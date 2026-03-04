@@ -62,3 +62,10 @@ export interface CourseRegistration {
   registered_at: string;
   completed: boolean;
 }
+
+export interface SiteSetting {
+  id: string;
+  setting_key: string;
+  setting_value: string | null;
+  updated_at: string;
+}

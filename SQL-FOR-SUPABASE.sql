@@ -12,6 +12,22 @@ CREATE TABLE IF NOT EXISTS users (
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- ЧАСТЬ 1.5: Таблица настроек сайта
+CREATE TABLE IF NOT EXISTS site_settings (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  setting_key VARCHAR(255) UNIQUE NOT NULL,
+  setting_value TEXT,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Вставим начальные значения
+INSERT INTO site_settings (setting_key, setting_value) 
+VALUES 
+  ('hero_background_url', ''),
+  ('hero_title', 'Академия Банкротства'),
+  ('hero_description', 'Знания, навыки и деловые связи для профессионального роста')
+ON CONFLICT (setting_key) DO NOTHING;
+
 -- ЧАСТЬ 2: Таблица медиа (загруженные картинки)
 CREATE TABLE IF NOT EXISTS media (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

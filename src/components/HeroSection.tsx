@@ -1,12 +1,46 @@
+import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabase";
 import heroBg from "@/assets/hero-bg.jpg";
 
 const HeroSection = () => {
+  const [backgroundUrl, setBackgroundUrl] = useState(heroBg);
+  const [heroTitle, setHeroTitle] = useState("Академия Банкротства");
+  const [heroDescription, setHeroDescription] = useState(
+    "Знания, навыки и деловые связи для профессионального роста специалистов в сфере банкротства"
+  );
+
+  useEffect(() => {
+    fetchSettings();
+  }, []);
+
+  const fetchSettings = async () => {
+    try {
+      const { data } = await supabase.from("site_settings").select("*");
+
+      if (data) {
+        data.forEach((item) => {
+          if (item.setting_key === "hero_background_url" && item.setting_value) {
+            setBackgroundUrl(item.setting_value);
+          }
+          if (item.setting_key === "hero_title" && item.setting_value) {
+            setHeroTitle(item.setting_value);
+          }
+          if (item.setting_key === "hero_description" && item.setting_value) {
+            setHeroDescription(item.setting_value);
+          }
+        });
+      }
+    } catch (error) {
+      console.log("Используются настройки по умолчанию");
+    }
+  };
+
   return (
     <section className="relative overflow-hidden">
       <div
         className="relative mx-auto max-w-[1200px] overflow-hidden rounded-b-3xl"
         style={{
-          backgroundImage: `url(${heroBg})`,
+          backgroundImage: `url(${backgroundUrl})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}
@@ -17,11 +51,10 @@ const HeroSection = () => {
             Онлайн-школа банкротства
           </p>
           <h1 className="mx-auto mt-4 max-w-3xl font-heading text-4xl font-extrabold leading-tight text-primary-foreground sm:text-5xl md:text-6xl">
-            Академия Банкротства
+            {heroTitle}
           </h1>
           <p className="mx-auto mt-6 max-w-2xl font-body text-base leading-relaxed text-primary-foreground/85 sm:text-lg">
-            Знания, навыки и деловые связи для профессионального роста
-            специалистов в сфере банкротства
+            {heroDescription}
           </p>
           <div className="mt-8">
             <a

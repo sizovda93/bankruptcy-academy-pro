@@ -4,6 +4,7 @@ import { UsersTable } from './UsersTable';
 import { MediaUploader } from './MediaUploader';
 import { CoursesManager } from './CoursesManager';
 import { ReviewsManager } from './ReviewsManager';
+import { SiteSettingsManager } from './SiteSettingsManager';
 import { LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -86,11 +87,12 @@ export function AdminPanel() {
           {/* Main Content */}
           <div className="max-w-7xl mx-auto px-4 py-8">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-4 mb-8">
+              <TabsList className="grid w-full grid-cols-5 mb-8">
                 <TabsTrigger value="dashboard">📊 Обзор</TabsTrigger>
                 <TabsTrigger value="courses">📚 Курсы</TabsTrigger>
                 <TabsTrigger value="media">🖼️ Медиа</TabsTrigger>
                 <TabsTrigger value="feedback">⭐ Отзывы</TabsTrigger>
+                <TabsTrigger value="settings">⚙️ Настройки</TabsTrigger>
               </TabsList>
 
               {/* Dashboard Tab */}
@@ -148,6 +150,11 @@ export function AdminPanel() {
               {/* Reviews Tab */}
               <TabsContent value="feedback" className="bg-white p-6 rounded-lg shadow">
                 <ReviewsManager />
+              </TabsContent>
+
+              {/* Settings Tab */}
+              <TabsContent value="settings" className="bg-white p-6 rounded-lg shadow">
+                <SiteSettingsManager />
               </TabsContent>
             </Tabs>
           </div>
