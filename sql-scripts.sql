@@ -214,5 +214,20 @@ CREATE POLICY "Курсы видны всем" ON courses FOR SELECT USING (true
 CREATE POLICY "Преподаватели видны всем" ON teachers FOR SELECT USING (is_published = true);
 CREATE POLICY "Опубликованные отзывы видны всем" ON reviews FOR SELECT USING (is_published = true);
 
+-- Политики записи для админ-панели (клиентское админ-приложение)
+-- ВАЖНО: это открывает запись с публичного ключа. Для production лучше вынести админку на сервер.
+DROP POLICY IF EXISTS "Курсы можно изменять" ON courses;
+DROP POLICY IF EXISTS "Отзывы можно изменять" ON reviews;
+DROP POLICY IF EXISTS "Преподавателей можно изменять" ON teachers;
+
+CREATE POLICY "Курсы можно изменять" ON courses
+FOR ALL USING (true) WITH CHECK (true);
+
+CREATE POLICY "Отзывы можно изменять" ON reviews
+FOR ALL USING (true) WITH CHECK (true);
+
+CREATE POLICY "Преподавателей можно изменять" ON teachers
+FOR ALL USING (true) WITH CHECK (true);
+
 -- Политики для АДМИНА (полный доступ) - если у вас есть админ пользователи
 -- CREATE POLICY "Админ может управлять медиа" ON media FOR ALL USING (auth.uid() = uploaded_by);

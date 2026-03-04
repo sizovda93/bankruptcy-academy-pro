@@ -120,6 +120,21 @@ CREATE POLICY "Преподаватели видны всем" ON teachers FOR S
 -- Все отзывы видны (админ панель может видеть все, включая неопубликованные)
 CREATE POLICY "Все отзывы видны всем" ON reviews FOR SELECT USING (true);
 
+-- ЧАСТЬ 8.5: Политики записи для админ-панели (клиентское админ-приложение)
+-- ВАЖНО: это открывает запись с публичного ключа. Для production лучше вынести админку на сервер.
+DROP POLICY IF EXISTS "Курсы можно изменять" ON courses;
+DROP POLICY IF EXISTS "Отзывы можно изменять" ON reviews;
+DROP POLICY IF EXISTS "Преподавателей можно изменять" ON teachers;
+
+CREATE POLICY "Курсы можно изменять" ON courses
+FOR ALL USING (true) WITH CHECK (true);
+
+CREATE POLICY "Отзывы можно изменять" ON reviews
+FOR ALL USING (true) WITH CHECK (true);
+
+CREATE POLICY "Преподавателей можно изменять" ON teachers
+FOR ALL USING (true) WITH CHECK (true);
+
 -- ЧАСТЬ 9: Начальные курсы
 INSERT INTO courses (title, description, price, level)
 SELECT title, description, price, level
