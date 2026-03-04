@@ -151,6 +151,48 @@ VALUES
 ) AS seed(title, description, price, legacy_duration, level)
 ON CONFLICT DO NOTHING;
 
+-- 7.5. НАЧАЛЬНЫЕ ПРЕПОДАВАТЕЛИ
+INSERT INTO teachers (full_name, position, bio, photo_url, display_order, is_published)
+SELECT seed.full_name, seed.position, seed.bio, seed.photo_url, seed.display_order, seed.is_published
+FROM (
+  VALUES
+    (
+      'Александр Воронов',
+      'Адвокат, партнер практики банкротства',
+      '15+ лет в сопровождении банкротных процедур и судебных споров.',
+      'https://api.dicebear.com/7.x/avataaars/svg?seed=Voronov',
+      1,
+      true
+    ),
+    (
+      'Екатерина Белова',
+      'Арбитражный юрист',
+      'Специализация: оспаривание сделок и защита контролирующих лиц.',
+      'https://api.dicebear.com/7.x/avataaars/svg?seed=Belova',
+      2,
+      true
+    ),
+    (
+      'Илья Смирнов',
+      'Руководитель образовательных программ',
+      'Практикующий юрист и методолог программ для senior-специалистов.',
+      'https://api.dicebear.com/7.x/avataaars/svg?seed=Smirnov',
+      3,
+      true
+    ),
+    (
+      'Ольга Романова',
+      'Адвокат по корпоративным спорам',
+      'Сопровождает сложные проекты по реструктуризации задолженности бизнеса.',
+      'https://api.dicebear.com/7.x/avataaars/svg?seed=Romanova',
+      4,
+      true
+    )
+) AS seed(full_name, position, bio, photo_url, display_order, is_published)
+WHERE NOT EXISTS (
+  SELECT 1 FROM teachers t WHERE t.full_name = seed.full_name
+);
+
 -- ==========================================
 -- RLS ПОЛИТИКИ (Row Level Security)
 -- ==========================================
