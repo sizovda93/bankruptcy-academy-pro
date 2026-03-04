@@ -6,8 +6,13 @@ const FALLBACK_SUPABASE_ANON_KEY = 'sb_publishable_968O3rZYMHg8vOqyuGz9kw_9PPxV1
 const envUrl = import.meta.env.VITE_SUPABASE_URL || '';
 const envAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || '';
 
+const isPlaceholderKey = (key: string) => {
+  const normalized = key.toLowerCase();
+  return normalized.includes('your-project') || normalized.includes('your-anon-key') || normalized.includes('your-publishable-key');
+};
+
 const supabaseUrl = !envUrl || envUrl.includes('your-project.supabase.co') ? FALLBACK_SUPABASE_URL : envUrl;
-const supabaseAnonKey = envAnonKey || FALLBACK_SUPABASE_ANON_KEY;
+const supabaseAnonKey = !envAnonKey || isPlaceholderKey(envAnonKey) ? FALLBACK_SUPABASE_ANON_KEY : envAnonKey;
 
 if (!supabaseUrl || !supabaseAnonKey) {
   console.warn('Supabase credentials are missing. Please set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in .env');

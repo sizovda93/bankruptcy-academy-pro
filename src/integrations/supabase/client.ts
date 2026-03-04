@@ -8,8 +8,14 @@ const FALLBACK_SUPABASE_ANON_KEY = 'sb_publishable_968O3rZYMHg8vOqyuGz9kw_9PPxV1
 const envUrl = import.meta.env.VITE_SUPABASE_URL;
 const envKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || import.meta.env.VITE_SUPABASE_ANON_KEY;
 
+const isPlaceholderKey = (key: string | undefined) => {
+  if (!key) return true;
+  const normalized = key.toLowerCase();
+  return normalized.includes('your-project') || normalized.includes('your-anon-key') || normalized.includes('your-publishable-key');
+};
+
 const SUPABASE_URL = !envUrl || envUrl.includes('your-project.supabase.co') ? FALLBACK_SUPABASE_URL : envUrl;
-const SUPABASE_PUBLISHABLE_KEY = envKey || FALLBACK_SUPABASE_ANON_KEY;
+const SUPABASE_PUBLISHABLE_KEY = !envKey || isPlaceholderKey(envKey) ? FALLBACK_SUPABASE_ANON_KEY : envKey;
 
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
