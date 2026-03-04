@@ -2,18 +2,28 @@ type ResizeOptions = {
   width: number;
   height: number;
   quality?: number;
-  backgroundColor?: string;
 };
 
 export async function resizeImageToCover(file: File, options: ResizeOptions): Promise<File> {
-  const { width, height, quality = 0.9, backgroundColor = "#f5f3eb" } = options;
+  const { width, height, quality = 0.9 } = options;
   const bitmap = await createImageBitmap(file);
 
-  const scale = Math.min(width / bitmap.width, height / bitmap.height);
-  const drawWidth = Math.round(bitmap.width * scale);
-  const drawHeight = Math.round(bitmap.height * scale);
-  const dx = Math.round((width - drawWidth) / 2);
-  const dy = Math.round((height - drawHeight) / 2);
+  const srcRatio = bitmap.width / bitmap.height;
+  const targetRatio = width / height;
+
+  let sx = 0;
+  let sy = 0;
+  let sw = bitmap.width;
+  let sh = bitmap.height;
+
+  // Crop from center so every uploaded image fills the same card ratio.
+  if (srcRatio > targetRatio) {
+    sw = Math.round(bitmap.height * targetRatio);
+    sx = Math.round((bitmap.width - sw) / 2);
+  } else if (srcRatio < targetRatio) {
+    sh = Math.round(bitmap.width / targetRatio);
+    sy = Math.round((bitmap.height - sh) / 2);
+  }
 
   const canvas = document.createElement("canvas");
   canvas.width = width;
@@ -24,10 +34,7 @@ export async function resizeImageToCover(file: File, options: ResizeOptions): Pr
     return file;
   }
 
-  // Keep full image visible and add background fields instead of cropping.
-  ctx.fillStyle = backgroundColor;
-  ctx.fillRect(0, 0, width, height);
-  ctx.drawImage(bitmap, 0, 0, bitmap.width, bitmap.height, dx, dy, drawWidth, drawHeight);
+  ctx.drawImage(bitmap, sx, sy, sw, sh, 0, 0, width, height);
   bitmap.close();
 
   const blob = await new Promise<Blob | null>((resolve) => {

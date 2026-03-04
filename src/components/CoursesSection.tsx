@@ -1,4 +1,4 @@
-п»їimport { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { BookOpen } from "lucide-react";
 import { supabase, Course } from "@/lib/supabase";
 
@@ -14,33 +14,33 @@ type DisplayCourse = {
 const defaultCourses: DisplayCourse[] = [
   {
     id: "default-1",
-    title: "Р®СЂРёРґРёС‡РµСЃРєРёРµ Р°СЃРїРµРєС‚С‹ РїСЂРѕС†РµРґСѓСЂС‹ Р±Р°РЅРєСЂРѕС‚СЃС‚РІР°",
-    type: "РџСЂРѕРґРІРёРЅСѓС‚С‹Р№",
-    price: "14 500 в‚Ѕ",
+    title: "Юридические аспекты процедуры банкротства",
+    type: "Продвинутый",
+    price: "14 500 ?",
   },
   {
     id: "default-2",
-    title: "РњР°СЂРєРµС‚РёРЅРі РІ СЃС„РµСЂРµ Р±Р°РЅРєСЂРѕС‚СЃС‚РІР°",
-    type: "РЎСЂРµРґРЅРёР№",
-    price: "11 200 в‚Ѕ",
+    title: "Маркетинг в сфере банкротства",
+    type: "Средний",
+    price: "11 200 ?",
   },
   {
     id: "default-3",
-    title: "РџРѕСЃС‚СЂРѕРµРЅРёРµ СЌС„С„РµРєС‚РёРІРЅРѕР№ РєРѕРјР°РЅРґС‹",
-    type: "РќР°С‡РёРЅР°СЋС‰РёР№",
-    price: "8 900 в‚Ѕ",
+    title: "Построение эффективной команды",
+    type: "Начинающий",
+    price: "8 900 ?",
   },
 ];
 
 const formatPrice = (value: number | null | undefined) => {
-  if (typeof value !== "number" || Number.isNaN(value)) return "РџРѕ Р·Р°РїСЂРѕСЃСѓ";
-  return `${new Intl.NumberFormat("ru-RU").format(value)} в‚Ѕ`;
+  if (typeof value !== "number" || Number.isNaN(value)) return "По запросу";
+  return `${new Intl.NumberFormat("ru-RU").format(value)} ?`;
 };
 
 const toDisplayCourse = (course: Course): DisplayCourse => ({
   id: course.id,
   title: course.title,
-  type: course.level || "РљСѓСЂСЃ",
+  type: course.level || "Курс",
   price: formatPrice(course.price),
   description: course.description || undefined,
   coverImageUrl: course.cover_image_url || undefined,
@@ -96,11 +96,11 @@ const CoursesSection = () => {
     <section id="courses" className="py-16 sm:py-24">
       <div className="container">
         <h2 className="font-heading text-3xl font-bold text-foreground sm:text-4xl">
-          РќР°С€Рё РєСѓСЂСЃС‹
+          Наши курсы
         </h2>
 
         {loading ? (
-          <p className="mt-6 text-muted-foreground">Р—Р°РіСЂСѓР·РєР° РєСѓСЂСЃРѕРІ...</p>
+          <p className="mt-6 text-muted-foreground">Загрузка курсов...</p>
         ) : null}
 
         <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -113,7 +113,7 @@ const CoursesSection = () => {
                 <img
                   src={course.coverImageUrl}
                   alt={course.title}
-                  className="mb-4 w-full aspect-video rounded-xl object-contain bg-muted/30"
+                  className="mb-4 h-40 w-full rounded-xl object-cover"
                 />
               ) : null}
 

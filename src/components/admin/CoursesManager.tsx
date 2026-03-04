@@ -162,7 +162,7 @@ export function CoursesManager() {
                     <img
                       src={coverImage.url}
                       alt="Cover"
-                      className="w-full aspect-video object-contain bg-muted/30 rounded-lg"
+                      className="w-full h-40 object-cover rounded-lg"
                     />
                     <Input
                       type="file"
@@ -242,7 +242,7 @@ export function CoursesManager() {
                 <img
                   src={course.cover_image_url}
                   alt={course.title}
-                  className="w-full aspect-video object-contain bg-muted/30"
+                  className="w-full h-40 object-cover"
                 />
               )}
               <div className="p-4">
