@@ -93,6 +93,9 @@ ALTER TABLE reviews ENABLE ROW LEVEL SECURITY;
 ALTER TABLE course_registrations ENABLE ROW LEVEL SECURITY;
 
 -- ЧАСТЬ 8: Политики безопасности
+DROP POLICY IF EXISTS "Курсы видны всем" ON courses;
+DROP POLICY IF EXISTS "Опубликованные отзывы видны всем" ON reviews;
+
 CREATE POLICY "Курсы видны всем" ON courses FOR SELECT USING (true);
 CREATE POLICY "Опубликованные отзывы видны всем" ON reviews FOR SELECT USING (is_published = true);
 
