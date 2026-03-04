@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase, Course } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -30,7 +30,7 @@ export function CoursesManager() {
       description: '',
       cover_image_url: '',
       price: 0,
-      level: 'РќР°С‡РёРЅР°СЋС‰РёР№',
+      level: 'Начинающий',
     },
   });
 
@@ -46,7 +46,7 @@ export function CoursesManager() {
       if (error) throw error;
       setCourses(data || []);
     } catch (error: any) {
-      toast({ title: 'РћС€РёР±РєР°', description: error.message, variant: 'destructive' });
+      toast({ title: 'Ошибка', description: error.message, variant: 'destructive' });
     } finally {
       setLoading(false);
     }
@@ -59,7 +59,7 @@ export function CoursesManager() {
     try {
       setUploading(true);
 
-      // Р—Р°РіСЂСѓР·РёРј С„Р°Р№Р» РІ Supabase Storage
+      // Загрузим файл в Supabase Storage
       const fileExt = file.name.split('.').pop();
       const fileName = `course-cover-${Date.now()}.${fileExt}`;
       const filePath = `covers/${fileName}`;
@@ -68,9 +68,9 @@ export function CoursesManager() {
 
       setCoverImage({ url: fileUrl, file: file });
       form.setValue('cover_image_url', fileUrl);
-      toast({ title: 'РЈСЃРїРµС€РЅРѕ', description: 'РћР±Р»РѕР¶РєР° Р·Р°РіСЂСѓР¶РµРЅР°' });
+      toast({ title: 'Успешно', description: 'Обложка загружена' });
     } catch (error: any) {
-      toast({ title: 'РћС€РёР±РєР° Р·Р°РіСЂСѓР·РєРё', description: error.message, variant: 'destructive' });
+      toast({ title: 'Ошибка загрузки', description: error.message, variant: 'destructive' });
     } finally {
       setUploading(false);
     }
@@ -86,11 +86,11 @@ export function CoursesManager() {
       if (editingId) {
         const { error } = await supabase.from('courses').update(submitData).eq('id', editingId);
         if (error) throw error;
-        toast({ title: 'РЈСЃРїРµС€РЅРѕ', description: 'РљСѓСЂСЃ РѕР±РЅРѕРІР»С‘РЅ' });
+        toast({ title: 'Успешно', description: 'Курс обновлён' });
       } else {
         const { error } = await supabase.from('courses').insert([submitData]);
         if (error) throw error;
-        toast({ title: 'РЈСЃРїРµС€РЅРѕ', description: 'РљСѓСЂСЃ СЃРѕР·РґР°РЅ' });
+        toast({ title: 'Успешно', description: 'Курс создан' });
       }
 
       form.reset();
@@ -99,7 +99,7 @@ export function CoursesManager() {
       setEditingId(null);
       await fetchCourses();
     } catch (error: any) {
-      toast({ title: 'РћС€РёР±РєР°', description: error.message, variant: 'destructive' });
+      toast({ title: 'Ошибка', description: error.message, variant: 'destructive' });
     }
   };
 
@@ -117,16 +117,16 @@ export function CoursesManager() {
   };
 
   const deleteCourse = async (id: string) => {
-    if (!confirm('Р’С‹ СѓРІРµСЂРµРЅС‹?')) return;
+    if (!confirm('Вы уверены?')) return;
 
     try {
       const { error } = await supabase.from('courses').delete().eq('id', id);
       if (error) throw error;
 
-      toast({ title: 'РЈСЃРїРµС€РЅРѕ', description: 'РљСѓСЂСЃ СѓРґР°Р»С‘РЅ' });
+      toast({ title: 'Успешно', description: 'Курс удалён' });
       await fetchCourses();
     } catch (error: any) {
-      toast({ title: 'РћС€РёР±РєР°', description: error.message, variant: 'destructive' });
+      toast({ title: 'Ошибка', description: error.message, variant: 'destructive' });
     }
   };
 
@@ -142,19 +142,19 @@ export function CoursesManager() {
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">РљСѓСЂСЃС‹ ({courses.length})</h2>
+        <h2 className="text-2xl font-bold">Курсы ({courses.length})</h2>
         <Dialog open={open} onOpenChange={handleOpenChange}>
           <DialogTrigger asChild>
-            <Button onClick={() => setEditingId(null)}>Р”РѕР±Р°РІРёС‚СЊ РєСѓСЂСЃ</Button>
+            <Button onClick={() => setEditingId(null)}>Добавить курс</Button>
           </DialogTrigger>
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>{editingId ? 'Р РµРґР°РєС‚РёСЂРѕРІР°С‚СЊ РєСѓСЂСЃ' : 'Р”РѕР±Р°РІРёС‚СЊ РєСѓСЂСЃ'}</DialogTitle>
+              <DialogTitle>{editingId ? 'Редактировать курс' : 'Добавить курс'}</DialogTitle>
             </DialogHeader>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               {/* Cover Image Upload */}
               <div>
-                <FormLabel className="block mb-2">РћР±Р»РѕР¶РєР° РєСѓСЂСЃР°</FormLabel>
+                <FormLabel className="block mb-2">Обложка курса</FormLabel>
                 {coverImage.url ? (
                   <div className="space-y-2">
                     <img
@@ -181,31 +181,31 @@ export function CoursesManager() {
                     />
                     <label htmlFor="cover-input" className="cursor-pointer block">
                       <Upload className="mx-auto mb-2 text-gray-400" size={24} />
-                      <p className="text-sm">РќР°Р¶РјРё РёР»Рё РїРµСЂРµС‚Р°С‰Рё РѕР±Р»РѕР¶РєСѓ</p>
-                      {uploading && <p className="text-xs text-blue-500 mt-2">Р—Р°РіСЂСѓР·РєР°...</p>}
+                      <p className="text-sm">Нажми или перетащи обложку</p>
+                      {uploading && <p className="text-xs text-blue-500 mt-2">Загрузка...</p>}
                     </label>
                   </div>
                 )}
               </div>
 
               <div>
-                <FormLabel className="block mb-2">РќР°Р·РІР°РЅРёРµ</FormLabel>
+                <FormLabel className="block mb-2">Название</FormLabel>
                 <Input
                   {...form.register('title')}
-                  placeholder="РќР°Р·РІР°РЅРёРµ РєСѓСЂСЃР°"
+                  placeholder="Название курса"
                 />
               </div>
 
               <div>
-                <FormLabel className="block mb-2">РћРїРёСЃР°РЅРёРµ</FormLabel>
+                <FormLabel className="block mb-2">Описание</FormLabel>
                 <Textarea
                   {...form.register('description')}
-                  placeholder="РћРїРёСЃР°РЅРёРµ РєСѓСЂСЃР°"
+                  placeholder="Описание курса"
                 />
               </div>
 
               <div>
-                <FormLabel className="block mb-2">Р¦РµРЅР° (в‚Ѕ)</FormLabel>
+                <FormLabel className="block mb-2">Цена (₽)</FormLabel>
                 <Input
                   type="number"
                   step="0.01"
@@ -215,15 +215,15 @@ export function CoursesManager() {
               </div>
 
               <div>
-                <FormLabel className="block mb-2">РЈСЂРѕРІРµРЅСЊ</FormLabel>
+                <FormLabel className="block mb-2">Уровень</FormLabel>
                 <Input
                   {...form.register('level')}
-                  placeholder="РЈСЂРѕРІРµРЅСЊ РєСѓСЂСЃР°"
+                  placeholder="Уровень курса"
                 />
               </div>
 
               <Button type="submit" className="w-full">
-                РЎРѕС…СЂР°РЅРёС‚СЊ
+                Сохранить
               </Button>
             </form>
           </DialogContent>
@@ -231,7 +231,7 @@ export function CoursesManager() {
       </div>
 
       {loading ? (
-        <p>Р—Р°РіСЂСѓР·РєР°...</p>
+        <p>Загрузка...</p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {courses.map((course) => (
@@ -243,8 +243,8 @@ export function CoursesManager() {
                 <h3 className="font-bold text-lg mb-2 line-clamp-2">{course.title}</h3>
                 <p className="text-sm text-gray-600 mb-2 line-clamp-2">{course.description}</p>
                 <div className="flex justify-between text-sm mb-4 gap-2 flex-wrap">
-                  <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">рџ’° {course.price} в‚Ѕ</span>
-                  <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded text-xs">рџ“Љ {course.level}</span>
+                  <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">💰 {course.price} ₽</span>
+                  <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded text-xs">📊 {course.level}</span>
                 </div>
                 <div className="flex gap-2">
                   <Button
@@ -254,7 +254,7 @@ export function CoursesManager() {
                     className="flex-1"
                   >
                     <Pencil size={16} className="mr-1" />
-                    Р РµРґР°РєС‚РёСЂРѕРІР°С‚СЊ
+                    Редактировать
                   </Button>
                   <Button
                     variant="destructive"
@@ -272,4 +272,3 @@ export function CoursesManager() {
     </div>
   );
 }
-
