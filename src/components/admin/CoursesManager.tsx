@@ -4,10 +4,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useForm } from 'react-hook-form';
 import { toast } from '@/hooks/use-toast';
 import { Pencil, Trash2, Upload } from 'lucide-react';
+
+const FormLabel = ({ className = '', ...props }: any) => (
+  <label className={`text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 ${className}`} {...props} />
+);
 
 export function CoursesManager() {
   const [courses, setCourses] = useState<Course[]>([]);
@@ -193,72 +196,52 @@ export function CoursesManager() {
                 )}
               </div>
 
-              <FormField
-                control={form.control}
-                name="title"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Название</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="description"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Описание</FormLabel>
-                    <FormControl>
-                      <Textarea {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="price"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Цена (₽)</FormLabel>
-                    <FormControl>
-                      <Input type="number" step="0.01" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="duration_hours"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Длительность (месяцев или часов)</FormLabel>
-                    <FormControl>
-                      <Input type="number" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="level"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Уровень</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <Button type="submit">Сохранить</Button>
+              <div>
+                <FormLabel className="block mb-2">Название</FormLabel>
+                <Input
+                  {...form.register('title')}
+                  placeholder="Название курса"
+                />
+              </div>
+
+              <div>
+                <FormLabel className="block mb-2">Описание</FormLabel>
+                <Textarea
+                  {...form.register('description')}
+                  placeholder="Описание курса"
+                />
+              </div>
+
+              <div>
+                <FormLabel className="block mb-2">Цена (₽)</FormLabel>
+                <Input
+                  type="number"
+                  step="0.01"
+                  {...form.register('price', { valueAsNumber: true })}
+                  placeholder="0"
+                />
+              </div>
+
+              <div>
+                <FormLabel className="block mb-2">Длительность (месяцев или часов)</FormLabel>
+                <Input
+                  type="number"
+                  {...form.register('duration_hours', { valueAsNumber: true })}
+                  placeholder="0"
+                />
+              </div>
+
+              <div>
+                <FormLabel className="block mb-2">Уровень</FormLabel>
+                <Input
+                  {...form.register('level')}
+                  placeholder="Уровень курса"
+                />
+              </div>
+
+              <Button type="submit" className="w-full">
+                Сохранить
+              </Button>
             </form>
           </DialogContent>
         </Dialog>
