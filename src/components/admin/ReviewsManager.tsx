@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase, Review, Course } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -48,7 +48,7 @@ export function ReviewsManager() {
       if (error) throw error;
       setReviews(data || []);
     } catch (error: any) {
-      toast({ title: 'РћС€РёР±РєР°', description: error.message, variant: 'destructive' });
+      toast({ title: 'Ошибка', description: error.message, variant: 'destructive' });
     } finally {
       setLoading(false);
     }
@@ -60,7 +60,7 @@ export function ReviewsManager() {
       if (error) throw error;
       setCourses(data || []);
     } catch (error: any) {
-      toast({ title: 'РћС€РёР±РєР° Р·Р°РіСЂСѓР·РєРё РєСѓСЂСЃРѕРІ', description: error.message, variant: 'destructive' });
+      toast({ title: 'Ошибка загрузки курсов', description: error.message, variant: 'destructive' });
     }
   };
 
@@ -71,7 +71,7 @@ export function ReviewsManager() {
     try {
       setUploading(true);
 
-      // Р—Р°РіСЂСѓР·РёРј С„Р°Р№Р» РІ Supabase Storage
+      // Загрузим файл в Supabase Storage
       const fileExt = file.name.split('.').pop();
       const fileName = `avatar-${Date.now()}.${fileExt}`;
       const filePath = `avatars/${fileName}`;
@@ -80,15 +80,15 @@ export function ReviewsManager() {
 
       if (uploadError) throw uploadError;
 
-      // РџРѕР»СѓС‡РёРј РїСѓР±Р»РёС‡РЅС‹Р№ URL
+      // Получим публичный URL
       const { data: publicData } = supabase.storage.from('media').getPublicUrl(filePath);
       const fileUrl = publicData.publicUrl;
 
       setAvatarImage({ url: fileUrl, file: file });
       form.setValue('author_avatar_url', fileUrl);
-      toast({ title: 'РЈСЃРїРµС€РЅРѕ', description: 'РђРІР°С‚Р°СЂ Р·Р°РіСЂСѓР¶РµРЅ' });
+      toast({ title: 'Успешно', description: 'Аватар загружен' });
     } catch (error: any) {
-      toast({ title: 'РћС€РёР±РєР° Р·Р°РіСЂСѓР·РєРё', description: error.message, variant: 'destructive' });
+      toast({ title: 'Ошибка загрузки', description: error.message, variant: 'destructive' });
     } finally {
       setUploading(false);
     }
@@ -108,11 +108,11 @@ export function ReviewsManager() {
       if (editingId) {
         const { error } = await supabase.from('reviews').update(submitData).eq('id', editingId);
         if (error) throw error;
-        toast({ title: 'РЈСЃРїРµС€РЅРѕ', description: 'РћС‚Р·С‹РІ РѕР±РЅРѕРІР»С‘РЅ' });
+        toast({ title: 'Успешно', description: 'Отзыв обновлён' });
       } else {
         const { error } = await supabase.from('reviews').insert([submitData]);
         if (error) throw error;
-        toast({ title: 'РЈСЃРїРµС€РЅРѕ', description: 'РћС‚Р·С‹РІ РґРѕР±Р°РІР»РµРЅ' });
+        toast({ title: 'Успешно', description: 'Отзыв добавлен' });
       }
 
       form.reset();
@@ -121,7 +121,7 @@ export function ReviewsManager() {
       setEditingId(null);
       await fetchReviews();
     } catch (error: any) {
-      toast({ title: 'РћС€РёР±РєР°', description: error.message, variant: 'destructive' });
+      toast({ title: 'Ошибка', description: error.message, variant: 'destructive' });
     }
   };
 
@@ -145,25 +145,25 @@ export function ReviewsManager() {
 
       if (error) throw error;
 
-      toast({ title: 'РЈСЃРїРµС€РЅРѕ', description: 'РЎС‚Р°С‚СѓСЃ РёР·РјРµРЅС‘РЅ' });
+      toast({ title: 'Успешно', description: 'Статус изменён' });
       await fetchReviews();
     } catch (error: any) {
-      toast({ title: 'РћС€РёР±РєР°', description: error.message, variant: 'destructive' });
+      toast({ title: 'Ошибка', description: error.message, variant: 'destructive' });
     }
   };
 
   const deleteReview = async (id: string) => {
-    if (!confirm('РЈРґР°Р»РёС‚СЊ РѕС‚Р·С‹РІ?')) return;
+    if (!confirm('Удалить отзыв?')) return;
 
     try {
       const { error } = await supabase.from('reviews').delete().eq('id', id);
 
       if (error) throw error;
 
-      toast({ title: 'РЈСЃРїРµС€РЅРѕ', description: 'РћС‚Р·С‹РІ СѓРґР°Р»С‘РЅ' });
+      toast({ title: 'Успешно', description: 'Отзыв удалён' });
       await fetchReviews();
     } catch (error: any) {
-      toast({ title: 'РћС€РёР±РєР°', description: error.message, variant: 'destructive' });
+      toast({ title: 'Ошибка', description: error.message, variant: 'destructive' });
     }
   };
 
@@ -179,30 +179,30 @@ export function ReviewsManager() {
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">РћС‚Р·С‹РІС‹ ({reviews.length})</h2>
+        <h2 className="text-2xl font-bold">Отзывы ({reviews.length})</h2>
         <Dialog open={open} onOpenChange={handleOpenChange}>
           <DialogTrigger asChild>
-            <Button>Р”РѕР±Р°РІРёС‚СЊ РѕС‚Р·С‹РІ</Button>
+            <Button>Добавить отзыв</Button>
           </DialogTrigger>
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>{editingId ? 'Р РµРґР°РєС‚РёСЂРѕРІР°С‚СЊ РѕС‚Р·С‹РІ' : 'Р”РѕР±Р°РІРёС‚СЊ РѕС‚Р·С‹РІ'}</DialogTitle>
+              <DialogTitle>{editingId ? 'Редактировать отзыв' : 'Добавить отзыв'}</DialogTitle>
             </DialogHeader>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              {/* РРјСЏ Р°РІС‚РѕСЂР° */}
+              {/* Имя автора */}
               <div className="space-y-2">
-                <FormLabel>РРјСЏ Р°РІС‚РѕСЂР°</FormLabel>
-                <Input {...form.register('author_name')} placeholder="РРІР°РЅ РџРµС‚СЂРѕРІ" />
+                <FormLabel>Имя автора</FormLabel>
+                <Input {...form.register('author_name')} placeholder="Иван Петров" />
               </div>
 
-              {/* Р’С‹Р±РѕСЂ РєСѓСЂСЃР° */}
+              {/* Выбор курса */}
               <div className="space-y-2">
-                <FormLabel>РљСѓСЂСЃ (РѕРїС†РёРѕРЅР°Р»СЊРЅРѕ)</FormLabel>
+                <FormLabel>Курс (опционально)</FormLabel>
                 <select
                   {...form.register('course_id')}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md"
                 >
-                  <option value="">РќРµ РїСЂРёРІСЏР·Р°РЅ Рє РєСѓСЂСЃСѓ</option>
+                  <option value="">Не привязан к курсу</option>
                   {courses.map((course) => (
                     <option key={course.id} value={course.id}>
                       {course.title}
@@ -211,9 +211,9 @@ export function ReviewsManager() {
                 </select>
               </div>
 
-              {/* РћС†РµРЅРєР° */}
+              {/* Оценка */}
               <div className="space-y-2">
-                <FormLabel>РћС†РµРЅРєР° (1-5)</FormLabel>
+                <FormLabel>Оценка (1-5)</FormLabel>
                 <Input
                   type="number"
                   min="1"
@@ -222,19 +222,19 @@ export function ReviewsManager() {
                 />
               </div>
 
-              {/* РўРµРєСЃС‚ РѕС‚Р·С‹РІР° */}
+              {/* Текст отзыва */}
               <div className="space-y-2">
-                <FormLabel>РўРµРєСЃС‚ РѕС‚Р·С‹РІР°</FormLabel>
+                <FormLabel>Текст отзыва</FormLabel>
                 <Textarea
                   {...form.register('comment')}
-                  placeholder="РћС‚Р»РёС‡РЅС‹Р№ РєСѓСЂСЃ, РјРЅРѕРіРѕ РїРѕР»РµР·РЅРѕР№ РёРЅС„РѕСЂРјР°С†РёРё..."
+                  placeholder="Отличный курс, много полезной информации..."
                   rows={4}
                 />
               </div>
 
-              {/* Р—Р°РіСЂСѓР·РєР° Р°РІР°С‚Р°СЂР° */}
+              {/* Загрузка аватара */}
               <div className="space-y-2">
-                <FormLabel>РђРІР°С‚Р°СЂ</FormLabel>
+                <FormLabel>Аватар</FormLabel>
                 {avatarImage.url && (
                   <div className="mb-2">
                     <img
@@ -252,16 +252,16 @@ export function ReviewsManager() {
                     disabled={uploading}
                     className="cursor-pointer"
                   />
-                  {uploading && <span className="text-sm text-gray-500">Р—Р°РіСЂСѓР·РєР°...</span>}
+                  {uploading && <span className="text-sm text-gray-500">Загрузка...</span>}
                 </div>
-                <p className="text-xs text-gray-500">РёР»Рё</p>
+                <p className="text-xs text-gray-500">или</p>
                 <Input
                   {...form.register('author_avatar_url')}
-                  placeholder="Р’СЃС‚Р°РІРёС‚СЊ URL Р°РІР°С‚Р°СЂР°"
+                  placeholder="Вставить URL аватара"
                 />
               </div>
 
-              {/* РџСѓР±Р»РёРєР°С†РёСЏ */}
+              {/* Публикация */}
               <div className="flex items-center gap-2">
                 <input
                   type="checkbox"
@@ -270,12 +270,12 @@ export function ReviewsManager() {
                   className="cursor-pointer"
                 />
                 <FormLabel htmlFor="is_published" className="cursor-pointer">
-                  РћРїСѓР±Р»РёРєРѕРІР°С‚СЊ СЃСЂР°Р·Сѓ
+                  Опубликовать сразу
                 </FormLabel>
               </div>
 
               <Button type="submit" className="w-full">
-                {editingId ? 'РћР±РЅРѕРІРёС‚СЊ' : 'Р”РѕР±Р°РІРёС‚СЊ'} РѕС‚Р·С‹РІ
+                {editingId ? 'Обновить' : 'Добавить'} отзыв
               </Button>
             </form>
           </DialogContent>
@@ -283,11 +283,11 @@ export function ReviewsManager() {
       </div>
 
       {loading ? (
-        <p>Р—Р°РіСЂСѓР·РєР°...</p>
+        <p>Загрузка...</p>
       ) : (
         <div className="space-y-3">
           {reviews.length === 0 ? (
-            <p className="text-gray-500">РћС‚Р·С‹РІРѕРІ РЅРµС‚</p>
+            <p className="text-gray-500">Отзывов нет</p>
           ) : (
             reviews.map((review) => {
               const course = courses.find((c) => c.id === review.course_id);
@@ -304,8 +304,8 @@ export function ReviewsManager() {
                     <div className="flex justify-between items-start mb-2 gap-2">
                       <div className="min-w-0">
                         <h4 className="font-bold">{review.author_name}</h4>
-                        <p className="text-sm text-yellow-500">в­ђ {review.rating}/5</p>
-                        {course && <p className="text-xs text-gray-500">РљСѓСЂСЃ: {course.title}</p>}
+                        <p className="text-sm text-yellow-500">⭐ {review.rating}/5</p>
+                        {course && <p className="text-xs text-gray-500">Курс: {course.title}</p>}
                       </div>
                       <div className="flex gap-2 flex-shrink-0">
                         <Button
@@ -333,7 +333,7 @@ export function ReviewsManager() {
                     </div>
                     <p className="text-sm text-gray-700 break-words">{review.comment}</p>
                     <p className="text-xs text-gray-500 mt-2">
-                      {review.is_published ? 'вњ“ РћРїСѓР±Р»РёРєРѕРІР°РЅРѕ' : 'вЉ РќРµ РѕРїСѓР±Р»РёРєРѕРІР°РЅРѕ'}
+                      {review.is_published ? '✓ Опубликовано' : '⊘ Не опубликовано'}
                     </p>
                   </div>
                 </div>
@@ -345,4 +345,3 @@ export function ReviewsManager() {
     </div>
   );
 }
-
