@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 const navItems = [
   { label: "Курсы", href: "#courses" },
   { label: "Преподаватели", href: "#teachers" },
-  { label: "Корпоративное обучение", href: "#" },
   { label: "Отзывы", href: "#reviews" },
   { label: "О нас", href: "#about" },
   { label: "Контакты", href: "#" },
