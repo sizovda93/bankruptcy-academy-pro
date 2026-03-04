@@ -1,4 +1,5 @@
 ﻿import { useEffect, useMemo, useState } from "react";
+import { Star } from "lucide-react";
 import { supabase, Review } from "@/lib/supabase";
 
 const defaultReviews: Review[] = [
@@ -99,8 +100,13 @@ const ReviewsSection = () => {
               key={review.id}
               className="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow"
             >
-              <div className="flex items-center mb-4">
-                <div className="text-yellow-400 text-lg">{"?".repeat(review.rating)}</div>
+              <div className="flex items-center mb-4 gap-1">
+                {Array.from({ length: review.rating }).map((_, idx) => (
+                  <Star
+                    key={`${review.id}-star-${idx}`}
+                    className="h-4 w-4 text-yellow-400 fill-yellow-400"
+                  />
+                ))}
               </div>
 
               <p className="text-gray-700 mb-6 line-clamp-4">"{review.comment}"</p>
@@ -134,4 +140,3 @@ const ReviewsSection = () => {
 };
 
 export default ReviewsSection;
-
