@@ -43,7 +43,7 @@
 | Таблица | Назначение | Поля |
 |---------|-----------|------|
 | `users` | Пользователи | id, email, full_name, phone, created_at |
-| `courses` | Курсы | id, title, description, cover_image_url, price, duration_hours, level |
+| `courses` | Курсы | id, title, description, cover_image_url, price, level |
 | `media` | Загруженные файлы | id, file_name, file_url, file_type, file_size, created_at |
 | `reviews` | Отзывы | id, author_name, rating, comment, author_avatar_url, is_published, created_at |
 | `course_registrations` | Регистрации | user_id, course_id, registered_at, completed |
@@ -96,7 +96,7 @@ http://localhost:5173/admin
 ### 📚 Курсы
 - Добавить/редактировать/удалить курсы
 - Добавить обложку (URL из медиа)
-- Установить цену и продолжительность
+- Установить цену
 
 ### 🖼️ Медиа
 - Загружать картинки (перетащи или нажми)

@@ -94,7 +94,6 @@ courses → Курсы с обложками
   - description
   - cover_image_url ← URL обложки из медиа!
   - price
-  - duration_hours
   - level
 
 media → Загруженные файлы

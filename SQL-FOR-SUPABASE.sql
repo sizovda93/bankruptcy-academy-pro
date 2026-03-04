@@ -47,11 +47,13 @@ CREATE TABLE IF NOT EXISTS courses (
   cover_image_url TEXT,
   cover_image_id UUID REFERENCES media(id) ON DELETE SET NULL,
   price DECIMAL(10, 2) DEFAULT 0,
-  duration_hours INTEGER,
   level VARCHAR(50),
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+-- For existing databases created before this update
+ALTER TABLE courses DROP COLUMN IF EXISTS duration_hours;
 
 -- ЧАСТЬ 4: Таблица отзывов
 CREATE TABLE IF NOT EXISTS reviews (
@@ -102,7 +104,9 @@ CREATE POLICY "Курсы видны всем" ON courses FOR SELECT USING (true
 CREATE POLICY "Все отзывы видны всем" ON reviews FOR SELECT USING (true);
 
 -- ЧАСТЬ 9: Начальные курсы
-INSERT INTO courses (title, description, price, duration_hours, level) 
+INSERT INTO courses (title, description, price, level)
+SELECT title, description, price, level
+FROM (
 VALUES 
   (
     'Юридические аспекты процедуры банкротства',
@@ -146,6 +150,7 @@ VALUES
     5,
     'Продвинутый'
   )
+) AS seed(title, description, price, legacy_duration, level)
 ON CONFLICT DO NOTHING;
 
 -- ЧАСТЬ 10: Начальные отзывы (тестовые данные)

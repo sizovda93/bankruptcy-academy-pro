@@ -123,7 +123,6 @@ courses (курсы)
 ├── description
 ├── cover_image_url
 ├── price
-├── duration_hours
 └── level
 
 reviews (отзывы)

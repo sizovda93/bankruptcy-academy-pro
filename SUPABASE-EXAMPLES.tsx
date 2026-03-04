@@ -51,7 +51,6 @@ export function CoursesSection() {
             <p className="text-gray-600 mb-2">{course.description}</p>
             <div className="flex justify-between">
               <span>💰 {course.price}₽</span>
-              <span>⏱️ {course.duration_hours}ч</span>
             </div>
           </div>
         </div>

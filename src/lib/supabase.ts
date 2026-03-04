@@ -57,7 +57,6 @@ export interface Course {
   cover_image_url?: string;
   cover_image_id?: string;
   price: number;
-  duration_hours?: number;
   level?: string;
   created_at: string;
   updated_at: string;
