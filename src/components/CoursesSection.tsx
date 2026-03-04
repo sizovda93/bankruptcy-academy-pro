@@ -1,126 +1,147 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Clock, BookOpen } from "lucide-react";
+import { supabase, Course } from "@/lib/supabase";
 
-const categories = [
-  "Все курсы",
-  "Юридические аспекты",
-  "Маркетинг",
-  "Управление",
-  "Практика",
-];
-
-interface Course {
+type DisplayCourse = {
+  id: string;
   title: string;
-  category: string;
   type: string;
   duration: string;
   price: string;
-  discount?: string;
-}
+  description?: string;
+  coverImageUrl?: string;
+};
 
-const courses: Course[] = [
+const defaultCourses: DisplayCourse[] = [
   {
-    title: "Юридические аспекты процедуры банкротства",
-    category: "Юридические аспекты",
-    type: "Повышение квалификации",
-    duration: "6 месяцев",
-    price: "14 500 ₽/мес",
-    discount: "до -20%",
+    id: "default-1",
+    title: "����������� ������� ��������� �����������",
+    type: "�����������",
+    duration: "6 ���",
+    price: "14 500 ?",
   },
   {
-    title: "Маркетинг в сфере банкротства",
-    category: "Маркетинг",
-    type: "Повышение квалификации",
-    duration: "4 месяца",
-    price: "11 200 ₽/мес",
-    discount: "до -40%",
+    id: "default-2",
+    title: "��������� � ����� �����������",
+    type: "�������",
+    duration: "4 ���",
+    price: "11 200 ?",
   },
   {
-    title: "Построение эффективной команды",
-    category: "Управление",
-    type: "Повышение квалификации",
-    duration: "3 месяца",
-    price: "8 900 ₽/мес",
-    discount: "до -30%",
-  },
-  {
-    title: "Обзор практики банкротства",
-    category: "Практика",
-    type: "Интенсив",
-    duration: "2 месяца",
-    price: "6 500 ₽/мес",
-  },
-  {
-    title: "Субсидиарная ответственность",
-    category: "Юридические аспекты",
-    type: "Курс",
-    duration: "3 месяца",
-    price: "9 800 ₽/мес",
-    discount: "до -15%",
-  },
-  {
-    title: "Масштабирование бизнеса в банкротстве",
-    category: "Управление",
-    type: "Повышение квалификации",
-    duration: "5 месяцев",
-    price: "12 000 ₽/мес",
-    discount: "до -25%",
+    id: "default-3",
+    title: "���������� ����������� �������",
+    type: "����������",
+    duration: "3 ���",
+    price: "8 900 ?",
   },
 ];
 
-const CoursesSection = () => {
-  const [active, setActive] = useState("Все курсы");
+const formatPrice = (value: number | null | undefined) => {
+  if (typeof value !== "number" || Number.isNaN(value)) return "�� �������";
+  return `${new Intl.NumberFormat("ru-RU").format(value)} ?`;
+};
 
-  const filtered =
-    active === "Все курсы"
-      ? courses
-      : courses.filter((c) => c.category === active);
+const toDisplayCourse = (course: Course): DisplayCourse => ({
+  id: course.id,
+  title: course.title,
+  type: course.level || "����",
+  duration: course.duration_hours ? `${course.duration_hours} ���` : "��� �����",
+  price: formatPrice(course.price),
+  description: course.description || undefined,
+  coverImageUrl: course.cover_image_url || undefined,
+});
+
+const CoursesSection = () => {
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchCourses = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("courses")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+      setCourses(data || []);
+    } catch {
+      setCourses([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCourses();
+
+    const channel = supabase
+      .channel("public-courses-changes")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "courses" },
+        () => {
+          fetchCourses();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+  const items = useMemo(() => {
+    if (courses.length > 0) {
+      return courses.map(toDisplayCourse);
+    }
+    return defaultCourses;
+  }, [courses]);
 
   return (
     <section id="courses" className="py-16 sm:py-24">
       <div className="container">
         <h2 className="font-heading text-3xl font-bold text-foreground sm:text-4xl">
-          Наши курсы
+          ���� �����
         </h2>
 
-        <div className="mt-8 flex flex-wrap gap-2">
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setActive(cat)}
-              className={`rounded-xl px-5 py-2.5 font-heading text-sm font-semibold transition-all ${
-                active === cat
-                  ? "bg-primary text-primary-foreground shadow-md"
-                  : "bg-secondary text-foreground/70 hover:bg-primary-light hover:text-primary"
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
-        </div>
+        {loading ? (
+          <p className="mt-6 text-muted-foreground">�������� ������...</p>
+        ) : null}
 
         <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {filtered.map((course) => (
+          {items.map((course) => (
             <div
-              key={course.title}
+              key={course.id}
               className="group relative flex flex-col rounded-2xl border border-border bg-card p-6 shadow-sm transition-all hover:shadow-lg hover:-translate-y-1"
             >
-              {course.discount && (
-                <span className="absolute -top-3 right-4 rounded-full bg-accent px-3 py-1 font-heading text-xs font-bold text-accent-foreground shadow">
-                  {course.discount}
-                </span>
-              )}
+              {course.coverImageUrl ? (
+                <img
+                  src={course.coverImageUrl}
+                  alt={course.title}
+                  className="mb-4 h-40 w-full rounded-xl object-cover"
+                />
+              ) : null}
+
               <div className="flex items-center gap-2 text-xs text-primary">
                 <BookOpen className="h-3.5 w-3.5" />
                 <span className="font-medium">{course.type}</span>
               </div>
+
               <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
                 <Clock className="h-3.5 w-3.5" />
                 <span>{course.duration}</span>
               </div>
+
               <h3 className="mt-4 font-heading text-lg font-bold leading-snug text-foreground group-hover:text-primary transition-colors">
                 {course.title}
               </h3>
+
+              {course.description ? (
+                <p className="mt-2 text-sm text-muted-foreground line-clamp-3">
+                  {course.description}
+                </p>
+              ) : null}
+
               <div className="mt-auto pt-6">
                 <p className="font-heading text-xl font-bold text-foreground">
                   {course.price}

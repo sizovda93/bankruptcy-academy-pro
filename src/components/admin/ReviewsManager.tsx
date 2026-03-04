@@ -31,7 +31,7 @@ export function ReviewsManager() {
       comment: '',
       author_avatar_url: '',
       course_id: '',
-      is_published: false,
+      is_published: true,
     },
   });
 
