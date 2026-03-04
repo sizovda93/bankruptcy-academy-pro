@@ -7,7 +7,7 @@ const navItems = [
   { label: "Преподаватели", href: "#teachers" },
   { label: "Корпоративное обучение", href: "#" },
   { label: "Отзывы", href: "#reviews" },
-  { label: "О нас", href: "#" },
+  { label: "О нас", href: "#about" },
   { label: "Контакты", href: "#" },
 ];
 
