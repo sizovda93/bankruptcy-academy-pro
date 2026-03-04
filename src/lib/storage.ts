@@ -1,6 +1,6 @@
 import { supabase } from "@/lib/supabase";
 
-const getStorageBuckets = () => {
+const getPreferredStorageBuckets = () => {
   const preferred = import.meta.env.VITE_SUPABASE_STORAGE_BUCKET as string | undefined;
 
   const buckets = [preferred, "media", "images", "uploads", "public"].filter(
@@ -10,13 +10,27 @@ const getStorageBuckets = () => {
   return Array.from(new Set(buckets));
 };
 
+const getProjectStorageBuckets = async () => {
+  const { data, error } = await supabase.storage.listBuckets();
+
+  if (error || !data) {
+    return [];
+  }
+
+  return data
+    .map((bucket) => bucket.name)
+    .filter((value): value is string => Boolean(value && value.trim()));
+};
+
 type UploadResult = {
   bucket: string;
   publicUrl: string;
 };
 
 export async function uploadImageWithBucketFallback(filePath: string, file: File): Promise<UploadResult> {
-  const buckets = getStorageBuckets();
+  const preferredBuckets = getPreferredStorageBuckets();
+  const projectBuckets = await getProjectStorageBuckets();
+  const buckets = Array.from(new Set([...preferredBuckets, ...projectBuckets]));
   let lastError: Error | null = null;
 
   for (const bucket of buckets) {
@@ -40,10 +54,11 @@ export async function uploadImageWithBucketFallback(filePath: string, file: File
 
   if (lastError) {
     throw new Error(
-      "Storage bucket not found. Create bucket 'media' or set VITE_SUPABASE_STORAGE_BUCKET in .env.local."
+      "Storage bucket not found. Create a public bucket (for example 'media') in Supabase Storage or set VITE_SUPABASE_STORAGE_BUCKET in .env.local."
     );
   }
 
-  throw new Error("No storage buckets configured for upload.");
+  throw new Error(
+    "No storage buckets available. Create a public bucket in Supabase Storage and retry."
+  );
 }
-
