@@ -162,7 +162,7 @@ export function CoursesManager() {
                     <img
                       src={coverImage.url}
                       alt="Cover"
-                      className="w-full h-40 object-cover rounded-lg"
+                      className="w-full aspect-video object-contain bg-muted/30 rounded-lg"
                     />
                     <Input
                       type="file"
@@ -239,7 +239,11 @@ export function CoursesManager() {
           {courses.map((course) => (
             <div key={course.id} className="border rounded-lg overflow-hidden hover:shadow-lg transition">
               {course.cover_image_url && (
-                <img src={course.cover_image_url} alt={course.title} className="w-full h-40 object-cover" />
+                <img
+                  src={course.cover_image_url}
+                  alt={course.title}
+                  className="w-full aspect-video object-contain bg-muted/30"
+                />
               )}
               <div className="p-4">
                 <h3 className="font-bold text-lg mb-2 line-clamp-2">{course.title}</h3>
