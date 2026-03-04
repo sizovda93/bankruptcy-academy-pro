@@ -1,10 +1,10 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { Menu, X, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const navItems = [
   { label: "Курсы", href: "#courses" },
-  { label: "Интенсивы", href: "#" },
+  { label: "Преподаватели", href: "#teachers" },
   { label: "Корпоративное обучение", href: "#" },
   { label: "Отзывы", href: "#reviews" },
   { label: "О нас", href: "#" },

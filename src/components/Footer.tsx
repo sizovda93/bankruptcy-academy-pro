@@ -18,7 +18,7 @@ const Footer = () => {
             <p className="font-heading text-sm font-semibold text-background">Навигация</p>
             <ul className="mt-3 space-y-2 text-sm">
               <li><a href="#" className="hover:text-primary transition-colors">Курсы</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">Интенсивы</a></li>
+              <li><a href="#teachers" className="hover:text-primary transition-colors">Преподаватели</a></li>
               <li><a href="#" className="hover:text-primary transition-colors">О нас</a></li>
               <li><a href="#" className="hover:text-primary transition-colors">Контакты</a></li>
             </ul>
