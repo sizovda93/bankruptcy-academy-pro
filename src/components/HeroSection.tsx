@@ -47,13 +47,13 @@ const HeroSection = () => {
       >
         <div className="absolute inset-0 bg-gradient-to-br from-primary/80 via-primary-glow/60 to-primary/90" />
         <div className="relative px-6 py-20 text-center sm:py-28 md:py-36">
-          <p className="font-heading text-base font-semibold tracking-wide text-primary-foreground/90 sm:text-lg">
+          <p className="font-heading text-base font-semibold tracking-wide text-slate-300 sm:text-lg">
             Онлайн-школа банкротства
           </p>
-          <h1 className="mx-auto mt-4 max-w-3xl font-heading text-4xl font-extrabold leading-tight text-primary-foreground sm:text-5xl md:text-6xl">
+          <h1 className="mx-auto mt-4 max-w-3xl font-heading text-4xl font-extrabold leading-tight text-slate-200 sm:text-5xl md:text-6xl">
             {heroTitle}
           </h1>
-          <p className="mx-auto mt-6 max-w-2xl font-body text-base leading-relaxed text-primary-foreground/85 sm:text-lg">
+          <p className="mx-auto mt-6 max-w-2xl font-body text-base leading-relaxed text-slate-300 sm:text-lg">
             {heroDescription}
           </p>
           <div className="mt-8">
