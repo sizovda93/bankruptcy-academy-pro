@@ -29,7 +29,6 @@ export function CoursesManager() {
       description: '',
       cover_image_url: '',
       price: 0,
-      duration_hours: 0,
       level: 'Начинающий',
     },
   });
@@ -87,7 +86,6 @@ export function CoursesManager() {
       const submitData = {
         ...values,
         price: parseFloat(values.price),
-        duration_hours: parseInt(values.duration_hours),
       };
 
       if (editingId) {
@@ -116,7 +114,6 @@ export function CoursesManager() {
       description: course.description,
       cover_image_url: course.cover_image_url,
       price: course.price,
-      duration_hours: course.duration_hours,
       level: course.level,
     });
     setCoverImage({ url: course.cover_image_url || '', file: null });
@@ -223,15 +220,6 @@ export function CoursesManager() {
               </div>
 
               <div>
-                <FormLabel className="block mb-2">Длительность (месяцев или часов)</FormLabel>
-                <Input
-                  type="number"
-                  {...form.register('duration_hours', { valueAsNumber: true })}
-                  placeholder="0"
-                />
-              </div>
-
-              <div>
                 <FormLabel className="block mb-2">Уровень</FormLabel>
                 <Input
                   {...form.register('level')}
@@ -261,7 +249,6 @@ export function CoursesManager() {
                 <p className="text-sm text-gray-600 mb-2 line-clamp-2">{course.description}</p>
                 <div className="flex justify-between text-sm mb-4 gap-2 flex-wrap">
                   <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">💰 {course.price} ₽</span>
-                  <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">⏱️ {course.duration_hours} мес</span>
                   <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded text-xs">📊 {course.level}</span>
                 </div>
                 <div className="flex gap-2">

@@ -1,12 +1,11 @@
 ﻿import { useEffect, useMemo, useState } from "react";
-import { Clock, BookOpen } from "lucide-react";
+import { BookOpen } from "lucide-react";
 import { supabase, Course } from "@/lib/supabase";
 
 type DisplayCourse = {
   id: string;
   title: string;
   type: string;
-  duration: string;
   price: string;
   description?: string;
   coverImageUrl?: string;
@@ -17,21 +16,18 @@ const defaultCourses: DisplayCourse[] = [
     id: "default-1",
     title: "Юридические аспекты процедуры банкротства",
     type: "Продвинутый",
-    duration: "6 мес",
     price: "14 500 ?",
   },
   {
     id: "default-2",
     title: "Маркетинг в сфере банкротства",
     type: "Средний",
-    duration: "4 мес",
     price: "11 200 ?",
   },
   {
     id: "default-3",
     title: "Построение эффективной команды",
     type: "Начинающий",
-    duration: "3 мес",
     price: "8 900 ?",
   },
 ];
@@ -45,7 +41,6 @@ const toDisplayCourse = (course: Course): DisplayCourse => ({
   id: course.id,
   title: course.title,
   type: course.level || "Курс",
-  duration: course.duration_hours ? `${course.duration_hours} мес` : "Без срока",
   price: formatPrice(course.price),
   description: course.description || undefined,
   coverImageUrl: course.cover_image_url || undefined,
@@ -125,11 +120,6 @@ const CoursesSection = () => {
               <div className="flex items-center gap-2 text-xs text-primary">
                 <BookOpen className="h-3.5 w-3.5" />
                 <span className="font-medium">{course.type}</span>
-              </div>
-
-              <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
-                <Clock className="h-3.5 w-3.5" />
-                <span>{course.duration}</span>
               </div>
 
               <h3 className="mt-4 font-heading text-lg font-bold leading-snug text-foreground group-hover:text-primary transition-colors">
