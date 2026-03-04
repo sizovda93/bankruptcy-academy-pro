@@ -95,9 +95,11 @@ ALTER TABLE course_registrations ENABLE ROW LEVEL SECURITY;
 -- ЧАСТЬ 8: Политики безопасности
 DROP POLICY IF EXISTS "Курсы видны всем" ON courses;
 DROP POLICY IF EXISTS "Опубликованные отзывы видны всем" ON reviews;
+DROP POLICY IF EXISTS "Все отзывы видны всем" ON reviews;
 
 CREATE POLICY "Курсы видны всем" ON courses FOR SELECT USING (true);
-CREATE POLICY "Опубликованные отзывы видны всем" ON reviews FOR SELECT USING (is_published = true);
+-- Все отзывы видны (админ панель может видеть все, включая неопубликованные)
+CREATE POLICY "Все отзывы видны всем" ON reviews FOR SELECT USING (true);
 
 -- ЧАСТЬ 9: Начальные курсы
 INSERT INTO courses (title, description, price, duration_hours, level) 
@@ -145,3 +147,43 @@ VALUES
     'Продвинутый'
   )
 ON CONFLICT DO NOTHING;
+
+-- ЧАСТЬ 10: Начальные отзывы (тестовые данные)
+INSERT INTO reviews (author_name, rating, comment, author_avatar_url, is_published)
+VALUES
+  (
+    'Иван Петров',
+    5,
+    'Отличный курс! Очень много полезной практической информации. Преподавателям огромное спасибо!',
+    'https://api.dicebear.com/7.x/avataaars/svg?seed=Ivan',
+    true
+  ),
+  (
+    'Мария Сидорова',
+    5,
+    'Превосходная программа обучения. После этого курса я чувствую себя гораздо увереннее в своей работе.',
+    'https://api.dicebear.com/7.x/avataaars/svg?seed=Maria',
+    true
+  ),
+  (
+    'Дмитрий Козлов',
+    4,
+    'Хороший курс, хоть материал и был местами сложным. Стоит того, чтобы потратить время.',
+    'https://api.dicebear.com/7.x/avataaars/svg?seed=Dmitry',
+    true
+  ),
+  (
+    'Екатерина Лебедева',
+    5,
+    'Лучший курс из всех, что я проходил. Рекомендую всем, кто работает в этой сфере!',
+    'https://api.dicebear.com/7.x/avataaars/svg?seed=Ekaterina',
+    true
+  ),
+  (
+    'Алексей Морозов',
+    4,
+    'Качественное содержание, понятное изложение. Немного не хватило живых примеров из практики.',
+    'https://api.dicebear.com/7.x/avataaars/svg?seed=Alexey',
+    true
+  );
+
