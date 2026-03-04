@@ -129,7 +129,7 @@ const ReviewsSection = () => {
         </div>
 
         <div className="text-center mt-12">
-          <p className="text-gray-600 mb-4">Готов присоединиться к студентам?</p>
+          <p className="text-gray-600 mb-4">Готовы усилить экспертизу в банкротстве и повысить ценность вашей юридической практики?</p>
           <button className="bg-gradient-to-r from-green-400 to-green-600 text-white px-8 py-3 rounded-lg font-semibold hover:shadow-lg transition-shadow inline-block">
             Начать обучение
           </button>
