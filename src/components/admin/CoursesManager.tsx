@@ -7,13 +7,18 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useForm } from 'react-hook-form';
 import { toast } from '@/hooks/use-toast';
-import { Pencil, Trash2 } from 'lucide-react';
+import { Pencil, Trash2, Upload } from 'lucide-react';
 
 export function CoursesManager() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [coverImage, setCoverImage] = useState<{ url: string; file: File | null }>({
+    url: '',
+    file: null,
+  });
 
   const form = useForm({
     defaultValues: {
@@ -44,19 +49,56 @@ export function CoursesManager() {
     }
   };
 
+  const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      setUploading(true);
+
+      // Загрузим файл в Supabase Storage
+      const fileExt = file.name.split('.').pop();
+      const fileName = `course-cover-${Date.now()}.${fileExt}`;
+      const filePath = `covers/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage.from('media').upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      // Получим публичный URL
+      const { data: publicData } = supabase.storage.from('media').getPublicUrl(filePath);
+      const fileUrl = publicData.publicUrl;
+
+      setCoverImage({ url: fileUrl, file: file });
+      form.setValue('cover_image_url', fileUrl);
+      toast({ title: 'Успешно', description: 'Обложка загружена' });
+    } catch (error: any) {
+      toast({ title: 'Ошибка загрузки', description: error.message, variant: 'destructive' });
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const onSubmit = async (values: any) => {
     try {
+      const submitData = {
+        ...values,
+        price: parseFloat(values.price),
+        duration_hours: parseInt(values.duration_hours),
+      };
+
       if (editingId) {
-        const { error } = await supabase.from('courses').update(values).eq('id', editingId);
+        const { error } = await supabase.from('courses').update(submitData).eq('id', editingId);
         if (error) throw error;
         toast({ title: 'Успешно', description: 'Курс обновлён' });
       } else {
-        const { error } = await supabase.from('courses').insert([values]);
+        const { error } = await supabase.from('courses').insert([submitData]);
         if (error) throw error;
         toast({ title: 'Успешно', description: 'Курс создан' });
       }
 
       form.reset();
+      setCoverImage({ url: '', file: null });
       setOpen(false);
       setEditingId(null);
       await fetchCourses();
@@ -74,6 +116,7 @@ export function CoursesManager() {
       duration_hours: course.duration_hours,
       level: course.level,
     });
+    setCoverImage({ url: course.cover_image_url || '', file: null });
     setEditingId(course.id);
     setOpen(true);
   };
@@ -92,19 +135,64 @@ export function CoursesManager() {
     }
   };
 
+  const handleOpenChange = (newOpen: boolean) => {
+    if (!newOpen) {
+      form.reset();
+      setCoverImage({ url: '', file: null });
+      setEditingId(null);
+    }
+    setOpen(newOpen);
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold">Курсы ({courses.length})</h2>
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog open={open} onOpenChange={handleOpenChange}>
           <DialogTrigger asChild>
             <Button onClick={() => setEditingId(null)}>Добавить курс</Button>
           </DialogTrigger>
-          <DialogContent className="max-w-md">
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>{editingId ? 'Редактировать курс' : 'Добавить курс'}</DialogTitle>
             </DialogHeader>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              {/* Cover Image Upload */}
+              <div>
+                <FormLabel className="block mb-2">Обложка курса</FormLabel>
+                {coverImage.url ? (
+                  <div className="space-y-2">
+                    <img
+                      src={coverImage.url}
+                      alt="Cover"
+                      className="w-full h-40 object-cover rounded-lg"
+                    />
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleCoverUpload}
+                      disabled={uploading}
+                    />
+                  </div>
+                ) : (
+                  <div className="border-2 border-dashed rounded-lg p-6 text-center hover:bg-gray-50 cursor-pointer">
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleCoverUpload}
+                      disabled={uploading}
+                      className="hidden"
+                      id="cover-input"
+                    />
+                    <label htmlFor="cover-input" className="cursor-pointer block">
+                      <Upload className="mx-auto mb-2 text-gray-400" size={24} />
+                      <p className="text-sm">Нажми или перетащи обложку</p>
+                      {uploading && <p className="text-xs text-blue-500 mt-2">Загрузка...</p>}
+                    </label>
+                  </div>
+                )}
+              </div>
+
               <FormField
                 control={form.control}
                 name="title"
@@ -133,25 +221,12 @@ export function CoursesManager() {
               />
               <FormField
                 control={form.control}
-                name="cover_image_url"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>URL обложки (скопируй из медиа)</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="https://..." />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
                 name="price"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Цена (₽)</FormLabel>
                     <FormControl>
-                      <Input type="number" {...field} />
+                      <Input type="number" step="0.01" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -162,7 +237,7 @@ export function CoursesManager() {
                 name="duration_hours"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Длительность (часов)</FormLabel>
+                    <FormLabel>Длительность (месяцев или часов)</FormLabel>
                     <FormControl>
                       <Input type="number" {...field} />
                     </FormControl>
@@ -194,17 +269,17 @@ export function CoursesManager() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {courses.map((course) => (
-            <div key={course.id} className="border rounded-lg overflow-hidden">
+            <div key={course.id} className="border rounded-lg overflow-hidden hover:shadow-lg transition">
               {course.cover_image_url && (
                 <img src={course.cover_image_url} alt={course.title} className="w-full h-40 object-cover" />
               )}
               <div className="p-4">
-                <h3 className="font-bold text-lg mb-2">{course.title}</h3>
+                <h3 className="font-bold text-lg mb-2 line-clamp-2">{course.title}</h3>
                 <p className="text-sm text-gray-600 mb-2 line-clamp-2">{course.description}</p>
-                <div className="flex justify-between text-sm mb-4">
-                  <span>💰 {course.price} ₽</span>
-                  <span>⏱️ {course.duration_hours}ч</span>
-                  <span>📊 {course.level}</span>
+                <div className="flex justify-between text-sm mb-4 gap-2 flex-wrap">
+                  <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">💰 {course.price} ₽</span>
+                  <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">⏱️ {course.duration_hours} мес</span>
+                  <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded text-xs">📊 {course.level}</span>
                 </div>
                 <div className="flex gap-2">
                   <Button
