@@ -113,7 +113,7 @@ const CoursesSection = () => {
                 <img
                   src={course.coverImageUrl}
                   alt={course.title}
-                  className="mb-4 h-40 w-full rounded-xl object-cover"
+                  className="mb-4 w-full aspect-video rounded-xl object-contain bg-muted/30"
                 />
               ) : null}
 
