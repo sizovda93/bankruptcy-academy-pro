@@ -3,11 +3,12 @@ import { Menu, X, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const navItems = [
-  "Курсы",
-  "Интенсивы",
-  "Корпоративное обучение",
-  "О нас",
-  "Контакты",
+  { label: "Курсы", href: "#courses" },
+  { label: "Интенсивы", href: "#" },
+  { label: "Корпоративное обучение", href: "#" },
+  { label: "Отзывы", href: "#reviews" },
+  { label: "О нас", href: "#" },
+  { label: "Контакты", href: "#" },
 ];
 
 const Header = () => {
@@ -29,11 +30,11 @@ const Header = () => {
         <nav className="hidden items-center gap-6 lg:flex">
           {navItems.map((item) => (
             <a
-              key={item}
-              href="#"
+              key={item.label}
+              href={item.href}
               className="font-body text-sm font-medium text-foreground/80 transition-colors hover:text-primary"
             >
-              {item}
+              {item.label}
             </a>
           ))}
         </nav>
@@ -60,11 +61,11 @@ const Header = () => {
           <nav className="flex flex-col gap-3">
             {navItems.map((item) => (
               <a
-                key={item}
-                href="#"
+                key={item.label}
+                href={item.href}
                 className="rounded-md px-3 py-2 text-sm font-medium text-foreground/80 transition-colors hover:bg-primary-light hover:text-primary"
               >
-                {item}
+                {item.label}
               </a>
             ))}
             <Button size="sm" className="mt-2 w-full bg-primary text-primary-foreground hover:bg-primary-glow">
