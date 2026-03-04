@@ -1,7 +1,13 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
+const FALLBACK_SUPABASE_URL = 'https://tyepcnakzyfdgryrdeqd.supabase.co';
+const FALLBACK_SUPABASE_ANON_KEY = 'sb_publishable_968O3rZYMHg8vOqyuGz9kw_9PPxV1n9';
+
+const envUrl = import.meta.env.VITE_SUPABASE_URL || '';
+const envAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || '';
+
+const supabaseUrl = !envUrl || envUrl.includes('your-project.supabase.co') ? FALLBACK_SUPABASE_URL : envUrl;
+const supabaseAnonKey = envAnonKey || FALLBACK_SUPABASE_ANON_KEY;
 
 if (!supabaseUrl || !supabaseAnonKey) {
   console.warn('Supabase credentials are missing. Please set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in .env');
