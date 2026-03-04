@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+п»їimport { useEffect, useMemo, useState } from "react";
 import { BookOpen } from "lucide-react";
 import { supabase, Course } from "@/lib/supabase";
 
@@ -11,36 +11,38 @@ type DisplayCourse = {
   coverImageUrl?: string;
 };
 
+const RUB = "\u20BD";
+
 const defaultCourses: DisplayCourse[] = [
   {
     id: "default-1",
-    title: "Юридические аспекты процедуры банкротства",
-    type: "Продвинутый",
-    price: "14 500 ?",
+    title: "Р®СЂРёРґРёС‡РµСЃРєРёРµ Р°СЃРїРµРєС‚С‹ РїСЂРѕС†РµРґСѓСЂС‹ Р±Р°РЅРєСЂРѕС‚СЃС‚РІР°",
+    type: "РџСЂРѕРґРІРёРЅСѓС‚С‹Р№",
+    price: `14 500 ${RUB}`,
   },
   {
     id: "default-2",
-    title: "Маркетинг в сфере банкротства",
-    type: "Средний",
-    price: "11 200 ?",
+    title: "РњР°СЂРєРµС‚РёРЅРі РІ СЃС„РµСЂРµ Р±Р°РЅРєСЂРѕС‚СЃС‚РІР°",
+    type: "РЎСЂРµРґРЅРёР№",
+    price: `11 200 ${RUB}`,
   },
   {
     id: "default-3",
-    title: "Построение эффективной команды",
-    type: "Начинающий",
-    price: "8 900 ?",
+    title: "РџРѕСЃС‚СЂРѕРµРЅРёРµ СЌС„С„РµРєС‚РёРІРЅРѕР№ РєРѕРјР°РЅРґС‹",
+    type: "РќР°С‡РёРЅР°СЋС‰РёР№",
+    price: `8 900 ${RUB}`,
   },
 ];
 
 const formatPrice = (value: number | null | undefined) => {
-  if (typeof value !== "number" || Number.isNaN(value)) return "По запросу";
-  return `${new Intl.NumberFormat("ru-RU").format(value)} ?`;
+  if (typeof value !== "number" || Number.isNaN(value)) return "РџРѕ Р·Р°РїСЂРѕСЃСѓ";
+  return `${new Intl.NumberFormat("ru-RU").format(value)} ${RUB}`;
 };
 
 const toDisplayCourse = (course: Course): DisplayCourse => ({
   id: course.id,
   title: course.title,
-  type: course.level || "Курс",
+  type: course.level || "РљСѓСЂСЃ",
   price: formatPrice(course.price),
   description: course.description || undefined,
   coverImageUrl: course.cover_image_url || undefined,
@@ -96,18 +98,16 @@ const CoursesSection = () => {
     <section id="courses" className="py-16 sm:py-24">
       <div className="container">
         <h2 className="font-heading text-3xl font-bold text-foreground sm:text-4xl">
-          Наши курсы
+          РќР°С€Рё РєСѓСЂСЃС‹
         </h2>
 
-        {loading ? (
-          <p className="mt-6 text-muted-foreground">Загрузка курсов...</p>
-        ) : null}
+        {loading ? <p className="mt-6 text-muted-foreground">Р—Р°РіСЂСѓР·РєР° РєСѓСЂСЃРѕРІ...</p> : null}
 
         <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {items.map((course) => (
             <div
               key={course.id}
-              className="group relative flex flex-col rounded-2xl border border-border bg-card p-6 shadow-sm transition-all hover:shadow-lg hover:-translate-y-1"
+              className="group relative flex flex-col rounded-2xl border border-border bg-card p-6 shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg"
             >
               {course.coverImageUrl ? (
                 <img
@@ -122,20 +122,16 @@ const CoursesSection = () => {
                 <span className="font-medium">{course.type}</span>
               </div>
 
-              <h3 className="mt-4 font-heading text-lg font-bold leading-snug text-foreground group-hover:text-primary transition-colors">
+              <h3 className="mt-4 font-heading text-lg font-bold leading-snug text-foreground transition-colors group-hover:text-primary">
                 {course.title}
               </h3>
 
               {course.description ? (
-                <p className="mt-2 text-sm text-muted-foreground line-clamp-3">
-                  {course.description}
-                </p>
+                <p className="mt-2 line-clamp-3 text-sm text-muted-foreground">{course.description}</p>
               ) : null}
 
               <div className="mt-auto pt-6">
-                <p className="font-heading text-xl font-bold text-foreground">
-                  {course.price}
-                </p>
+                <p className="font-heading text-xl font-bold text-foreground">{course.price}</p>
               </div>
             </div>
           ))}
@@ -146,4 +142,3 @@ const CoursesSection = () => {
 };
 
 export default CoursesSection;
-
