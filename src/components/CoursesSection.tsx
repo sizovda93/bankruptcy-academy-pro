@@ -16,25 +16,25 @@ const defaultCourses: DisplayCourse[] = [
     id: "default-1",
     title: "Юридические аспекты процедуры банкротства",
     type: "Продвинутый",
-    price: "14 500 ?",
+    price: "14 500 ₽",
   },
   {
     id: "default-2",
     title: "Маркетинг в сфере банкротства",
     type: "Средний",
-    price: "11 200 ?",
+    price: "11 200 ₽",
   },
   {
     id: "default-3",
     title: "Построение эффективной команды",
     type: "Начинающий",
-    price: "8 900 ?",
+    price: "8 900 ₽",
   },
 ];
 
 const formatPrice = (value: number | null | undefined) => {
   if (typeof value !== "number" || Number.isNaN(value)) return "По запросу";
-  return `${new Intl.NumberFormat("ru-RU").format(value)} ?`;
+  return `${new Intl.NumberFormat("ru-RU").format(value)} ₽`;
 };
 
 const toDisplayCourse = (course: Course): DisplayCourse => ({
