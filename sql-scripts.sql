@@ -56,6 +56,19 @@ CREATE TABLE IF NOT EXISTS courses (
 ALTER TABLE courses DROP COLUMN IF EXISTS duration_hours;
 
 -- 4. ТАБЛИЦА ОТЗЫВОВ
+CREATE TABLE IF NOT EXISTS teachers (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  full_name VARCHAR(255) NOT NULL,
+  position VARCHAR(255),
+  bio TEXT,
+  photo_url TEXT,
+  display_order INTEGER DEFAULT 0,
+  is_published BOOLEAN DEFAULT TRUE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 5. ТАБЛИЦА ОТЗЫВОВ
 CREATE TABLE IF NOT EXISTS reviews (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID REFERENCES users(id) ON DELETE CASCADE,
@@ -83,6 +96,7 @@ CREATE TABLE IF NOT EXISTS course_registrations (
 CREATE INDEX IF NOT EXISTS idx_media_uploaded_by ON media(uploaded_by);
 CREATE INDEX IF NOT EXISTS idx_courses_created ON courses(created_at);
 CREATE INDEX IF NOT EXISTS idx_reviews_published ON reviews(is_published);
+CREATE INDEX IF NOT EXISTS idx_teachers_order ON teachers(display_order);
 CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
 CREATE INDEX IF NOT EXISTS idx_registrations_user ON course_registrations(user_id);
 CREATE INDEX IF NOT EXISTS idx_registrations_course ON course_registrations(course_id);
@@ -145,14 +159,17 @@ ON CONFLICT DO NOTHING;
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE media ENABLE ROW LEVEL SECURITY;
 ALTER TABLE courses ENABLE ROW LEVEL SECURITY;
+ALTER TABLE teachers ENABLE ROW LEVEL SECURITY;
 ALTER TABLE reviews ENABLE ROW LEVEL SECURITY;
 ALTER TABLE course_registrations ENABLE ROW LEVEL SECURITY;
 
 -- Политики для ПУБЛИЧНОГО доступа (чтение)
 DROP POLICY IF EXISTS "Курсы видны всем" ON courses;
+DROP POLICY IF EXISTS "Преподаватели видны всем" ON teachers;
 DROP POLICY IF EXISTS "Опубликованные отзывы видны всем" ON reviews;
 
 CREATE POLICY "Курсы видны всем" ON courses FOR SELECT USING (true);
+CREATE POLICY "Преподаватели видны всем" ON teachers FOR SELECT USING (is_published = true);
 CREATE POLICY "Опубликованные отзывы видны всем" ON reviews FOR SELECT USING (is_published = true);
 
 -- Политики для АДМИНА (полный доступ) - если у вас есть админ пользователи
