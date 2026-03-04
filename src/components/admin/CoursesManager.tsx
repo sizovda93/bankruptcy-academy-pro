@@ -8,6 +8,7 @@ import { useForm } from 'react-hook-form';
 import { toast } from '@/hooks/use-toast';
 import { Pencil, Trash2, Upload } from 'lucide-react';
 import { uploadImageWithBucketFallback } from '@/lib/storage';
+import { resizeImageToCover } from '@/lib/image';
 
 const FormLabel = ({ className = '', ...props }: any) => (
   <label className={`text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 ${className}`} {...props} />
@@ -53,11 +54,12 @@ export function CoursesManager() {
   };
 
   const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const originalFile = e.target.files?.[0];
+    if (!originalFile) return;
 
     try {
       setUploading(true);
+      const file = await resizeImageToCover(originalFile, { width: 1200, height: 675, quality: 0.9 });
 
       // Загрузим файл в Supabase Storage
       const fileExt = file.name.split('.').pop();
