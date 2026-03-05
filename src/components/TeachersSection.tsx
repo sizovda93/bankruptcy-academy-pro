@@ -130,8 +130,6 @@ const TeachersSection = () => {
                   Стаж работы: {teacher.experience ? teacher.experience : "не указан"}
                 </p>
               </div>
-
-              <div className="border-t border-gray-200" />
             </article>
           ))}
         </div>
