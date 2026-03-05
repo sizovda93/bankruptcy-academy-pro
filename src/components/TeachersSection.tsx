@@ -122,8 +122,8 @@ const TeachersSection = () => {
                 </h3>
 
                 <div className="space-y-4">
-                  {teacher.position ? <p className="text-[22px] leading-snug text-[#b44a3f]">{teacher.position}</p> : null}
-                  {teacher.bio ? <p className="text-[22px] leading-snug text-[#b44a3f]">{teacher.bio}</p> : null}
+                  {teacher.position ? <p className="text-[22px] leading-snug text-primary">{teacher.position}</p> : null}
+                  {teacher.bio ? <p className="text-[22px] leading-snug text-primary">{teacher.bio}</p> : null}
                 </div>
 
                 <p className="text-[24px] leading-tight text-gray-900">
