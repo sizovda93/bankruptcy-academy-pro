@@ -194,7 +194,7 @@ export default function CourseLegalAspectsBfl() {
 
               <div className="relative grid gap-6 lg:grid-cols-2 lg:gap-10">
                 <h2 className="font-heading text-2xl font-semibold text-foreground sm:text-3xl">
-                  <span className="font-bold text-primary">Быть квалифицированным специалистом</span> в области БФЛ — значит управлять результатом, а не надеяться на случай
+                  <span className="font-bold text-primary">Быть квалифицированным специалистом в области БФЛ</span> — значит управлять результатом, а не надеяться на случай
                 </h2>
                 <p className="text-base leading-relaxed text-muted-foreground sm:text-lg">
                   Квалифицированный юрист по банкротству физлиц видит дело системно: оценивает риски до входа в процедуру,
