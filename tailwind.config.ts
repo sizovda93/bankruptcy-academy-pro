@@ -70,6 +70,16 @@ export default {
         sm: "calc(var(--radius) - 4px)",
       },
       keyframes: {
+        "page-enter": {
+          from: {
+            opacity: "0",
+            transform: "translateY(10px)",
+          },
+          to: {
+            opacity: "1",
+            transform: "translateY(0)",
+          },
+        },
         "accordion-down": {
           from: {
             height: "0",
@@ -88,6 +98,7 @@ export default {
         },
       },
       animation: {
+        "page-enter": "page-enter 0.35s ease-out",
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
       },
