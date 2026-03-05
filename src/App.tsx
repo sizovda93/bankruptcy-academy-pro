@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Admin from "./pages/Admin";
 import CoursePromotionNoAds from "./pages/CoursePromotionNoAds";
+import CourseLegalAspectsBfl from "./pages/CourseLegalAspectsBfl";
 
 const queryClient = new QueryClient();
 
@@ -20,6 +21,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/courses/promotion-without-ads" element={<CoursePromotionNoAds />} />
+          <Route path="/courses/legal-aspects-bfl" element={<CourseLegalAspectsBfl />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

@@ -76,6 +76,10 @@ const CoursesSection = () => {
       navigate("/courses/promotion-without-ads");
       return;
     }
+    if (normalizedTitle.includes("юридические аспекты бфл") || normalizedTitle.includes("юридические аспекты процедуры банкротства")) {
+      navigate("/courses/legal-aspects-bfl");
+      return;
+    }
 
     setSelectedCourse(course);
   };

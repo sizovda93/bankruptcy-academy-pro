@@ -116,8 +116,6 @@ const faq = [
   },
 ];
 
-const SectionTag = () => <p className="mt-4 text-sm font-medium text-primary">Агентская программа</p>;
-
 export default function CoursePromotionNoAds() {
   const [isLeadModalOpen, setIsLeadModalOpen] = useState(false);
 
@@ -164,7 +162,6 @@ export default function CoursePromotionNoAds() {
                 </article>
               ))}
             </div>
-            <SectionTag />
           </div>
         </section>
 
@@ -179,7 +176,6 @@ export default function CoursePromotionNoAds() {
               Решение — не воевать за трафик, а строить голубой океан доверия: быть первым, кому звонят, первым, о
               ком рекомендуют, тем, кого выбирают без торга.
             </p>
-            <SectionTag />
           </div>
         </section>
 
@@ -191,7 +187,6 @@ export default function CoursePromotionNoAds() {
                 <article key={item.title} className="rounded-xl border bg-card p-5">
                   <h3 className="font-heading text-xl font-semibold">{item.title}</h3>
                   <p className="mt-2 text-muted-foreground">{item.text}</p>
-                  <SectionTag />
                 </article>
               ))}
             </div>
@@ -209,7 +204,6 @@ export default function CoursePromotionNoAds() {
                     <li key={point}>{point}</li>
                   ))}
                 </ul>
-                <SectionTag />
               </article>
             ))}
           </div>
@@ -225,7 +219,6 @@ export default function CoursePromotionNoAds() {
               <li>Доступ к записям</li>
               <li>Очная встреча (Москва) + сертификация (если предусмотрено расписанием потока)</li>
             </ul>
-            <SectionTag />
           </div>
         </section>
 
@@ -237,7 +230,6 @@ export default function CoursePromotionNoAds() {
                 <li key={item}>{item}</li>
               ))}
             </ol>
-            <SectionTag />
           </div>
         </section>
 
@@ -249,7 +241,6 @@ export default function CoursePromotionNoAds() {
                 <li key={item}>{item}</li>
               ))}
             </ul>
-            <SectionTag />
           </div>
         </section>
 
@@ -259,7 +250,6 @@ export default function CoursePromotionNoAds() {
             <p className="mt-3 text-muted-foreground">
               Василий Алексеевич Артин — к.ю.н., Председатель Совета партнёров группы «Федеральная экспертная служба».
             </p>
-            <SectionTag />
           </div>
         </section>
 
@@ -271,7 +261,6 @@ export default function CoursePromotionNoAds() {
                 <article key={item.q} className="rounded-xl border bg-card p-5">
                   <h3 className="font-heading text-lg font-semibold">{item.q}</h3>
                   <p className="mt-2 text-muted-foreground">{item.a}</p>
-                  <SectionTag />
                 </article>
               ))}
             </div>

@@ -2,11 +2,11 @@
 import { Menu, X, Phone } from "lucide-react";
 
 const navItems = [
-  { label: "Курсы", href: "#courses" },
-  { label: "Преподаватели", href: "#teachers" },
-  { label: "Отзывы", href: "#reviews" },
-  { label: "О нас", href: "#about" },
-  { label: "Контакты", href: "#contact-form" },
+  { label: "Курсы", href: "/#courses" },
+  { label: "Преподаватели", href: "/#teachers" },
+  { label: "Отзывы", href: "/#reviews" },
+  { label: "О нас", href: "/#about" },
+  { label: "Контакты", href: "/#contact-form" },
 ];
 
 const Header = () => {
@@ -15,7 +15,7 @@ const Header = () => {
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
       <div className="container flex h-16 items-center justify-between">
-        <div className="flex items-center gap-2">
+        <a href="/" className="flex items-center gap-2">
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
             <span className="font-heading text-sm font-bold text-primary-foreground">АБ</span>
           </div>
@@ -23,7 +23,7 @@ const Header = () => {
             <p className="font-heading text-sm font-bold leading-tight text-foreground">Академия</p>
             <p className="font-heading text-xs font-semibold leading-tight text-primary">Банкротства</p>
           </div>
-        </div>
+        </a>
 
         <nav className="hidden items-center gap-6 lg:flex">
           {navItems.map((item) => (
@@ -58,6 +58,7 @@ const Header = () => {
               <a
                 key={item.label}
                 href={item.href}
+                onClick={() => setMobileOpen(false)}
                 className="rounded-md px-3 py-2 text-sm font-medium text-foreground/80 transition-colors hover:bg-primary-light hover:text-primary"
               >
                 {item.label}
