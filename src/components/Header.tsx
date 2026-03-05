@@ -7,7 +7,7 @@ const navItems = [
   { label: "Преподаватели", href: "#teachers" },
   { label: "Отзывы", href: "#reviews" },
   { label: "О нас", href: "#about" },
-  { label: "Контакты", href: "#" },
+  { label: "Контакты", href: "#contact-form" },
 ];
 
 const Header = () => {

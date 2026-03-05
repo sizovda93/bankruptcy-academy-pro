@@ -5,6 +5,7 @@ import TeachersSection from "@/components/TeachersSection";
 import ReviewsSection from "@/components/ReviewsSection";
 import InfoBanner from "@/components/InfoBanner";
 import AboutSection from "@/components/AboutSection";
+import LeadFormSection from "@/components/LeadFormSection";
 import Footer from "@/components/Footer";
 
 const Index = () => {
@@ -17,6 +18,7 @@ const Index = () => {
       <TeachersSection />
       <AboutSection />
       <ReviewsSection />
+      <LeadFormSection />
       <Footer />
     </div>
   );
