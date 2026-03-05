@@ -1,6 +1,5 @@
 ﻿import { useState } from "react";
 import { Menu, X, Phone } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 const navItems = [
   { label: "Курсы", href: "#courses" },
@@ -43,9 +42,6 @@ const Header = () => {
             <Phone className="h-4 w-4 text-primary" />
             +7 495 123 45 67
           </a>
-          <Button size="sm" variant="outline" className="hidden sm:inline-flex border-primary text-primary hover:bg-primary hover:text-primary-foreground">
-            Войти
-          </Button>
           <button
             className="lg:hidden"
             onClick={() => setMobileOpen(!mobileOpen)}
@@ -67,9 +63,6 @@ const Header = () => {
                 {item.label}
               </a>
             ))}
-            <Button size="sm" className="mt-2 w-full bg-primary text-primary-foreground hover:bg-primary-glow">
-              Войти
-            </Button>
           </nav>
         </div>
       )}
