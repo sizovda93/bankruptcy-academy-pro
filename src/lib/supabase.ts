@@ -97,6 +97,18 @@ export interface CourseRegistration {
   completed: boolean;
 }
 
+export interface Lead {
+  id: string;
+  full_name: string;
+  phone: string;
+  email?: string;
+  promo_code?: string;
+  consent_policy: boolean;
+  consent_offers: boolean;
+  source?: string;
+  created_at: string;
+}
+
 export interface SiteSetting {
   id: string;
   setting_key: string;

@@ -98,6 +98,19 @@ CREATE TABLE IF NOT EXISTS course_registrations (
   UNIQUE(user_id, course_id)
 );
 
+-- ЧАСТЬ 5.5: Таблица заявок с формы
+CREATE TABLE IF NOT EXISTS leads (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  full_name VARCHAR(255) NOT NULL,
+  phone VARCHAR(50) NOT NULL,
+  email VARCHAR(255),
+  promo_code VARCHAR(100),
+  consent_policy BOOLEAN NOT NULL DEFAULT false,
+  consent_offers BOOLEAN NOT NULL DEFAULT true,
+  source VARCHAR(100) DEFAULT 'website',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- ЧАСТЬ 6: Индексы для быстрого поиска
 CREATE INDEX IF NOT EXISTS idx_media_uploaded_by ON media(uploaded_by);
 CREATE INDEX IF NOT EXISTS idx_courses_created ON courses(created_at);
@@ -106,6 +119,7 @@ CREATE INDEX IF NOT EXISTS idx_teachers_order ON teachers(display_order);
 CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
 CREATE INDEX IF NOT EXISTS idx_registrations_user ON course_registrations(user_id);
 CREATE INDEX IF NOT EXISTS idx_registrations_course ON course_registrations(course_id);
+CREATE INDEX IF NOT EXISTS idx_leads_created ON leads(created_at);
 
 -- ЧАСТЬ 7: Включение RLS
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
@@ -114,6 +128,7 @@ ALTER TABLE courses ENABLE ROW LEVEL SECURITY;
 ALTER TABLE teachers ENABLE ROW LEVEL SECURITY;
 ALTER TABLE reviews ENABLE ROW LEVEL SECURITY;
 ALTER TABLE course_registrations ENABLE ROW LEVEL SECURITY;
+ALTER TABLE leads ENABLE ROW LEVEL SECURITY;
 
 -- ЧАСТЬ 8: Политики безопасности
 DROP POLICY IF EXISTS "Курсы видны всем" ON courses;
@@ -131,6 +146,7 @@ CREATE POLICY "Все отзывы видны всем" ON reviews FOR SELECT US
 DROP POLICY IF EXISTS "Курсы можно изменять" ON courses;
 DROP POLICY IF EXISTS "Отзывы можно изменять" ON reviews;
 DROP POLICY IF EXISTS "Преподавателей можно изменять" ON teachers;
+DROP POLICY IF EXISTS "Заявки можно отправлять" ON leads;
 
 CREATE POLICY "Курсы можно изменять" ON courses
 FOR ALL USING (true) WITH CHECK (true);
@@ -140,6 +156,9 @@ FOR ALL USING (true) WITH CHECK (true);
 
 CREATE POLICY "Преподавателей можно изменять" ON teachers
 FOR ALL USING (true) WITH CHECK (true);
+
+CREATE POLICY "Заявки можно отправлять" ON leads
+FOR INSERT WITH CHECK (true);
 
 -- ЧАСТЬ 9: Начальные курсы
 INSERT INTO courses (title, description, price, level)

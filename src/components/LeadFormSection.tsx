@@ -1,12 +1,68 @@
-import { MessageSquare, Phone } from "lucide-react";
+﻿import { MessageSquare, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
+import { supabase } from "@/lib/supabase";
+import { toast } from "@/hooks/use-toast";
 
 const LeadFormSection = () => {
+  const [fullName, setFullName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const [promoCode, setPromoCode] = useState("");
+  const [showPromo, setShowPromo] = useState(false);
   const [consentPolicy, setConsentPolicy] = useState(false);
   const [consentOffers, setConsentOffers] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+
+  const resetForm = () => {
+    setFullName("");
+    setPhone("");
+    setEmail("");
+    setPromoCode("");
+    setShowPromo(false);
+    setConsentPolicy(false);
+    setConsentOffers(true);
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (!fullName.trim() || !phone.trim()) {
+      toast({ title: "Заполните поля", description: "Укажите имя и телефон.", variant: "destructive" });
+      return;
+    }
+
+    if (!consentPolicy) {
+      toast({ title: "Требуется согласие", description: "Подтвердите обработку персональных данных.", variant: "destructive" });
+      return;
+    }
+
+    try {
+      setSubmitting(true);
+      const { error } = await supabase.from("leads").insert([
+        {
+          full_name: fullName.trim(),
+          phone: phone.trim(),
+          email: email.trim() || null,
+          promo_code: promoCode.trim() || null,
+          consent_policy: consentPolicy,
+          consent_offers: consentOffers,
+          source: "website",
+        },
+      ]);
+
+      if (error) throw error;
+
+      toast({ title: "Заявка отправлена", description: "Мы свяжемся с вами в ближайшее время." });
+      resetForm();
+    } catch (error: any) {
+      toast({ title: "Ошибка отправки", description: error.message, variant: "destructive" });
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
     <section id="contact-form" className="bg-background py-16 sm:py-24">
@@ -35,23 +91,45 @@ const LeadFormSection = () => {
           </div>
 
           <div className="rounded-3xl border border-border bg-card p-6 sm:p-8">
-            <form className="space-y-4">
+            <form className="space-y-4" onSubmit={handleSubmit}>
               <Input
                 className="h-14 rounded-xl bg-muted/40 text-base"
                 placeholder="Имя и фамилия"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                required
               />
               <Input
                 className="h-14 rounded-xl bg-muted/40 text-base"
                 placeholder="+7 (000) 000-00-00"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                required
               />
               <Input
                 className="h-14 rounded-xl bg-muted/40 text-base"
                 placeholder="Email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
 
-              <button type="button" className="pt-1 text-left text-sm font-medium text-primary hover:underline">
+              <button
+                type="button"
+                className="pt-1 text-left text-sm font-medium text-primary hover:underline"
+                onClick={() => setShowPromo((v) => !v)}
+              >
                 У меня есть промокод
               </button>
+
+              {showPromo ? (
+                <Input
+                  className="h-12 rounded-xl bg-muted/40 text-base"
+                  placeholder="Введите промокод"
+                  value={promoCode}
+                  onChange={(e) => setPromoCode(e.target.value)}
+                />
+              ) : null}
 
               <label className="flex items-start gap-3 text-sm text-muted-foreground">
                 <Checkbox
@@ -76,9 +154,9 @@ const LeadFormSection = () => {
               <Button
                 type="submit"
                 className="mt-2 h-14 w-full rounded-xl bg-foreground text-base font-semibold text-background hover:bg-foreground/90"
-                disabled={!consentPolicy}
+                disabled={!consentPolicy || submitting}
               >
-                Оставить заявку
+                {submitting ? "Отправка..." : "Оставить заявку"}
               </Button>
             </form>
           </div>
