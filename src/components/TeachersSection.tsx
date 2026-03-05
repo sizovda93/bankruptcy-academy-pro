@@ -120,8 +120,10 @@ const TeachersSection = () => {
                   <div className="h-36 w-36 flex-shrink-0 rounded-2xl bg-gray-200" />
                 )}
 
-                <div className="pt-1">
-                  <h3 className="text-4xl font-bold leading-tight text-gray-900">{teacher.full_name}</h3>
+                <div className="min-w-0 pt-1">
+                  <h3 className="break-words text-3xl font-bold leading-tight text-gray-900 sm:text-4xl">
+                    {teacher.full_name}
+                  </h3>
                 </div>
               </div>
 
