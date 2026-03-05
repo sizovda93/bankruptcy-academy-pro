@@ -114,7 +114,7 @@ const TeachersSection = () => {
                   <img
                     src={teacher.photo_url}
                     alt={teacher.full_name}
-                    className="h-24 w-24 flex-shrink-0 rounded-2xl bg-white object-cover"
+                    className="h-24 w-24 flex-shrink-0 rounded-2xl bg-white object-contain p-1"
                   />
                 ) : (
                   <div className="h-24 w-24 flex-shrink-0 rounded-2xl bg-gray-200" />
