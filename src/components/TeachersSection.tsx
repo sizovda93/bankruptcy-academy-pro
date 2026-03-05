@@ -95,7 +95,7 @@ const TeachersSection = () => {
 
   return (
     <section id="teachers" className="bg-white py-16">
-      <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
         <div className="mb-12 text-center">
           <h2 className="mb-4 text-4xl font-bold text-gray-900">Преподаватели</h2>
           <p className="mx-auto max-w-3xl text-xl text-gray-600">
@@ -103,9 +103,12 @@ const TeachersSection = () => {
           </p>
         </div>
 
-        <div className="space-y-8">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
           {items.map((teacher) => (
-            <article key={teacher.id} className="rounded-3xl border border-gray-200 bg-gray-50 p-8 sm:p-10">
+            <article
+              key={teacher.id}
+              className="relative rounded-3xl border border-gray-200 bg-gray-50 p-8 min-h-[520px]"
+            >
               <div className="flex items-start gap-6">
                 {teacher.photo_url ? (
                   <img
@@ -118,11 +121,11 @@ const TeachersSection = () => {
                 )}
 
                 <div className="pt-1">
-                  <h3 className="text-3xl font-bold leading-tight text-gray-900 sm:text-4xl">{teacher.full_name}</h3>
+                  <h3 className="text-4xl font-bold leading-tight text-gray-900">{teacher.full_name}</h3>
                 </div>
               </div>
 
-              <div className="mt-8 space-y-5 text-xl leading-relaxed text-gray-700 sm:text-2xl">
+              <div className="mt-8 space-y-5 text-xl leading-relaxed text-gray-700 max-h-[330px] overflow-hidden">
                 {teacher.position ? <p>{teacher.position}</p> : null}
                 {teacher.bio ? <p>{teacher.bio}</p> : null}
                 {teacher.expertise ? (
@@ -130,8 +133,15 @@ const TeachersSection = () => {
                     <span className="font-semibold text-gray-900">Экспертиза:</span> {teacher.expertise}
                   </p>
                 ) : null}
-                {teacher.experience ? <p>{teacher.experience}</p> : null}
+                {teacher.experience ? (
+                  <p>
+                    <span className="font-semibold text-gray-900">Опыт:</span> {teacher.experience}
+                  </p>
+                ) : null}
               </div>
+
+              <div className="pointer-events-none absolute inset-x-8 bottom-8 h-16 bg-gradient-to-t from-gray-50 to-transparent" />
+              <p className="absolute bottom-6 left-1/2 -translate-x-1/2 text-3xl text-gray-500">...</p>
             </article>
           ))}
         </div>
