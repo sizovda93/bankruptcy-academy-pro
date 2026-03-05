@@ -184,16 +184,25 @@ export default function CourseLegalAspectsBfl() {
               </article>
             </div>
 
-            <article className="rounded-3xl border bg-card p-6 sm:p-8">
-              <h2 className="font-heading text-3xl font-bold text-foreground sm:text-4xl">
-                Быть квалифицированным специалистом в области БФЛ — значит управлять результатом, а не надеяться на случай
-              </h2>
-              <p className="mt-5 max-w-4xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-                Квалифицированный юрист по банкротству физлиц видит дело системно: оценивает риски до входа в процедуру,
-                выстраивает стратегию под позицию суда и кредиторов, грамотно взаимодействует с арбитражным управляющим и
-                ведёт доверителя к прогнозируемому итогу. Это уровень, на котором вы снижаете процессуальные ошибки,
-                экономите время команды, усиливаете доверие клиентов и формируете устойчивую профессиональную репутацию.
-              </p>
+            <article className="relative overflow-hidden rounded-3xl border bg-card p-6 sm:p-8">
+              <div className="pointer-events-none absolute inset-0">
+                <span className="absolute left-[6%] top-[12%] h-[120%] w-6 -rotate-12 bg-primary/10" />
+                <span className="absolute left-[38%] top-[-10%] h-[130%] w-4 rotate-6 bg-primary/10" />
+                <span className="absolute left-[62%] top-[5%] h-[120%] w-5 -rotate-[18deg] bg-primary/10" />
+                <span className="absolute left-[83%] top-[-6%] h-[140%] w-3 rotate-12 bg-primary/10" />
+              </div>
+
+              <div className="relative grid gap-6 lg:grid-cols-2 lg:gap-10">
+                <h2 className="font-heading text-3xl font-bold text-foreground sm:text-4xl">
+                  Быть квалифицированным специалистом в области БФЛ — значит управлять результатом, а не надеяться на случай
+                </h2>
+                <p className="text-base leading-relaxed text-muted-foreground sm:text-lg">
+                  Квалифицированный юрист по банкротству физлиц видит дело системно: оценивает риски до входа в процедуру,
+                  выстраивает стратегию под позицию суда и кредиторов, грамотно взаимодействует с арбитражным управляющим и
+                  ведёт доверителя к прогнозируемому итогу. Это уровень, на котором вы снижаете процессуальные ошибки,
+                  экономите время команды, усиливаете доверие клиентов и формируете устойчивую профессиональную репутацию.
+                </p>
+              </div>
             </article>
           </div>
         </section>
