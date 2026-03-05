@@ -1,6 +1,8 @@
 ﻿import { useEffect, useMemo, useState } from "react";
 import { Star } from "lucide-react";
 import { supabase, Review } from "@/lib/supabase";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { LeadFormContent } from "@/components/LeadFormSection";
 
 const defaultReviews: Review[] = [
   {
@@ -38,6 +40,7 @@ const defaultReviews: Review[] = [
 const ReviewsSection = () => {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
+  const [openLeadForm, setOpenLeadForm] = useState(false);
 
   const fetchReviews = async () => {
     try {
@@ -81,43 +84,31 @@ const ReviewsSection = () => {
   }, [reviews]);
 
   if (loading) {
-    return <div className="text-center py-12">Загрузка отзывов...</div>;
+    return <div className="py-12 text-center">Загрузка отзывов...</div>;
   }
 
   return (
-    <section id="reviews" className="py-16 bg-gradient-to-b from-white to-gray-50">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">Отзывы студентов</h2>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Что говорят люди, которые уже прошли обучение
-          </p>
+    <section id="reviews" className="bg-gradient-to-b from-white to-gray-50 py-16">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+        <div className="mb-12 text-center">
+          <h2 className="mb-4 text-4xl font-bold text-gray-900">Отзывы студентов</h2>
+          <p className="mx-auto max-w-2xl text-xl text-gray-600">Что говорят люди, которые уже прошли обучение</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {items.map((review) => (
-            <div
-              key={review.id}
-              className="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow"
-            >
-              <div className="flex items-center mb-4 gap-1">
+            <div key={review.id} className="rounded-lg bg-white p-6 shadow-lg transition-shadow hover:shadow-xl">
+              <div className="mb-4 flex items-center gap-1">
                 {Array.from({ length: review.rating }).map((_, idx) => (
-                  <Star
-                    key={`${review.id}-star-${idx}`}
-                    className="h-4 w-4 text-yellow-400 fill-yellow-400"
-                  />
+                  <Star key={`${review.id}-star-${idx}`} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
                 ))}
               </div>
 
-              <p className="text-gray-700 mb-6 line-clamp-4">"{review.comment}"</p>
+              <p className="mb-6 line-clamp-4 text-gray-700">"{review.comment}"</p>
 
-              <div className="flex items-center gap-3 pt-4 border-t border-gray-100">
+              <div className="flex items-center gap-3 border-t border-gray-100 pt-4">
                 {review.author_avatar_url ? (
-                  <img
-                    src={review.author_avatar_url}
-                    alt={review.author_name}
-                    className="w-12 h-12 rounded-full object-cover"
-                  />
+                  <img src={review.author_avatar_url} alt={review.author_name} className="h-12 w-12 rounded-full object-cover" />
                 ) : null}
                 <div>
                   <p className="font-semibold text-gray-900">{review.author_name}</p>
@@ -128,13 +119,22 @@ const ReviewsSection = () => {
           ))}
         </div>
 
-        <div className="text-center mt-12">
-          <p className="text-gray-600 mb-4">Готовы усилить экспертизу в банкротстве и повысить ценность вашей юридической практики?</p>
-          <button className="bg-gradient-to-r from-green-400 to-green-600 text-white px-8 py-3 rounded-lg font-semibold hover:shadow-lg transition-shadow inline-block">
+        <div className="mt-12 text-center">
+          <p className="mb-4 text-gray-600">Готовы усилить экспертизу в банкротстве и повысить ценность вашей юридической практики?</p>
+          <button
+            onClick={() => setOpenLeadForm(true)}
+            className="inline-block rounded-lg bg-gradient-to-r from-green-400 to-green-600 px-8 py-3 font-semibold text-white transition-shadow hover:shadow-lg"
+          >
             Начать обучение
           </button>
         </div>
       </div>
+
+      <Dialog open={openLeadForm} onOpenChange={setOpenLeadForm}>
+        <DialogContent className="w-[96vw] max-w-[1280px] p-4 sm:p-6">
+          <LeadFormContent />
+        </DialogContent>
+      </Dialog>
     </section>
   );
 };

@@ -6,7 +6,7 @@ import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { toast } from "@/hooks/use-toast";
 
-const LeadFormSection = () => {
+export const LeadFormContent = () => {
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
@@ -65,9 +65,7 @@ const LeadFormSection = () => {
   };
 
   return (
-    <section id="contact-form" className="bg-background py-16 sm:py-24">
-      <div className="container">
-        <div className="grid gap-6 lg:grid-cols-2">
+    <div className="grid gap-6 lg:grid-cols-2">
           <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary via-primary-glow to-emerald-500 p-8 text-white sm:p-12">
             <div className="absolute -bottom-12 -right-10 h-56 w-56 rounded-full bg-white/10 blur-2xl" />
             <div className="absolute -left-10 -top-10 h-40 w-40 rounded-full bg-white/10 blur-2xl" />
@@ -161,6 +159,14 @@ const LeadFormSection = () => {
             </form>
           </div>
         </div>
+  );
+};
+
+const LeadFormSection = () => {
+  return (
+    <section id="contact-form" className="bg-background py-16 sm:py-24">
+      <div className="container">
+        <LeadFormContent />
       </div>
     </section>
   );
