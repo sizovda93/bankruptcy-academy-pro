@@ -116,7 +116,7 @@ const TeachersSection = () => {
                 <div className="h-64 w-full bg-gray-200" />
               )}
 
-              <div className="space-y-5 p-6">
+              <div className="space-y-5 bg-gray-50 p-6">
                 <h3 className="text-2xl font-bold leading-tight text-gray-900 break-normal sm:text-3xl">
                   {teacher.full_name}
                 </h3>
