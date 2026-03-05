@@ -105,7 +105,7 @@ const TeachersSection = () => {
 
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-3">
           {items.map((teacher) => (
-            <article key={teacher.id} className="overflow-hidden rounded-2xl border border-gray-200 bg-white">
+            <article key={teacher.id} className="overflow-hidden rounded-2xl border border-gray-200 bg-gray-50">
               {teacher.photo_url ? (
                 <img
                   src={teacher.photo_url}
@@ -116,7 +116,7 @@ const TeachersSection = () => {
                 <div className="h-64 w-full bg-gray-200" />
               )}
 
-              <div className="space-y-5 bg-gray-50 p-6">
+              <div className="space-y-5 p-6">
                 <h3 className="text-2xl font-bold leading-tight text-gray-900 break-normal sm:text-3xl">
                   {teacher.full_name}
                 </h3>
