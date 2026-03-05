@@ -177,7 +177,7 @@ const CoursesSection = () => {
             </div>
 
             <div>
-              <LeadFormContent />
+              <LeadFormContent compact />
             </div>
           </div>
         </DialogContent>

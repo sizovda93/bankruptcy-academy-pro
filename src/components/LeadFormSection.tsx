@@ -6,7 +6,11 @@ import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { toast } from "@/hooks/use-toast";
 
-export const LeadFormContent = () => {
+type LeadFormContentProps = {
+  compact?: boolean;
+};
+
+export const LeadFormContent = ({ compact = false }: LeadFormContentProps) => {
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
@@ -65,7 +69,8 @@ export const LeadFormContent = () => {
   };
 
   return (
-    <div className="grid gap-6 lg:grid-cols-2">
+    <div className={compact ? "grid gap-6" : "grid gap-6 lg:grid-cols-2"}>
+          {!compact ? (
           <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary via-primary-glow to-emerald-500 p-8 text-white sm:p-12">
             <div className="absolute -bottom-12 -right-10 h-56 w-56 rounded-full bg-white/10 blur-2xl" />
             <div className="absolute -left-10 -top-10 h-40 w-40 rounded-full bg-white/10 blur-2xl" />
@@ -87,6 +92,7 @@ export const LeadFormContent = () => {
               </div>
             </div>
           </div>
+          ) : null}
 
           <div className="rounded-3xl border border-border bg-card p-6 sm:p-8">
             <form className="space-y-4" onSubmit={handleSubmit}>
