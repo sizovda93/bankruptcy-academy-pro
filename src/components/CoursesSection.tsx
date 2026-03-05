@@ -1,5 +1,6 @@
 ﻿import { useEffect, useMemo, useState } from "react";
 import { BookOpen, CheckCircle2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { supabase, Course } from "@/lib/supabase";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { LeadFormContent } from "@/components/LeadFormSection";
@@ -64,9 +65,20 @@ const toDisplayCourse = (course: Course): DisplayCourse => ({
 });
 
 const CoursesSection = () => {
+  const navigate = useNavigate();
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCourse, setSelectedCourse] = useState<DisplayCourse | null>(null);
+
+  const handleCourseClick = (course: DisplayCourse) => {
+    const normalizedTitle = course.title.toLowerCase();
+    if (normalizedTitle.includes("продвижение без вложений")) {
+      navigate("/courses/promotion-without-ads");
+      return;
+    }
+
+    setSelectedCourse(course);
+  };
 
   const fetchCourses = async () => {
     try {
@@ -122,7 +134,7 @@ const CoursesSection = () => {
             <button
               key={course.id}
               type="button"
-              onClick={() => setSelectedCourse(course)}
+              onClick={() => handleCourseClick(course)}
               className="group relative flex flex-col rounded-2xl border border-border bg-card p-6 text-left shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg"
             >
               {course.coverImageUrl ? (
