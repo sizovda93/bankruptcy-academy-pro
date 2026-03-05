@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase, SiteSetting } from '@/lib/supabase';
+import { api } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -22,9 +22,7 @@ export function SiteSettingsManager() {
   const fetchSettings = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase.from('site_settings').select('*');
-
-      if (error) throw error;
+      const data = await api.settings.list();
 
       const settingsMap: { [key: string]: string } = {};
       data?.forEach((item) => {
@@ -46,28 +44,11 @@ export function SiteSettingsManager() {
     try {
       setUploading(true);
 
-      // Загрузим файл в Supabase Storage
-      const fileExt = file.name.split('.').pop();
-      const fileName = `hero-bg-${Date.now()}.${fileExt}`;
-      const filePath = `backgrounds/${fileName}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from('media')
-        .upload(filePath, file, { upsert: true });
-
-      if (uploadError) throw uploadError;
-
-      // Получим публичный URL
-      const { data: publicData } = supabase.storage.from('media').getPublicUrl(filePath);
-      const fileUrl = publicData.publicUrl;
+      // Загрузим файл на сервер
+      const { publicUrl: fileUrl } = await api.media.uploadToPath(file);
 
       // Обновим настройку в БД
-      const { error: dbError } = await supabase
-        .from('site_settings')
-        .update({ setting_value: fileUrl })
-        .eq('setting_key', 'hero_background_url');
-
-      if (dbError) throw dbError;
+      await api.settings.update('hero_background_url', fileUrl);
 
       setPreviewUrl(fileUrl);
       setSettings({ ...settings, hero_background_url: fileUrl });
@@ -90,10 +71,7 @@ export function SiteSettingsManager() {
 
       for (const [key, value] of Object.entries(settings)) {
         if (key !== 'hero_background_url') {
-          await supabase
-            .from('site_settings')
-            .update({ setting_value: value })
-            .eq('setting_key', key);
+          await api.settings.update(key, value);
         }
       }
 
@@ -111,17 +89,8 @@ export function SiteSettingsManager() {
     if (!confirm('Удалить фоновое изображение?')) return;
 
     try {
-      // Удалим из Storage
-      const fileName = previewUrl.split('/').pop();
-      if (fileName) {
-        await supabase.storage.from('media').remove([`backgrounds/${fileName}`]);
-      }
-
       // Очистим в БД
-      await supabase
-        .from('site_settings')
-        .update({ setting_value: '' })
-        .eq('setting_key', 'hero_background_url');
+      await api.settings.update('hero_background_url', '');
 
       setPreviewUrl('');
       setSettings({ ...settings, hero_background_url: '' });

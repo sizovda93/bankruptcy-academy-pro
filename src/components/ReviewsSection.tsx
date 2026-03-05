@@ -1,6 +1,6 @@
 ﻿import { useEffect, useMemo, useState } from "react";
 import { Star } from "lucide-react";
-import { supabase, Review } from "@/lib/supabase";
+import { api, Review } from "@/lib/api";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { LeadFormContent } from "@/components/LeadFormSection";
 
@@ -44,13 +44,7 @@ const ReviewsSection = () => {
 
   const fetchReviews = async () => {
     try {
-      const { data, error } = await supabase
-        .from("reviews")
-        .select("*")
-        .eq("is_published", true)
-        .order("created_at", { ascending: false });
-
-      if (error) throw error;
+      const data = await api.reviews.list(true);
       setReviews(data || []);
     } catch {
       setReviews([]);
@@ -61,21 +55,6 @@ const ReviewsSection = () => {
 
   useEffect(() => {
     fetchReviews();
-
-    const channel = supabase
-      .channel("public-reviews-changes")
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "reviews" },
-        () => {
-          fetchReviews();
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
   }, []);
 
   const items = useMemo(() => {

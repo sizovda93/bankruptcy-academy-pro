@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase, User } from '@/lib/supabase';
+import { api, User } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Input } from '@/components/ui/input';
@@ -28,9 +28,7 @@ export function UsersTable() {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase.from('users').select('*').order('created_at', { ascending: false });
-
-      if (error) throw error;
+      const data = await api.users.list();
       setUsers(data || []);
     } catch (error: any) {
       toast({ title: 'Ошибка', description: error.message, variant: 'destructive' });
@@ -41,9 +39,7 @@ export function UsersTable() {
 
   const onSubmit = async (values: any) => {
     try {
-      const { error } = await supabase.from('users').insert([values]);
-
-      if (error) throw error;
+      await api.users.create(values);
 
       toast({ title: 'Успешно', description: 'Пользователь добавлен' });
       form.reset();
@@ -58,9 +54,7 @@ export function UsersTable() {
     if (!confirm('Вы уверены?')) return;
 
     try {
-      const { error } = await supabase.from('users').delete().eq('id', id);
-
-      if (error) throw error;
+      await api.users.delete(id);
 
       toast({ title: 'Успешно', description: 'Пользователь удалён' });
       fetchUsers();

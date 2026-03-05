@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase, Media } from '@/lib/supabase';
+import { api, Media } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from '@/hooks/use-toast';
@@ -17,12 +17,7 @@ export function MediaUploader() {
 
   const fetchMedia = async () => {
     try {
-      const { data, error } = await supabase
-        .from('media')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
+      const data = await api.media.list();
       setFiles(data || []);
     } catch (error: any) {
       toast({ title: 'Ошибка', description: error.message, variant: 'destructive' });
@@ -38,31 +33,8 @@ export function MediaUploader() {
     try {
       setUploading(true);
 
-      // Загрузим файл в Supabase Storage
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Date.now()}.${fileExt}`;
-      const filePath = `media/${fileName}`;
-
-      const { error: uploadError, data } = await supabase.storage.from('media').upload(filePath, file);
-
-      if (uploadError) throw uploadError;
-
-      // Получим публичный URL
-      const { data: publicData } = supabase.storage.from('media').getPublicUrl(filePath);
-      const fileUrl = publicData.publicUrl;
-
-      // Сохраним инфо в БД
-      const { error: dbError } = await supabase.from('media').insert([
-        {
-          file_name: file.name,
-          file_url: fileUrl,
-          file_type: file.type,
-          file_size: file.size,
-          uploaded_by: null, // Можешь заменить на current_user_id если будет auth
-        },
-      ]);
-
-      if (dbError) throw dbError;
+      // Загрузим файл на сервер
+      await api.media.upload(file);
 
       toast({ title: 'Успешно', description: 'Файл загружен' });
       e.target.value = '';
@@ -78,16 +50,7 @@ export function MediaUploader() {
     if (!confirm('Удалить файл?')) return;
 
     try {
-      // Удалим из Storage
-      const filePath = fileUrl.split('/').pop();
-      if (filePath) {
-        await supabase.storage.from('media').remove([`media/${filePath}`]);
-      }
-
-      // Удалим из БД
-      const { error } = await supabase.from('media').delete().eq('id', id);
-
-      if (error) throw error;
+      await api.media.delete(id);
 
       toast({ title: 'Успешно', description: 'Файл удалён' });
       await fetchMedia();

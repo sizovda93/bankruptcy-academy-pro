@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase";
+import { api } from "@/lib/api";
 import heroBg from "@/assets/hero-bg.jpg";
 
 const HeroSection = () => {
@@ -15,7 +15,7 @@ const HeroSection = () => {
 
   const fetchSettings = async () => {
     try {
-      const { data } = await supabase.from("site_settings").select("*");
+      const data = await api.settings.list();
 
       if (data) {
         data.forEach((item) => {

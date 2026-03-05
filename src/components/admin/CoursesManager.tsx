@@ -1,8 +1,7 @@
 ﻿import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Pencil, Trash2, Upload } from "lucide-react";
-import { supabase, Course } from "@/lib/supabase";
-import { uploadImageWithBucketFallback } from "@/lib/storage";
+import { api, Course } from "@/lib/api";
 import { resizeImageToCover } from "@/lib/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -46,8 +45,7 @@ export function CoursesManager() {
   const fetchCourses = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase.from("courses").select("*").order("created_at", { ascending: false });
-      if (error) throw error;
+      const data = await api.courses.list();
       setCourses(data || []);
     } catch (error: any) {
       toast({ title: "Ошибка", description: error.message, variant: "destructive" });
@@ -63,10 +61,7 @@ export function CoursesManager() {
     try {
       setUploading(true);
       const file = await resizeImageToCover(originalFile, { width: 1200, height: 675, quality: 0.9 });
-      const fileExt = file.name.split(".").pop();
-      const fileName = `course-cover-${Date.now()}.${fileExt}`;
-      const filePath = `covers/${fileName}`;
-      const { publicUrl: fileUrl } = await uploadImageWithBucketFallback(filePath, file);
+      const { publicUrl: fileUrl } = await api.media.uploadToPath(file);
 
       setCoverImage({ url: fileUrl, file });
       form.setValue("cover_image_url", fileUrl);
@@ -90,12 +85,10 @@ export function CoursesManager() {
       };
 
       if (editingId) {
-        const { error } = await supabase.from("courses").update(submitData).eq("id", editingId);
-        if (error) throw error;
+        await api.courses.update(editingId, submitData);
         toast({ title: "Успешно", description: "Курс обновлен" });
       } else {
-        const { error } = await supabase.from("courses").insert([submitData]);
-        if (error) throw error;
+        await api.courses.create(submitData);
         toast({ title: "Успешно", description: "Курс создан" });
       }
 
@@ -127,9 +120,7 @@ export function CoursesManager() {
     if (!confirm("Вы уверены?")) return;
 
     try {
-      const { error } = await supabase.from("courses").delete().eq("id", id);
-      if (error) throw error;
-
+      await api.courses.delete(id);
       toast({ title: "Успешно", description: "Курс удален" });
       await fetchCourses();
     } catch (error: any) {

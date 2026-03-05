@@ -1,6 +1,5 @@
 ﻿import { useState, useEffect } from "react";
-import { supabase, Review, Course } from "@/lib/supabase";
-import { uploadImageWithBucketFallback } from "@/lib/storage";
+import { api, Review, Course } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -47,8 +46,7 @@ export function ReviewsManager() {
   const fetchReviews = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase.from("reviews").select("*").order("created_at", { ascending: false });
-      if (error) throw error;
+      const data = await api.reviews.list();
       setReviews(data || []);
     } catch (error: any) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
@@ -59,8 +57,7 @@ export function ReviewsManager() {
 
   const fetchCourses = async () => {
     try {
-      const { data, error } = await supabase.from("courses").select("*").order("created_at", { ascending: false });
-      if (error) throw error;
+      const data = await api.courses.list();
       setCourses(data || []);
     } catch (error: any) {
       toast({ title: "Error loading courses", description: error.message, variant: "destructive" });
@@ -78,7 +75,7 @@ export function ReviewsManager() {
       const fileName = `avatar-${Date.now()}.${fileExt}`;
       const filePath = `avatars/${fileName}`;
 
-      const { publicUrl: fileUrl } = await uploadImageWithBucketFallback(filePath, file);
+      const { publicUrl: fileUrl } = await api.media.uploadToPath(file);
 
       setAvatarImage({ url: fileUrl, file });
       form.setValue("author_avatar_url", fileUrl);
@@ -102,12 +99,10 @@ export function ReviewsManager() {
       };
 
       if (editingId) {
-        const { error } = await supabase.from("reviews").update(submitData).eq("id", editingId);
-        if (error) throw error;
+        await api.reviews.update(editingId, submitData);
         toast({ title: "Success", description: "Review updated" });
       } else {
-        const { error } = await supabase.from("reviews").insert([submitData]);
-        if (error) throw error;
+        await api.reviews.create(submitData);
         toast({ title: "Success", description: "Review added" });
       }
 
@@ -137,9 +132,7 @@ export function ReviewsManager() {
 
   const togglePublish = async (id: string, current: boolean) => {
     try {
-      const { error } = await supabase.from("reviews").update({ is_published: !current }).eq("id", id);
-      if (error) throw error;
-
+      await api.reviews.togglePublish(id, !current);
       toast({ title: "Success", description: "Publish status updated" });
       await fetchReviews();
     } catch (error: any) {
@@ -151,9 +144,7 @@ export function ReviewsManager() {
     if (!confirm("Delete this review?")) return;
 
     try {
-      const { error } = await supabase.from("reviews").delete().eq("id", id);
-      if (error) throw error;
-
+      await api.reviews.delete(id);
       toast({ title: "Success", description: "Review deleted" });
       await fetchReviews();
     } catch (error: any) {

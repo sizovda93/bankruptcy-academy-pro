@@ -1,7 +1,7 @@
 ﻿import { useEffect, useMemo, useState } from "react";
 import { BookOpen, CheckCircle2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { supabase, Course } from "@/lib/supabase";
+import { api, Course } from "@/lib/api";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { LeadFormContent } from "@/components/LeadFormSection";
 
@@ -86,12 +86,7 @@ const CoursesSection = () => {
 
   const fetchCourses = async () => {
     try {
-      const { data, error } = await supabase
-        .from("courses")
-        .select("*")
-        .order("created_at", { ascending: false });
-
-      if (error) throw error;
+      const data = await api.courses.list();
       setCourses(data || []);
     } catch {
       setCourses([]);
@@ -102,21 +97,6 @@ const CoursesSection = () => {
 
   useEffect(() => {
     fetchCourses();
-
-    const channel = supabase
-      .channel("public-courses-changes")
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "courses" },
-        () => {
-          fetchCourses();
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
   }, []);
 
   const items = useMemo(() => {

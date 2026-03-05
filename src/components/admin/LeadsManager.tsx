@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { supabase, Lead } from "@/lib/supabase";
+import { api, Lead } from "@/lib/api";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { toast } from "@/hooks/use-toast";
@@ -16,13 +16,8 @@ export function LeadsManager() {
   const fetchLeads = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
-        .from("leads")
-        .select("*")
-        .order("created_at", { ascending: false });
-
-      if (error) throw error;
-      setLeads((data as Lead[]) || []);
+      const data = await api.leads.list();
+      setLeads(data || []);
     } catch (error: any) {
       toast({ title: "Ошибка", description: error.message, variant: "destructive" });
     } finally {

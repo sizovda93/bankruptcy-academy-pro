@@ -1,5 +1,5 @@
 ﻿import { useEffect, useMemo, useState } from "react";
-import { supabase, Teacher } from "@/lib/supabase";
+import { api, Teacher } from "@/lib/api";
 
 const defaultTeachers: Teacher[] = [
   {
@@ -49,14 +49,7 @@ const TeachersSection = () => {
 
   const fetchTeachers = async () => {
     try {
-      const { data, error } = await supabase
-        .from("teachers")
-        .select("*")
-        .eq("is_published", true)
-        .order("display_order", { ascending: true, nullsFirst: false })
-        .order("created_at", { ascending: false });
-
-      if (error) throw error;
+      const data = await api.teachers.list(true);
       setTeachers(data || []);
     } catch {
       setTeachers([]);
@@ -67,21 +60,6 @@ const TeachersSection = () => {
 
   useEffect(() => {
     fetchTeachers();
-
-    const channel = supabase
-      .channel("public-teachers-changes")
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "teachers" },
-        () => {
-          fetchTeachers();
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
   }, []);
 
   const items = useMemo(() => {

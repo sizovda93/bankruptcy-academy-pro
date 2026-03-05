@@ -1,8 +1,7 @@
 ﻿import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Pencil, Trash2, Eye, EyeOff, Upload } from "lucide-react";
-import { supabase, Teacher } from "@/lib/supabase";
-import { uploadImageWithBucketFallback } from "@/lib/storage";
+import { api, Teacher } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -47,13 +46,7 @@ export function TeachersManager() {
   const fetchTeachers = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
-        .from("teachers")
-        .select("*")
-        .order("display_order", { ascending: true, nullsFirst: false })
-        .order("created_at", { ascending: false });
-
-      if (error) throw error;
+      const data = await api.teachers.list();
       setTeachers(data || []);
     } catch (error: any) {
       toast({ title: "Ошибка", description: error.message, variant: "destructive" });
@@ -70,9 +63,8 @@ export function TeachersManager() {
       setUploading(true);
       const fileExt = file.name.split(".").pop();
       const fileName = `teacher-photo-${Date.now()}.${fileExt}`;
-      const filePath = `teachers/${fileName}`;
 
-      const { publicUrl: fileUrl } = await uploadImageWithBucketFallback(filePath, file);
+      const { publicUrl: fileUrl } = await api.media.uploadToPath(file);
       setPhotoImage({ url: fileUrl, file });
       form.setValue("photo_url", fileUrl);
       toast({ title: "Успешно", description: "Фото загружено" });
@@ -97,12 +89,10 @@ export function TeachersManager() {
       };
 
       if (editingId) {
-        const { error } = await supabase.from("teachers").update(submitData).eq("id", editingId);
-        if (error) throw error;
+        await api.teachers.update(editingId, submitData);
         toast({ title: "Успешно", description: "Преподаватель обновлен" });
       } else {
-        const { error } = await supabase.from("teachers").insert([submitData]);
-        if (error) throw error;
+        await api.teachers.create(submitData);
         toast({ title: "Успешно", description: "Преподаватель добавлен" });
       }
 
@@ -135,9 +125,7 @@ export function TeachersManager() {
 
   const togglePublish = async (id: string, current: boolean) => {
     try {
-      const { error } = await supabase.from("teachers").update({ is_published: !current }).eq("id", id);
-      if (error) throw error;
-
+      await api.teachers.togglePublish(id, !current);
       toast({ title: "Успешно", description: "Статус публикации изменен" });
       await fetchTeachers();
     } catch (error: any) {
@@ -149,9 +137,7 @@ export function TeachersManager() {
     if (!confirm("Удалить преподавателя?")) return;
 
     try {
-      const { error } = await supabase.from("teachers").delete().eq("id", id);
-      if (error) throw error;
-
+      await api.teachers.delete(id);
       toast({ title: "Успешно", description: "Преподаватель удален" });
       await fetchTeachers();
     } catch (error: any) {

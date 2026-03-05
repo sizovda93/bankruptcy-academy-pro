@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
-import { supabase } from "@/lib/supabase";
+import { api } from "@/lib/api";
 import { toast } from "@/hooks/use-toast";
 
 type LeadFormContentProps = {
@@ -45,19 +45,15 @@ export const LeadFormContent = ({ compact = false }: LeadFormContentProps) => {
 
     try {
       setSubmitting(true);
-      const { error } = await supabase.from("leads").insert([
-        {
-          full_name: fullName.trim(),
-          phone: phone.trim(),
-          email: email.trim() || null,
-          promo_code: promoCode.trim() || null,
-          consent_policy: consentPolicy,
-          consent_offers: consentOffers,
-          source: "website",
-        },
-      ]);
-
-      if (error) throw error;
+      await api.leads.create({
+        full_name: fullName.trim(),
+        phone: phone.trim(),
+        email: email.trim() || undefined,
+        promo_code: promoCode.trim() || undefined,
+        consent_policy: consentPolicy,
+        consent_offers: consentOffers,
+        source: "website",
+      });
 
       toast({ title: "Заявка отправлена", description: "Мы свяжемся с вами в ближайшее время." });
       resetForm();
