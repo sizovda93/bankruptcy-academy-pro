@@ -291,3 +291,8 @@ VALUES
     true
   );
 
+
+-- Leads read policy for admin panel
+DROP POLICY IF EXISTS leads_select_all ON leads;
+CREATE POLICY leads_select_all ON leads FOR SELECT USING (true);
+
