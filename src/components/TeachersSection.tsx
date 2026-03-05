@@ -117,16 +117,16 @@ const TeachersSection = () => {
               )}
 
               <div className="space-y-5 p-6">
-                <h3 className="text-4xl font-bold leading-tight text-gray-900 break-normal sm:text-5xl">
+                <h3 className="text-2xl font-bold leading-tight text-gray-900 break-normal sm:text-3xl">
                   {teacher.full_name}
                 </h3>
 
                 <div className="space-y-4">
-                  {teacher.position ? <p className="text-[28px] leading-snug text-[#b44a3f]">{teacher.position}</p> : null}
-                  {teacher.bio ? <p className="text-[28px] leading-snug text-[#b44a3f]">{teacher.bio}</p> : null}
+                  {teacher.position ? <p className="text-[22px] leading-snug text-[#b44a3f]">{teacher.position}</p> : null}
+                  {teacher.bio ? <p className="text-[22px] leading-snug text-[#b44a3f]">{teacher.bio}</p> : null}
                 </div>
 
-                <p className="text-[34px] leading-tight text-gray-900">
+                <p className="text-[24px] leading-tight text-gray-900">
                   Стаж работы: {teacher.experience ? teacher.experience : "не указан"}
                 </p>
               </div>
