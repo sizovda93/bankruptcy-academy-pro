@@ -44,6 +44,7 @@ CREATE TABLE IF NOT EXISTS courses (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   title VARCHAR(255) NOT NULL,
   description TEXT,
+  benefits TEXT,
   cover_image_url TEXT,
   cover_image_id UUID REFERENCES media(id) ON DELETE SET NULL,
   price DECIMAL(10, 2) DEFAULT 0,
@@ -54,6 +55,7 @@ CREATE TABLE IF NOT EXISTS courses (
 
 -- For existing databases created before this update
 ALTER TABLE courses DROP COLUMN IF EXISTS duration_hours;
+ALTER TABLE courses ADD COLUMN IF NOT EXISTS benefits TEXT;
 
 -- ЧАСТЬ 4: Таблица отзывов
 CREATE TABLE IF NOT EXISTS teachers (

@@ -54,6 +54,7 @@ export interface Course {
   id: string;
   title: string;
   description?: string;
+  benefits?: string;
   cover_image_url?: string;
   cover_image_id?: string;
   price: number;
