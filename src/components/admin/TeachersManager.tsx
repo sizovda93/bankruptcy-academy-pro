@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Pencil, Trash2, Eye, EyeOff, Upload } from "lucide-react";
 import { supabase, Teacher } from "@/lib/supabase";
@@ -32,6 +32,8 @@ export function TeachersManager() {
       full_name: "",
       position: "",
       bio: "",
+      expertise: "",
+      experience: "",
       photo_url: "",
       display_order: 0,
       is_published: true,
@@ -87,6 +89,8 @@ export function TeachersManager() {
         full_name: values.full_name,
         position: values.position || null,
         bio: values.bio || null,
+        expertise: values.expertise || null,
+        experience: values.experience || null,
         photo_url: values.photo_url || null,
         display_order: Number(values.display_order) || 0,
         is_published: Boolean(values.is_published),
@@ -117,6 +121,8 @@ export function TeachersManager() {
       full_name: teacher.full_name,
       position: teacher.position || "",
       bio: teacher.bio || "",
+      expertise: teacher.expertise || "",
+      experience: teacher.experience || "",
       photo_url: teacher.photo_url || "",
       display_order: teacher.display_order || 0,
       is_published: teacher.is_published,
@@ -164,30 +170,30 @@ export function TeachersManager() {
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
+      <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold">Преподаватели ({teachers.length})</h2>
         <Dialog open={open} onOpenChange={handleOpenChange}>
           <DialogTrigger asChild>
             <Button onClick={() => setEditingId(null)}>Добавить преподавателя</Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
             <DialogHeader>
               <DialogTitle>{editingId ? "Редактировать преподавателя" : "Добавить преподавателя"}</DialogTitle>
             </DialogHeader>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <div>
-                <FormLabel className="block mb-2">Фото</FormLabel>
+                <FormLabel className="mb-2 block">Фото</FormLabel>
                 {photoImage.url ? (
                   <div className="space-y-2">
                     <img
                       src={photoImage.url}
                       alt="Teacher"
-                      className="w-24 h-24 rounded-full object-cover"
+                      className="h-24 w-24 rounded-md bg-muted/30 p-1 object-contain"
                     />
                     <Input type="file" accept="image/*" onChange={handlePhotoUpload} disabled={uploading} />
                   </div>
                 ) : (
-                  <div className="border-2 border-dashed rounded-lg p-6 text-center hover:bg-gray-50 cursor-pointer">
+                  <div className="cursor-pointer rounded-lg border-2 border-dashed p-6 text-center hover:bg-gray-50">
                     <Input
                       type="file"
                       accept="image/*"
@@ -196,32 +202,42 @@ export function TeachersManager() {
                       className="hidden"
                       id="teacher-photo-input"
                     />
-                    <label htmlFor="teacher-photo-input" className="cursor-pointer block">
+                    <label htmlFor="teacher-photo-input" className="block cursor-pointer">
                       <Upload className="mx-auto mb-2 text-gray-400" size={24} />
                       <p className="text-sm">Нажми или перетащи фото</p>
-                      {uploading ? <p className="text-xs text-blue-500 mt-2">Загрузка...</p> : null}
+                      {uploading ? <p className="mt-2 text-xs text-blue-500">Загрузка...</p> : null}
                     </label>
                   </div>
                 )}
               </div>
 
               <div>
-                <FormLabel className="block mb-2">ФИО</FormLabel>
+                <FormLabel className="mb-2 block">ФИО</FormLabel>
                 <Input {...form.register("full_name")} placeholder="Иванов Иван Иванович" />
               </div>
 
               <div>
-                <FormLabel className="block mb-2">Должность / роль</FormLabel>
-                <Input {...form.register("position")} placeholder="Адвокат, партнер практики банкротства" />
+                <FormLabel className="mb-2 block">Должность / роль</FormLabel>
+                <Input {...form.register("position")} placeholder="Руководитель арбитражной группы" />
               </div>
 
               <div>
-                <FormLabel className="block mb-2">Описание</FormLabel>
-                <Textarea {...form.register("bio")} placeholder="Кратко о компетенциях преподавателя" />
+                <FormLabel className="mb-2 block">Краткое описание</FormLabel>
+                <Textarea {...form.register("bio")} placeholder="Краткий абзац о преподавателе" />
               </div>
 
               <div>
-                <FormLabel className="block mb-2">Порядок отображения</FormLabel>
+                <FormLabel className="mb-2 block">Экспертиза</FormLabel>
+                <Textarea {...form.register("expertise")} placeholder="Корпоративное право, венчурные инвестиции..." />
+              </div>
+
+              <div>
+                <FormLabel className="mb-2 block">Опыт</FormLabel>
+                <Textarea {...form.register("experience")} placeholder="Кандидат юридических наук..." />
+              </div>
+
+              <div>
+                <FormLabel className="mb-2 block">Порядок отображения</FormLabel>
                 <Input type="number" {...form.register("display_order", { valueAsNumber: true })} placeholder="0" />
               </div>
 
@@ -243,31 +259,31 @@ export function TeachersManager() {
       {loading ? (
         <p>Загрузка...</p>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           {teachers.length === 0 ? (
             <p className="text-gray-500">Преподавателей пока нет</p>
           ) : (
             teachers.map((teacher) => (
-              <div key={teacher.id} className="border rounded-lg p-4 hover:shadow-md transition">
+              <div key={teacher.id} className="rounded-lg border p-4 transition hover:shadow-md">
                 <div className="flex gap-4">
                   {teacher.photo_url ? (
                     <img
                       src={teacher.photo_url}
                       alt={teacher.full_name}
-                      className="w-16 h-16 rounded-full object-cover flex-shrink-0"
+                      className="h-16 w-16 flex-shrink-0 rounded-md bg-muted/30 p-1 object-contain"
                     />
                   ) : (
-                    <div className="w-16 h-16 rounded-full bg-gray-200 flex-shrink-0" />
+                    <div className="h-16 w-16 flex-shrink-0 rounded-md bg-gray-200" />
                   )}
 
-                  <div className="flex-1 min-w-0">
-                    <div className="flex justify-between items-start gap-2">
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0">
-                        <h3 className="font-bold text-lg truncate">{teacher.full_name}</h3>
+                        <h3 className="truncate text-lg font-bold">{teacher.full_name}</h3>
                         {teacher.position ? <p className="text-sm text-gray-600">{teacher.position}</p> : null}
-                        <p className="text-xs text-gray-500 mt-1">Порядок: {teacher.display_order ?? 0}</p>
+                        <p className="mt-1 text-xs text-gray-500">Порядок: {teacher.display_order ?? 0}</p>
                       </div>
-                      <div className="flex gap-2 flex-shrink-0">
+                      <div className="flex flex-shrink-0 gap-2">
                         <Button variant="outline" size="sm" onClick={() => editTeacher(teacher)}>
                           <Pencil size={16} />
                         </Button>
@@ -284,11 +300,11 @@ export function TeachersManager() {
                       </div>
                     </div>
 
-                    {teacher.bio ? <p className="text-sm text-gray-700 mt-3">{teacher.bio}</p> : null}
+                    {teacher.bio ? <p className="mt-3 text-sm text-gray-700">{teacher.bio}</p> : null}
+                    {teacher.expertise ? <p className="mt-2 text-sm text-gray-700"><b>Экспертиза:</b> {teacher.expertise}</p> : null}
+                    {teacher.experience ? <p className="mt-2 text-sm text-gray-700"><b>Опыт:</b> {teacher.experience}</p> : null}
 
-                    <p className="text-xs mt-3 text-gray-500">
-                      {teacher.is_published ? "Опубликован" : "Скрыт"}
-                    </p>
+                    <p className="mt-3 text-xs text-gray-500">{teacher.is_published ? "Опубликован" : "Скрыт"}</p>
                   </div>
                 </div>
               </div>
@@ -299,4 +315,3 @@ export function TeachersManager() {
     </div>
   );
 }
-

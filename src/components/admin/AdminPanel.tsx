@@ -21,7 +21,7 @@ export function AdminPanel() {
 
   const handleLogin = () => {
     // Простая защита - измени пароль на свой!
-    const adminPassword = '123456';
+    const adminPassword = '279286';
     
     if (password === adminPassword) {
       localStorage.setItem('admin_authenticated', 'true');

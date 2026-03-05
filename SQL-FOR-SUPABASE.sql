@@ -61,12 +61,18 @@ CREATE TABLE IF NOT EXISTS teachers (
   full_name VARCHAR(255) NOT NULL,
   position VARCHAR(255),
   bio TEXT,
+  expertise TEXT,
+  experience TEXT,
   photo_url TEXT,
   display_order INTEGER DEFAULT 0,
   is_published BOOLEAN DEFAULT TRUE,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+-- For existing databases created before this update
+ALTER TABLE teachers ADD COLUMN IF NOT EXISTS expertise TEXT;
+ALTER TABLE teachers ADD COLUMN IF NOT EXISTS experience TEXT;
 
 -- ЧАСТЬ 5: Таблица отзывов
 CREATE TABLE IF NOT EXISTS reviews (

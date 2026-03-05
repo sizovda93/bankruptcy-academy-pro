@@ -80,6 +80,8 @@ export interface Teacher {
   full_name: string;
   position?: string;
   bio?: string;
+  expertise?: string;
+  experience?: string;
   photo_url?: string;
   display_order?: number;
   is_published: boolean;
