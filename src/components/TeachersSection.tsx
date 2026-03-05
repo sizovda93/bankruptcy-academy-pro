@@ -121,7 +121,7 @@ const TeachersSection = () => {
                 )}
 
                 <div className="min-w-0 flex-1 pt-1">
-                  <h3 className="break-words text-2xl font-bold leading-tight text-gray-900 sm:text-3xl xl:text-4xl">
+                  <h3 className="break-normal text-2xl font-bold leading-tight text-gray-900 sm:text-3xl xl:text-4xl">
                     {teacher.full_name}
                   </h3>
                 </div>
