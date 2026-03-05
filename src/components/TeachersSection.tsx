@@ -103,47 +103,35 @@ const TeachersSection = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-3">
           {items.map((teacher) => (
-            <article
-              key={teacher.id}
-              className="relative rounded-3xl border border-gray-200 bg-gray-50 p-8 min-h-[520px]"
-            >
-              <div className="flex items-start gap-6">
-                {teacher.photo_url ? (
-                  <img
-                    src={teacher.photo_url}
-                    alt={teacher.full_name}
-                    className="h-36 w-36 flex-shrink-0 rounded-2xl bg-white object-contain p-1"
-                  />
-                ) : (
-                  <div className="h-36 w-36 flex-shrink-0 rounded-2xl bg-gray-200" />
-                )}
+            <article key={teacher.id} className="overflow-hidden rounded-2xl border border-gray-200 bg-white">
+              {teacher.photo_url ? (
+                <img
+                  src={teacher.photo_url}
+                  alt={teacher.full_name}
+                  className="h-64 w-full bg-gray-100 object-contain"
+                />
+              ) : (
+                <div className="h-64 w-full bg-gray-200" />
+              )}
 
-                <div className="min-w-0 flex-1 pt-1">
-                  <h3 className="break-normal text-lg font-bold leading-tight text-gray-900 sm:text-xl xl:text-2xl">
-                    {teacher.full_name}
-                  </h3>
+              <div className="space-y-5 p-6">
+                <h3 className="text-4xl font-bold leading-tight text-gray-900 break-normal sm:text-5xl">
+                  {teacher.full_name}
+                </h3>
+
+                <div className="space-y-4">
+                  {teacher.position ? <p className="text-[28px] leading-snug text-[#b44a3f]">{teacher.position}</p> : null}
+                  {teacher.bio ? <p className="text-[28px] leading-snug text-[#b44a3f]">{teacher.bio}</p> : null}
                 </div>
+
+                <p className="text-[34px] leading-tight text-gray-900">
+                  Стаж работы: {teacher.experience ? teacher.experience : "не указан"}
+                </p>
               </div>
 
-              <div className="mt-8 space-y-5 text-xl leading-relaxed text-gray-700 max-h-[330px] overflow-hidden">
-                {teacher.position ? <p>{teacher.position}</p> : null}
-                {teacher.bio ? <p>{teacher.bio}</p> : null}
-                {teacher.expertise ? (
-                  <p>
-                    <span className="font-semibold text-gray-900">Экспертиза:</span> {teacher.expertise}
-                  </p>
-                ) : null}
-                {teacher.experience ? (
-                  <p>
-                    <span className="font-semibold text-gray-900">Опыт:</span> {teacher.experience}
-                  </p>
-                ) : null}
-              </div>
-
-              <div className="pointer-events-none absolute inset-x-8 bottom-8 h-16 bg-gradient-to-t from-gray-50 to-transparent" />
-              <p className="absolute bottom-6 left-1/2 -translate-x-1/2 text-3xl text-gray-500">...</p>
+              <div className="border-t border-gray-200" />
             </article>
           ))}
         </div>
