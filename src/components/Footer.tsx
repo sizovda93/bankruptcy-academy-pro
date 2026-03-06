@@ -1,4 +1,9 @@
+import { useLocation, useNavigate } from "react-router-dom";
+
 const Footer = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  
   const cities = [
     "Москва", "Санкт-Петербург", "Новосибирск", "Екатеринбург", "Казань",
     "Нижний Новгород", "Челябинск", "Самара", "Омск", "Ростов-на-Дону",
@@ -11,10 +16,24 @@ const Footer = () => {
     if (href.startsWith('#')) {
       e.preventDefault();
       const id = href.substring(1); // убираем '#'
-      const element = document.getElementById(id);
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        window.history.pushState(null, '', href);
+      
+      // Если мы на главной странице - просто прокручиваем
+      if (location.pathname === '/') {
+        const element = document.getElementById(id);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          window.history.pushState(null, '', '/' + href);
+        }
+      } else {
+        // Если на другой странице - переходим на главную с якорем
+        navigate('/' + href);
+        // После перехода прокручиваем к элементу
+        setTimeout(() => {
+          const element = document.getElementById(id);
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }, 100);
       }
     }
   };
@@ -52,10 +71,10 @@ const Footer = () => {
           <div>
             <p className="font-heading text-sm font-semibold text-background">Навигация</p>
             <ul className="mt-3 space-y-2 text-sm">
-              <li><a href="#" className="hover:text-primary transition-colors">Курсы</a></li>
+              <li><a href="#courses" onClick={(e) => handleNavClick(e, '#courses')} className="hover:text-primary transition-colors">Курсы</a></li>
               <li><a href="#teachers" onClick={(e) => handleNavClick(e, '#teachers')} className="hover:text-primary transition-colors">Преподаватели</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">О нас</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">Контакты</a></li>
+              <li><a href="#about" onClick={(e) => handleNavClick(e, '#about')} className="hover:text-primary transition-colors">О нас</a></li>
+              <li><a href="#contact-form" onClick={(e) => handleNavClick(e, '#contact-form')} className="hover:text-primary transition-colors">Контакты</a></li>
             </ul>
           </div>
           <div>

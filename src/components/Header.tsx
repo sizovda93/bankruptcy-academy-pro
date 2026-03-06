@@ -1,5 +1,6 @@
 ﻿import { useState } from "react";
 import { Menu, X, Phone } from "lucide-react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const navItems = [
   { label: "Курсы", href: "/#courses" },
@@ -12,17 +13,37 @@ const navItems = [
 
 const Header = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-    // Если это якорная ссылка на текущей странице
+    // Если это якорная ссылка на главной странице
     if (href.startsWith('/#')) {
       e.preventDefault();
       const id = href.substring(2); // убираем '/#'
-      const element = document.getElementById(id);
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        window.history.pushState(null, '', href);
+      
+      // Если мы на главной странице - просто прокручиваем
+      if (location.pathname === '/') {
+        const element = document.getElementById(id);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          window.history.pushState(null, '', href);
+        }
+      } else {
+        // Если на другой странице - переходим на главную с якорем
+        navigate('/' + href.substring(1));
+        // После перехода прокручиваем к элементу
+        setTimeout(() => {
+          const element = document.getElementById(id);
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }, 100);
       }
+    } else if (!href.startsWith('http')) {
+      // Для внутренних ссылок используем React Router
+      e.preventDefault();
+      navigate(href);
     }
   };
 
