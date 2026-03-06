@@ -13,6 +13,19 @@ const navItems = [
 const Header = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
 
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    // Если это якорная ссылка на текущей странице
+    if (href.startsWith('/#')) {
+      e.preventDefault();
+      const id = href.substring(2); // убираем '/#'
+      const element = document.getElementById(id);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        window.history.pushState(null, '', href);
+      }
+    }
+  };
+
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
       <div className="container flex h-16 items-center justify-between">
@@ -31,6 +44,7 @@ const Header = () => {
             <a
               key={item.label}
               href={item.href}
+              onClick={(e) => handleNavClick(e, item.href)}
               className="font-body text-sm font-medium text-foreground/80 transition-colors hover:text-primary"
             >
               {item.label}
@@ -59,7 +73,10 @@ const Header = () => {
               <a
                 key={item.label}
                 href={item.href}
-                onClick={() => setMobileOpen(false)}
+                onClick={(e) => {
+                  handleNavClick(e, item.href);
+                  setMobileOpen(false);
+                }}
                 className="rounded-md px-3 py-2 text-sm font-medium text-foreground/80 transition-colors hover:bg-primary-light hover:text-primary"
               >
                 {item.label}

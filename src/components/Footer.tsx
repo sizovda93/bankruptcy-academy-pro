@@ -6,6 +6,19 @@ const Footer = () => {
     "Краснодар", "Саратов", "Тюмень", "Тольятти", "Ижевск"
   ];
 
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    // Если это якорная ссылка
+    if (href.startsWith('#')) {
+      e.preventDefault();
+      const id = href.substring(1); // убираем '#'
+      const element = document.getElementById(id);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        window.history.pushState(null, '', href);
+      }
+    }
+  };
+
   return (
     <footer className="border-t border-border bg-foreground text-background/70">
       {/* Бегущая строка с городами */}
@@ -40,7 +53,7 @@ const Footer = () => {
             <p className="font-heading text-sm font-semibold text-background">Навигация</p>
             <ul className="mt-3 space-y-2 text-sm">
               <li><a href="#" className="hover:text-primary transition-colors">Курсы</a></li>
-              <li><a href="#teachers" className="hover:text-primary transition-colors">Преподаватели</a></li>
+              <li><a href="#teachers" onClick={(e) => handleNavClick(e, '#teachers')} className="hover:text-primary transition-colors">Преподаватели</a></li>
               <li><a href="#" className="hover:text-primary transition-colors">О нас</a></li>
               <li><a href="#" className="hover:text-primary transition-colors">Контакты</a></li>
             </ul>
