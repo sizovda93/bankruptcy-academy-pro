@@ -96,6 +96,10 @@ const CoursesSection = () => {
       navigate("/courses/non-discharge");
       return;
     }
+    if (normalizedTitle.includes("эффективная команда") || normalizedTitle.includes("команд")) {
+      navigate("/courses/effective-team");
+      return;
+    }
 
     setSelectedCourse(course);
   };

@@ -96,6 +96,7 @@ export interface Lead {
   promo_code?: string;
   consent_policy: boolean;
   consent_offers: boolean;
+  consent_given?: boolean;
   source?: string;
   created_at: string;
 }
@@ -110,10 +111,13 @@ export interface SiteSetting {
 export interface StudentCase {
   id: string;
   course_id?: string;
+  course_title?: string;
   student_name: string;
   student_role?: string;
   case_text: string;
+  case_description?: string;
   result_text?: string;
+  result?: string;
   is_published: boolean;
   display_order?: number;
   created_at: string;

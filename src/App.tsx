@@ -12,6 +12,7 @@ import CourseLegalAspectsBfl from "./pages/CourseLegalAspectsBfl";
 import CourseSalesPromotion from "./pages/CourseSalesPromotion";
 import CourseTransactionDisputes from "./pages/CourseTransactionDisputes";
 import CourseNonDischarge from "./pages/CourseNonDischarge";
+import CourseEffectiveTeam from "./pages/CourseEffectiveTeam";
 import WebinarBankruptcyBusiness from "./pages/WebinarBankruptcyBusiness";
 
 const queryClient = new QueryClient();
@@ -31,6 +32,7 @@ const App = () => (
           <Route path="/courses/sales-promotion" element={<CourseSalesPromotion />} />
           <Route path="/courses/transaction-disputes" element={<CourseTransactionDisputes />} />
           <Route path="/courses/non-discharge" element={<CourseNonDischarge />} />
+          <Route path="/courses/effective-team" element={<CourseEffectiveTeam />} />
           <Route path="/webinars/bankruptcy-business" element={<WebinarBankruptcyBusiness />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
