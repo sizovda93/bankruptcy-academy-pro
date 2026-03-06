@@ -11,6 +11,7 @@ import leadsRouter from './routes/leads.js';
 import usersRouter from './routes/users.js';
 import settingsRouter from './routes/settings.js';
 import mediaRouter from './routes/media.js';
+import studentCasesRouter from './routes/student-cases.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
@@ -37,6 +38,7 @@ app.use('/api/leads', leadsRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/settings', settingsRouter);
 app.use('/api/media', mediaRouter);
+app.use('/api/student-cases', studentCasesRouter);
 
 // Health check
 app.get('/api/health', async (_req, res) => {

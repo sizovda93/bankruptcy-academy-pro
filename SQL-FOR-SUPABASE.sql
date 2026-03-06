@@ -25,7 +25,11 @@ INSERT INTO site_settings (setting_key, setting_value)
 VALUES 
   ('hero_background_url', ''),
   ('hero_title', 'РђРєР°РґРµРјРёСЏ Р‘Р°РЅРєСЂРѕС‚СЃС‚РІР°'),
-  ('hero_description', 'Р—РЅР°РЅРёСЏ, РЅР°РІС‹РєРё Рё РґРµР»РѕРІС‹Рµ СЃРІСЏР·Рё РґР»СЏ РїСЂРѕС„РµСЃСЃРёРѕРЅР°Р»СЊРЅРѕРіРѕ СЂРѕСЃС‚Р°')
+  ('hero_description', 'Р—РЅР°РЅРёСЏ, РЅР°РІС‹РєРё Рё РґРµР»РѕРІС‹Рµ СЃРІСЏР·Рё РґР»СЏ РїСЂРѕС„РµСЃСЃРёРѕРЅР°Р»СЊРЅРѕРіРѕ СЂРѕСЃС‚Р°'),
+  ('bfl_book_banner_url', ''),
+  ('bfl_book_download_url', ''),
+  ('bfl_book_title', 'Получите книгу по банкротству физических лиц 2026'),
+  ('bfl_book_description', 'Краткое практическое руководство по изменениям и судебной логике БФЛ')
 ON CONFLICT (setting_key) DO NOTHING;
 
 -- Р§РђРЎРўР¬ 2: РўР°Р±Р»РёС†Р° РјРµРґРёР° (Р·Р°РіСЂСѓР¶РµРЅРЅС‹Рµ РєР°СЂС‚РёРЅРєРё)
@@ -298,4 +302,79 @@ VALUES
 DROP POLICY IF EXISTS leads_select_all ON leads;
 CREATE POLICY leads_select_all ON leads FOR SELECT USING (true);
 
+-- Student cases (кейсы студентов для страниц курсов)
+CREATE TABLE IF NOT EXISTS student_cases (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  course_id UUID REFERENCES courses(id) ON DELETE CASCADE,
+  student_name VARCHAR(255) NOT NULL,
+  student_role VARCHAR(255),
+  case_text TEXT NOT NULL,
+  result_text TEXT,
+  is_published BOOLEAN NOT NULL DEFAULT true,
+  display_order INTEGER NOT NULL DEFAULT 0,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
+CREATE INDEX IF NOT EXISTS idx_student_cases_course ON student_cases(course_id);
+CREATE INDEX IF NOT EXISTS idx_student_cases_published ON student_cases(is_published);
+CREATE INDEX IF NOT EXISTS idx_student_cases_order ON student_cases(display_order);
+
+ALTER TABLE student_cases ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Кейсы видны всем" ON student_cases;
+DROP POLICY IF EXISTS "Кейсы можно изменять" ON student_cases;
+
+CREATE POLICY "Кейсы видны всем" ON student_cases
+FOR SELECT USING (is_published = true);
+
+CREATE POLICY "Кейсы можно изменять" ON student_cases
+FOR ALL USING (true) WITH CHECK (true);
+
+INSERT INTO student_cases (course_id, student_name, student_role, case_text, result_text, is_published, display_order)
+SELECT
+  c.id,
+  s.student_name,
+  s.student_role,
+  s.case_text,
+  s.result_text,
+  true,
+  s.display_order
+FROM (
+  VALUES
+    (
+      'Александр М.',
+      'Выпускник курса',
+      'После внедрения карты аудита и чек-листов сократил срок подготовки дела к подаче в суд с 5 дней до 2 дней. Снизил количество процессуальных доработок и повысил предсказуемость результата по делам БФЛ.',
+      'Результат: рост конверсии в договор на 27%',
+      1
+    ),
+    (
+      'Ольга К.',
+      'Руководитель практики',
+      'Перестроила работу команды по модульной схеме курса: отдельно аудит входа, отдельно сбор доказательств и сопровождение процедуры. Команда начала работать по единому стандарту, без просадок в качестве.',
+      'Результат: +35% к производительности команды',
+      2
+    ),
+    (
+      'Петр Н.',
+      'Юрист по БФЛ',
+      'Применил из курса модель взаимодействия с АУ и стандартизировал коммуникацию с доверителями. Это позволило закрыть частые возражения до суда и улучшить клиентский опыт без увеличения нагрузки.',
+      'Результат: снижение отказов клиентов на 22%',
+      3
+    ),
+    (
+      'Мария Л.',
+      'Старший юрист',
+      'После блока по торгам и оспариванию сделок улучшила стратегию по сложным делам с имуществом. Перешла от реактивной тактики к планированию рисков на входе в процедуру.',
+      'Результат: +18% успешных кейсов в сложных делах',
+      4
+    )
+) AS s(student_name, student_role, case_text, result_text, display_order)
+JOIN courses c ON lower(c.title) LIKE '%юридические аспекты%'
+WHERE NOT EXISTS (
+  SELECT 1
+  FROM student_cases sc
+  WHERE sc.course_id = c.id
+    AND sc.student_name = s.student_name
+);

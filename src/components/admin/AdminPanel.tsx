@@ -1,19 +1,19 @@
 ﻿import { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { UsersTable } from './UsersTable';
-import { MediaUploader } from './MediaUploader';
 import { CoursesManager } from './CoursesManager';
 import { ReviewsManager } from './ReviewsManager';
 import { SiteSettingsManager } from './SiteSettingsManager';
 import { TeachersManager } from './TeachersManager';
 import { LeadsManager } from './LeadsManager';
+import { StudentCasesManager } from './StudentCasesManager';
 import { LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 export function AdminPanel() {
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const [activeTab, setActiveTab] = useState('courses');
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
     return localStorage.getItem('admin_authenticated') === 'true';
   });
@@ -72,7 +72,7 @@ export function AdminPanel() {
             <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-6">
               <div>
                 <h1 className="text-3xl font-bold text-gray-900">Админ Панель</h1>
-                <p className="text-gray-500">Bankruptcy Academy</p>
+                <p className="text-gray-500">Академия Банкротства</p>
               </div>
               <Button variant="outline" onClick={handleLogout}>
                 <LogOut className="mr-2" size={18} />
@@ -83,55 +83,14 @@ export function AdminPanel() {
 
           <div className="mx-auto max-w-7xl px-4 py-8">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="mb-8 grid w-full grid-cols-7">
-                <TabsTrigger value="dashboard">Обзор</TabsTrigger>
+              <TabsList className="mb-8 grid w-full grid-cols-6">
                 <TabsTrigger value="courses">Курсы</TabsTrigger>
                 <TabsTrigger value="teachers">Преподаватели</TabsTrigger>
-                <TabsTrigger value="media">Медиа</TabsTrigger>
+                <TabsTrigger value="cases">Кейсы</TabsTrigger>
                 <TabsTrigger value="leads">Заявки</TabsTrigger>
                 <TabsTrigger value="feedback">Отзывы</TabsTrigger>
                 <TabsTrigger value="settings">Настройки</TabsTrigger>
               </TabsList>
-
-              <TabsContent value="dashboard" className="space-y-6">
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
-                  <div className="rounded-lg bg-white p-6 shadow">
-                    <p className="mb-2 text-gray-500">Всего пользователей</p>
-                    <p className="text-3xl font-bold">-</p>
-                  </div>
-                  <div className="rounded-lg bg-white p-6 shadow">
-                    <p className="mb-2 text-gray-500">Активных курсов</p>
-                    <p className="text-3xl font-bold">-</p>
-                  </div>
-                  <div className="rounded-lg bg-white p-6 shadow">
-                    <p className="mb-2 text-gray-500">Загруженных файлов</p>
-                    <p className="text-3xl font-bold">-</p>
-                  </div>
-                  <div className="rounded-lg bg-white p-6 shadow">
-                    <p className="mb-2 text-gray-500">Новых отзывов</p>
-                    <p className="text-3xl font-bold">-</p>
-                  </div>
-                </div>
-
-                <div className="rounded-lg bg-white p-6 shadow">
-                  <h2 className="mb-4 text-2xl font-bold">Быстрые действия</h2>
-                  <div className="space-y-2">
-                    <Button variant="outline" className="w-full justify-start">
-                      Добавить новый курс
-                    </Button>
-                    <Button variant="outline" className="w-full justify-start">
-                      Загрузить медиа файл
-                    </Button>
-                    <Button variant="outline" className="w-full justify-start">
-                      Добавить пользователя
-                    </Button>
-                  </div>
-                </div>
-
-                <div className="rounded-lg bg-white p-6 shadow">
-                  <UsersTable />
-                </div>
-              </TabsContent>
 
               <TabsContent value="courses" className="rounded-lg bg-white p-6 shadow">
                 <CoursesManager />
@@ -141,8 +100,8 @@ export function AdminPanel() {
                 <TeachersManager />
               </TabsContent>
 
-              <TabsContent value="media" className="rounded-lg bg-white p-6 shadow">
-                <MediaUploader />
+              <TabsContent value="cases" className="rounded-lg bg-white p-6 shadow">
+                <StudentCasesManager />
               </TabsContent>
 
               <TabsContent value="leads" className="rounded-lg bg-white p-6 shadow">

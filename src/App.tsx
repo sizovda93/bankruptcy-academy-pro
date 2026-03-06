@@ -8,6 +8,10 @@ import NotFound from "./pages/NotFound";
 import Admin from "./pages/Admin";
 import CoursePromotionNoAds from "./pages/CoursePromotionNoAds";
 import CourseLegalAspectsBfl from "./pages/CourseLegalAspectsBfl";
+import CourseSalesPromotion from "./pages/CourseSalesPromotion";
+import CourseTransactionDisputes from "./pages/CourseTransactionDisputes";
+import CourseNonDischarge from "./pages/CourseNonDischarge";
+import WebinarBankruptcyBusiness from "./pages/WebinarBankruptcyBusiness";
 
 const queryClient = new QueryClient();
 
@@ -22,6 +26,10 @@ const App = () => (
           <Route path="/admin" element={<Admin />} />
           <Route path="/courses/promotion-without-ads" element={<CoursePromotionNoAds />} />
           <Route path="/courses/legal-aspects-bfl" element={<CourseLegalAspectsBfl />} />
+          <Route path="/courses/sales-promotion" element={<CourseSalesPromotion />} />
+          <Route path="/courses/transaction-disputes" element={<CourseTransactionDisputes />} />
+          <Route path="/courses/non-discharge" element={<CourseNonDischarge />} />
+          <Route path="/webinars/bankruptcy-business" element={<WebinarBankruptcyBusiness />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

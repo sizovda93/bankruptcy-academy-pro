@@ -3,13 +3,28 @@ import { query } from '../db.js';
 
 const router = Router();
 
-// GET /api/reviews — все отзывы (опционально ?published=true)
+// GET /api/reviews — все отзывы (опционально ?published=true, ?page_type=xxx, ?page_id=xxx)
 router.get('/', async (req: Request, res: Response) => {
   try {
     const published = req.query.published;
+    const pageType = req.query.page_type;
+    const pageId = req.query.page_id;
+    
     let sql = 'SELECT * FROM reviews';
+    const conditions: string[] = [];
+    
     if (published === 'true') {
-      sql += ' WHERE is_published = true';
+      conditions.push('is_published = true');
+    }
+    if (pageType) {
+      conditions.push(`page_type = '${pageType}'`);
+    }
+    if (pageId) {
+      conditions.push(`page_id = '${pageId}'`);
+    }
+    
+    if (conditions.length > 0) {
+      sql += ' WHERE ' + conditions.join(' AND ');
     }
     sql += ' ORDER BY created_at DESC';
 
@@ -23,11 +38,11 @@ router.get('/', async (req: Request, res: Response) => {
 // POST /api/reviews
 router.post('/', async (req: Request, res: Response) => {
   try {
-    const { author_name, rating, comment, author_avatar_url, course_id, is_published } = req.body;
+    const { author_name, rating, comment, author_avatar_url, course_id, is_published, page_type, page_id } = req.body;
     const result = await query(
-      `INSERT INTO reviews (author_name, rating, comment, author_avatar_url, course_id, is_published)
-       VALUES ($1,$2,$3,$4,$5,$6) RETURNING *`,
-      [author_name, rating, comment || null, author_avatar_url || null, course_id || null, is_published ?? false]
+      `INSERT INTO reviews (author_name, rating, comment, author_avatar_url, course_id, is_published, page_type, page_id)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING *`,
+      [author_name, rating, comment || null, author_avatar_url || null, course_id || null, is_published ?? false, page_type || 'general', page_id || null]
     );
     res.status(201).json(result.rows[0]);
   } catch (err: any) {
@@ -38,11 +53,11 @@ router.post('/', async (req: Request, res: Response) => {
 // PUT /api/reviews/:id
 router.put('/:id', async (req: Request, res: Response) => {
   try {
-    const { author_name, rating, comment, author_avatar_url, course_id, is_published } = req.body;
+    const { author_name, rating, comment, author_avatar_url, course_id, is_published, page_type, page_id } = req.body;
     const result = await query(
-      `UPDATE reviews SET author_name=$1, rating=$2, comment=$3, author_avatar_url=$4, course_id=$5, is_published=$6, updated_at=CURRENT_TIMESTAMP
-       WHERE id=$7 RETURNING *`,
-      [author_name, rating, comment || null, author_avatar_url || null, course_id || null, is_published ?? false, req.params.id]
+      `UPDATE reviews SET author_name=$1, rating=$2, comment=$3, author_avatar_url=$4, course_id=$5, is_published=$6, page_type=$7, page_id=$8, updated_at=CURRENT_TIMESTAMP
+       WHERE id=$9 RETURNING *`,
+      [author_name, rating, comment || null, author_avatar_url || null, course_id || null, is_published ?? false, page_type || 'general', page_id || null, req.params.id]
     );
     if (result.rows.length === 0) {
       res.status(404).json({ error: 'Review not found' });

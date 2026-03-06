@@ -45,7 +45,7 @@ export interface Course {
   benefits?: string;
   cover_image_url?: string;
   cover_image_id?: string;
-  price: number;
+  price: number | string;
   level?: string;
   created_at: string;
   updated_at: string;
@@ -60,6 +60,8 @@ export interface Review {
   author_name: string;
   author_avatar_url?: string;
   is_published: boolean;
+  page_type?: string;
+  page_id?: string;
   created_at: string;
   updated_at: string;
 }
@@ -105,6 +107,19 @@ export interface SiteSetting {
   updated_at: string;
 }
 
+export interface StudentCase {
+  id: string;
+  course_id?: string;
+  student_name: string;
+  student_role?: string;
+  case_text: string;
+  result_text?: string;
+  is_published: boolean;
+  display_order?: number;
+  created_at: string;
+  updated_at: string;
+}
+
 // ============ API методы ============
 
 export const api = {
@@ -139,8 +154,14 @@ export const api = {
 
   // --- Reviews ---
   reviews: {
-    list: (published?: boolean) =>
-      request<Review[]>(`/reviews${published !== undefined ? `?published=${published}` : ''}`),
+    list: (published?: boolean, pageType?: string, pageId?: string) => {
+      const params = new URLSearchParams();
+      if (published !== undefined) params.set('published', String(published));
+      if (pageType) params.set('page_type', pageType);
+      if (pageId) params.set('page_id', pageId);
+      const query = params.toString();
+      return request<Review[]>(`/reviews${query ? `?${query}` : ''}`);
+    },
     create: (data: Partial<Review>) =>
       request<Review>('/reviews', { method: 'POST', body: JSON.stringify(data) }),
     update: (id: string, data: Partial<Review>) =>
@@ -152,6 +173,28 @@ export const api = {
       }),
     delete: (id: string) =>
       request<{ success: boolean }>(`/reviews/${id}`, { method: 'DELETE' }),
+  },
+
+  // --- Student Cases ---
+  studentCases: {
+    list: (published?: boolean, courseId?: string) => {
+      const params = new URLSearchParams();
+      if (published !== undefined) params.set('published', String(published));
+      if (courseId) params.set('courseId', courseId);
+      const query = params.toString();
+      return request<StudentCase[]>(`/student-cases${query ? `?${query}` : ''}`);
+    },
+    create: (data: Partial<StudentCase>) =>
+      request<StudentCase>('/student-cases', { method: 'POST', body: JSON.stringify(data) }),
+    update: (id: string, data: Partial<StudentCase>) =>
+      request<StudentCase>(`/student-cases/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+    togglePublish: (id: string, is_published: boolean) =>
+      request<StudentCase>(`/student-cases/${id}/publish`, {
+        method: 'PATCH',
+        body: JSON.stringify({ is_published }),
+      }),
+    delete: (id: string) =>
+      request<{ success: boolean }>(`/student-cases/${id}`, { method: 'DELETE' }),
   },
 
   // --- Leads ---

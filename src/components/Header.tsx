@@ -3,6 +3,7 @@ import { Menu, X, Phone } from "lucide-react";
 
 const navItems = [
   { label: "Курсы", href: "/#courses" },
+  { label: "Вебинары", href: "/webinars/bankruptcy-business" },
   { label: "Преподаватели", href: "/#teachers" },
   { label: "Отзывы", href: "/#reviews" },
   { label: "О нас", href: "/#about" },

@@ -35,6 +35,8 @@ export function ReviewsManager() {
       author_avatar_url: "",
       course_id: "",
       is_published: true,
+      page_type: "general",
+      page_id: "",
     },
   });
 
@@ -49,7 +51,7 @@ export function ReviewsManager() {
       const data = await api.reviews.list();
       setReviews(data || []);
     } catch (error: any) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      toast({ title: "Ошибка", description: error.message, variant: "destructive" });
     } finally {
       setLoading(false);
     }
@@ -60,7 +62,7 @@ export function ReviewsManager() {
       const data = await api.courses.list();
       setCourses(data || []);
     } catch (error: any) {
-      toast({ title: "Error loading courses", description: error.message, variant: "destructive" });
+      toast({ title: "Ошибка загрузки курсов", description: error.message, variant: "destructive" });
     }
   };
 
@@ -79,9 +81,9 @@ export function ReviewsManager() {
 
       setAvatarImage({ url: fileUrl, file });
       form.setValue("author_avatar_url", fileUrl);
-      toast({ title: "Success", description: "Avatar uploaded" });
+      toast({ title: "Успешно", description: "Аватар загружен" });
     } catch (error: any) {
-      toast({ title: "Upload error", description: error.message, variant: "destructive" });
+      toast({ title: "Ошибка загрузки", description: error.message, variant: "destructive" });
     } finally {
       setUploading(false);
     }
@@ -96,14 +98,16 @@ export function ReviewsManager() {
         author_avatar_url: values.author_avatar_url,
         course_id: values.course_id || null,
         is_published: values.is_published,
+        page_type: values.page_type || 'general',
+        page_id: values.page_id || null,
       };
 
       if (editingId) {
         await api.reviews.update(editingId, submitData);
-        toast({ title: "Success", description: "Review updated" });
+        toast({ title: "Успешно", description: "Отзыв обновлен" });
       } else {
         await api.reviews.create(submitData);
-        toast({ title: "Success", description: "Review added" });
+        toast({ title: "Успешно", description: "Отзыв добавлен" });
       }
 
       form.reset();
@@ -112,7 +116,7 @@ export function ReviewsManager() {
       setEditingId(null);
       await fetchReviews();
     } catch (error: any) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      toast({ title: "Ошибка", description: error.message, variant: "destructive" });
     }
   };
 
@@ -124,6 +128,8 @@ export function ReviewsManager() {
       author_avatar_url: review.author_avatar_url,
       course_id: review.course_id || "",
       is_published: review.is_published,
+      page_type: review.page_type || "general",
+      page_id: review.page_id || "",
     });
     setAvatarImage({ url: review.author_avatar_url || "", file: null });
     setEditingId(review.id);
@@ -133,22 +139,22 @@ export function ReviewsManager() {
   const togglePublish = async (id: string, current: boolean) => {
     try {
       await api.reviews.togglePublish(id, !current);
-      toast({ title: "Success", description: "Publish status updated" });
+      toast({ title: "Успешно", description: "Статус публикации обновлен" });
       await fetchReviews();
     } catch (error: any) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      toast({ title: "Ошибка", description: error.message, variant: "destructive" });
     }
   };
 
   const deleteReview = async (id: string) => {
-    if (!confirm("Delete this review?")) return;
+    if (!confirm("Удалить этот отзыв?")) return;
 
     try {
       await api.reviews.delete(id);
-      toast({ title: "Success", description: "Review deleted" });
+      toast({ title: "Успешно", description: "Отзыв удален" });
       await fetchReviews();
     } catch (error: any) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      toast({ title: "Ошибка", description: error.message, variant: "destructive" });
     }
   };
 
@@ -164,25 +170,25 @@ export function ReviewsManager() {
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Reviews ({reviews.length})</h2>
+        <h2 className="text-2xl font-bold">Отзывы ({reviews.length})</h2>
         <Dialog open={open} onOpenChange={handleOpenChange}>
           <DialogTrigger asChild>
-            <Button>Add review</Button>
+            <Button>Добавить отзыв</Button>
           </DialogTrigger>
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>{editingId ? "Edit review" : "Add review"}</DialogTitle>
+              <DialogTitle>{editingId ? "Редактировать отзыв" : "Добавить отзыв"}</DialogTitle>
             </DialogHeader>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <div className="space-y-2">
-                <FormLabel>Author name</FormLabel>
-                <Input {...form.register("author_name")} placeholder="Ivan Petrov" />
+                <FormLabel>Имя автора</FormLabel>
+                <Input {...form.register("author_name")} placeholder="Иван Петров" />
               </div>
 
               <div className="space-y-2">
-                <FormLabel>Course (optional)</FormLabel>
+                <FormLabel>Курс (необязательно)</FormLabel>
                 <select {...form.register("course_id")} className="w-full px-3 py-2 border border-gray-300 rounded-md">
-                  <option value="">Not linked to course</option>
+                  <option value="">Не привязан к курсу</option>
                   {courses.map((course) => (
                     <option key={course.id} value={course.id}>
                       {course.title}
@@ -192,20 +198,38 @@ export function ReviewsManager() {
               </div>
 
               <div className="space-y-2">
-                <FormLabel>Rating (1-5)</FormLabel>
+                <FormLabel>Тип страницы</FormLabel>
+                <select {...form.register("page_type")} className="w-full px-3 py-2 border border-gray-300 rounded-md">
+                  <option value="general">Общая (Главная страница)</option>
+                  <option value="course">Курс</option>
+                  <option value="webinar">Вебинар</option>
+                </select>
+              </div>
+
+              <div className="space-y-2">
+                <FormLabel>ID страницы (для вебинара: bankruptcy-business)</FormLabel>
+                <Input {...form.register("page_id")} placeholder="bankruptcy-business" />
+                <p className="text-xs text-gray-500">
+                  Для вебинаров используйте: bankruptcy-business<br />
+                  Для курсов: оставьте пустым или используйте ID курса из выпадающего списка выше
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <FormLabel>Рейтинг (1-5)</FormLabel>
                 <Input type="number" min="1" max="5" {...form.register("rating")} />
               </div>
 
               <div className="space-y-2">
-                <FormLabel>Review text</FormLabel>
-                <Textarea {...form.register("comment")} placeholder="Great course..." rows={4} />
+                <FormLabel>Текст отзыва</FormLabel>
+                <Textarea {...form.register("comment")} placeholder="Отличный курс..." rows={4} />
               </div>
 
               <div className="space-y-2">
-                <FormLabel>Avatar</FormLabel>
+                <FormLabel>Аватар</FormLabel>
                 {avatarImage.url ? (
                   <div className="mb-2">
-                    <img src={avatarImage.url} alt="Avatar preview" className="w-16 h-16 rounded-full object-cover" />
+                    <img src={avatarImage.url} alt="Превью аватара" className="w-16 h-16 rounded-full object-cover" />
                   </div>
                 ) : null}
 
@@ -217,22 +241,22 @@ export function ReviewsManager() {
                     disabled={uploading}
                     className="cursor-pointer"
                   />
-                  {uploading ? <span className="text-sm text-gray-500">Uploading...</span> : null}
+                  {uploading ? <span className="text-sm text-gray-500">Загрузка...</span> : null}
                 </div>
 
-                <p className="text-xs text-gray-500">or</p>
-                <Input {...form.register("author_avatar_url")} placeholder="Paste avatar URL" />
+                <p className="text-xs text-gray-500">или</p>
+                <Input {...form.register("author_avatar_url")} placeholder="Вставьте URL аватара" />
               </div>
 
               <div className="flex items-center gap-2">
                 <input type="checkbox" {...form.register("is_published")} id="is_published" className="cursor-pointer" />
                 <FormLabel htmlFor="is_published" className="cursor-pointer">
-                  Publish now
+                  Опубликовать сейчас
                 </FormLabel>
               </div>
 
               <Button type="submit" className="w-full">
-                {editingId ? "Update" : "Add"} review
+                {editingId ? "Обновить" : "Добавить"} отзыв
               </Button>
             </form>
           </DialogContent>
@@ -240,14 +264,16 @@ export function ReviewsManager() {
       </div>
 
       {loading ? (
-        <p>Loading...</p>
+        <p>Загрузка...</p>
       ) : (
         <div className="space-y-3">
           {reviews.length === 0 ? (
-            <p className="text-gray-500">No reviews</p>
+            <p className="text-gray-500">Нет отзывов</p>
           ) : (
             reviews.map((review) => {
               const course = courses.find((c) => c.id === review.course_id);
+              const pageTypeLabel = review.page_type === 'webinar' ? 'Вебинар' : review.page_type === 'course' ? 'Курс' : 'Общий';
+              
               return (
                 <div key={review.id} className="border rounded-lg p-4 flex gap-4">
                   {review.author_avatar_url ? (
@@ -263,7 +289,11 @@ export function ReviewsManager() {
                       <div className="min-w-0">
                         <h4 className="font-bold">{review.author_name}</h4>
                         <p className="text-sm text-yellow-500">★ {review.rating}/5</p>
-                        {course ? <p className="text-xs text-gray-500">Course: {course.title}</p> : null}
+                        {course ? <p className="text-xs text-gray-500">Курс: {course.title}</p> : null}
+                        <p className="text-xs text-gray-500">
+                          Тип: {pageTypeLabel}
+                          {review.page_id ? ` • ID: ${review.page_id}` : ''}
+                        </p>
                       </div>
 
                       <div className="flex gap-2 flex-shrink-0">
@@ -280,7 +310,7 @@ export function ReviewsManager() {
                     </div>
 
                     <p className="text-sm text-gray-700 break-words">{review.comment}</p>
-                    <p className="text-xs text-gray-500 mt-2">{review.is_published ? "Published" : "Hidden"}</p>
+                    <p className="text-xs text-gray-500 mt-2">{review.is_published ? "Опубликован" : "Скрыт"}</p>
                   </div>
                 </div>
               );

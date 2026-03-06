@@ -41,9 +41,10 @@ const defaultCourses: DisplayCourse[] = [
   },
 ];
 
-const formatPrice = (value: number | null | undefined) => {
-  if (typeof value !== "number" || Number.isNaN(value)) return "По запросу";
-  return `${new Intl.NumberFormat("ru-RU").format(value)} ${RUB}`;
+const formatPrice = (value: number | string | null | undefined) => {
+  const numValue = typeof value === "string" ? parseFloat(value) : value;
+  if (typeof numValue !== "number" || Number.isNaN(numValue) || numValue === 0) return "По запросу";
+  return `${new Intl.NumberFormat("ru-RU").format(numValue)} ${RUB}`;
 };
 
 const parseBenefits = (value: string | null | undefined) => {
@@ -54,15 +55,18 @@ const parseBenefits = (value: string | null | undefined) => {
     .filter(Boolean);
 };
 
-const toDisplayCourse = (course: Course): DisplayCourse => ({
-  id: course.id,
-  title: course.title,
-  type: course.level || "Курс",
-  price: formatPrice(course.price),
-  description: course.description || undefined,
-  benefits: parseBenefits(course.benefits),
-  coverImageUrl: course.cover_image_url || undefined,
-});
+const toDisplayCourse = (course: Course, fallbackPrice?: string): DisplayCourse => {
+  const priceValue = formatPrice(course.price);
+  return {
+    id: course.id,
+    title: course.title,
+    type: course.level || "Курс",
+    price: priceValue !== "По запросу" ? priceValue : (fallbackPrice || "По запросу"),
+    description: course.description || undefined,
+    benefits: parseBenefits(course.benefits),
+    coverImageUrl: course.cover_image_url || undefined,
+  };
+};
 
 const CoursesSection = () => {
   const navigate = useNavigate();
@@ -78,6 +82,18 @@ const CoursesSection = () => {
     }
     if (normalizedTitle.includes("юридические аспекты бфл") || normalizedTitle.includes("юридические аспекты процедуры банкротства")) {
       navigate("/courses/legal-aspects-bfl");
+      return;
+    }
+    if (normalizedTitle.includes("продаж") || normalizedTitle.includes("продавать") || normalizedTitle.includes("1,5 млн")) {
+      navigate("/courses/sales-promotion");
+      return;
+    }
+    if (normalizedTitle.includes("оспаривание") || normalizedTitle.includes("сделок")) {
+      navigate("/courses/transaction-disputes");
+      return;
+    }
+    if (normalizedTitle.includes("неосвобождение") || normalizedTitle.includes("обязательств")) {
+      navigate("/courses/non-discharge");
       return;
     }
 
@@ -101,7 +117,17 @@ const CoursesSection = () => {
 
   const items = useMemo(() => {
     if (courses.length > 0) {
-      return courses.map(toDisplayCourse);
+      return courses.map(course => {
+        // Попробуем найти дефолтный курс с похожим названием
+        const normalizedTitle = course.title.toLowerCase();
+        const fallback = defaultCourses.find(dc => {
+          const dcTitle = dc.title.toLowerCase();
+          return normalizedTitle.includes("юридич") && dcTitle.includes("юридич") ||
+                 normalizedTitle.includes("маркетинг") && dcTitle.includes("маркетинг") ||
+                 normalizedTitle.includes("команд") && dcTitle.includes("команд");
+        });
+        return toDisplayCourse(course, fallback?.price);
+      });
     }
     return defaultCourses;
   }, [courses]);

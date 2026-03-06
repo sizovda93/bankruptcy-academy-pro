@@ -60,7 +60,7 @@ export function LeadsManager() {
                 <TableHead>Дата</TableHead>
                 <TableHead>Имя</TableHead>
                 <TableHead>Телефон</TableHead>
-                <TableHead>Email</TableHead>
+                <TableHead>Эл. почта</TableHead>
                 <TableHead>Промокод</TableHead>
                 <TableHead>Согласие</TableHead>
               </TableRow>

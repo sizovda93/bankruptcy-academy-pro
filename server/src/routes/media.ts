@@ -28,11 +28,11 @@ const upload = multer({
   storage,
   limits: { fileSize: parseInt(process.env.MAX_FILE_SIZE || '10485760') },
   fileFilter: (_req, file, cb) => {
-    const allowed = /\.(jpg|jpeg|png|gif|webp|svg|avif)$/i;
+    const allowed = /\.(jpg|jpeg|png|gif|webp|svg|avif|pdf|doc|docx|rtf|txt)$/i;
     if (allowed.test(path.extname(file.originalname))) {
       cb(null, true);
     } else {
-      cb(new Error('Only image files are allowed'));
+      cb(new Error('Unsupported file type'));
     }
   },
 });

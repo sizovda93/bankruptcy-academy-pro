@@ -1,8 +1,30 @@
 const Footer = () => {
+  const cities = [
+    "Москва", "Санкт-Петербург", "Новосибирск", "Екатеринбург", "Казань",
+    "Нижний Новгород", "Челябинск", "Самара", "Омск", "Ростов-на-Дону",
+    "Уфа", "Красноярск", "Воронеж", "Пермь", "Волгоград",
+    "Краснодар", "Саратов", "Тюмень", "Тольятти", "Ижевск"
+  ];
+
   return (
-    <footer className="border-t border-border bg-foreground py-12 text-background/70">
-      <div className="container">
-        <div className="grid gap-8 sm:grid-cols-3">
+    <footer className="border-t border-border bg-foreground text-background/70">
+      {/* Бегущая строка с городами */}
+      <div className="relative overflow-hidden border-b border-background/10 bg-foreground/95 py-3">
+        <div className="flex animate-scroll whitespace-nowrap">
+          {[...cities, ...cities].map((city, index) => (
+            <span
+              key={index}
+              className="mx-6 text-sm font-medium text-background/60"
+            >
+              {city}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      <div className="py-12">
+        <div className="container">
+          <div className="grid gap-8 sm:grid-cols-3">
           <div>
             <div className="flex items-center gap-2">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
@@ -36,6 +58,7 @@ const Footer = () => {
         </div>
         <div className="mt-10 border-t border-background/10 pt-6 text-center text-xs">
           © 2026 Академия Банкротства. Все права защищены.
+        </div>
         </div>
       </div>
     </footer>

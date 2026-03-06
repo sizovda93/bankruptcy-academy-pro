@@ -94,19 +94,20 @@ const TeachersSection = () => {
                 <div className="h-64 w-full bg-gray-200" />
               )}
 
-              <div className="space-y-5 p-6">
-                <h3 className="text-2xl font-bold leading-tight text-gray-900 break-normal sm:text-3xl">
-                  {teacher.full_name}
-                </h3>
-
-                <div className="space-y-4">
+              <div className="p-6">
+                <div className="space-y-2">
+                  <h3 className="text-2xl font-bold leading-tight text-gray-900 break-normal sm:text-3xl">
+                    {teacher.full_name}
+                  </h3>
                   {teacher.position ? <p className="text-[22px] leading-snug text-primary">{teacher.position}</p> : null}
-                  {teacher.bio ? <p className="text-[22px] leading-snug text-primary">{teacher.bio}</p> : null}
                 </div>
 
-                <p className="text-[24px] leading-tight text-gray-900">
-                  Стаж работы: {teacher.experience ? teacher.experience : "не указан"}
-                </p>
+                <div className="mt-5 space-y-4">
+                  {teacher.bio ? <p className="text-[22px] leading-snug text-primary">{teacher.bio}</p> : null}
+                  <p className="text-[24px] leading-tight text-gray-900">
+                    Стаж работы: {teacher.experience ? teacher.experience : "не указан"}
+                  </p>
+                </div>
               </div>
             </article>
           ))}
