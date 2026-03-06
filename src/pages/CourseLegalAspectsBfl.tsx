@@ -138,7 +138,7 @@ const faqItems = [
   },
 ];
 
-const teamOrder = ["артин", "абукаев", "сизов", "герасимов", "лященко", "дрыгваль", "пустельнинкас"];
+const teamOrder = ["артин", "абукаев", "герасимов", "лященко"];
 
 const teamFallback: Teacher[] = [
   {
@@ -168,19 +168,6 @@ const teamFallback: Teacher[] = [
     updated_at: "",
   },
   {
-    id: "fallback-sizov",
-    full_name: "Сизов",
-    position: "Эксперт курса",
-    bio: "Эксперт по юридической практике и операционному сопровождению дел.",
-    expertise: "Организация работы команды, стандарты, контроль качества.",
-    experience: "Практикующий эксперт",
-    photo_url: "",
-    display_order: 3,
-    is_published: true,
-    created_at: "",
-    updated_at: "",
-  },
-  {
     id: "fallback-gerasimov",
     full_name: "Герасимов Александр Валерьевич",
     position: "Эксперт курса",
@@ -188,7 +175,7 @@ const teamFallback: Teacher[] = [
     expertise: "Анализ судебной практики по БФЛ, оценка рисков на входе в процедуру.",
     experience: "Практикующий эксперт",
     photo_url: "",
-    display_order: 4,
+    display_order: 3,
     is_published: true,
     created_at: "",
     updated_at: "",
@@ -201,33 +188,7 @@ const teamFallback: Teacher[] = [
     expertise: "Взаимодействие с АУ, регламенты коммуникации, контроль процедуры.",
     experience: "15 лет",
     photo_url: "",
-    display_order: 5,
-    is_published: true,
-    created_at: "",
-    updated_at: "",
-  },
-  {
-    id: "fallback-dryigval",
-    full_name: "Дрыгваль Дарья Владимировна",
-    position: "Руководитель отдела сопровождения",
-    bio: "Эксперт по клиентскому сервису и организации работы с доверителями.",
-    expertise: "Клиентский сервис, коммуникация с доверителями, сопровождение процедуры.",
-    experience: "10 лет",
-    photo_url: "",
-    display_order: 6,
-    is_published: true,
-    created_at: "",
-    updated_at: "",
-  },
-  {
-    id: "fallback-pustelninkas",
-    full_name: "Пустельнинкас Виолетта Владимировна",
-    position: "Руководитель отдела финансов",
-    bio: "Эксперт по финансовому планированию и контролю процедур банкротства.",
-    expertise: "Финансовый анализ дел БФЛ, планирование бюджета процедуры, контроль расчетов с кредиторами.",
-    experience: "7 лет",
-    photo_url: "",
-    display_order: 7,
+    display_order: 4,
     is_published: true,
     created_at: "",
     updated_at: "",
@@ -239,27 +200,18 @@ const teamExpertiseByName: Record<string, string> = {
     "Стратегия ведения дел БФЛ, правовой аудит на входе в процедуру, взаимодействие с арбитражными управляющими и судами.",
   абукаев:
     "Подготовка процессуальных документов по БФЛ, оценка рисков по кейсам, сопровождение клиента на всех этапах процедуры.",
-  сизов:
-    "Организация юридической практики БФЛ, стандартизация работы команды, контроль качества и управляемый результат.",
   герасимов:
     "Анализ судебной практики по БФЛ, оценка рисков на входе в процедуру, стратегия защиты должника.",
   лященко:
     "Взаимодействие с арбитражными управляющими, регламенты коммуникации в процедуре, контроль и стандарты сопровождения.",
-  дрыгваль:
-    "Клиентский сервис в БФЛ, коммуникация с доверителями, сопровождение процедуры.",
-  пустельнинкас:
-    "Финансовый анализ дел БФЛ, планирование бюджета процедуры, контроль расчетов с кредиторами и управление финансовыми потоками.",
 };
 
 const getTeamExpertise = (fullName: string) => {
   const lower = fullName.toLowerCase();
   if (lower.includes("артин")) return teamExpertiseByName.артин;
   if (lower.includes("абукаев")) return teamExpertiseByName.абукаев;
-  if (lower.includes("сизов")) return teamExpertiseByName.сизов;
   if (lower.includes("герасимов")) return teamExpertiseByName.герасимов;
   if (lower.includes("лященко")) return teamExpertiseByName.лященко;
-  if (lower.includes("дрыгваль")) return teamExpertiseByName.дрыгваль;
-  if (lower.includes("пустельнинкас")) return teamExpertiseByName.пустельнинкас;
   return "Практическая экспертиза в сопровождении дел о банкротстве физических лиц.";
 };
 
