@@ -606,7 +606,7 @@ export default function CourseEffectiveTeam() {
                       <img
                         src={teacher.photo_url}
                         alt={teacher.full_name}
-                        className="h-full w-full object-cover"
+                        className="h-full w-full object-cover object-top"
                       />
                     ) : (
                       <div className="flex h-full w-full items-center justify-center bg-primary/10">
@@ -649,9 +649,12 @@ export default function CourseEffectiveTeam() {
                 </p>
 
                 <div className="mt-8">
-                  <a href="#course-form">
-                    <Button className="h-14 w-full text-base font-semibold">Открыть форму заявки</Button>
-                  </a>
+                  <Button 
+                    className="h-14 w-full text-base font-semibold"
+                    onClick={() => setIsFormOpen(true)}
+                  >
+                    Открыть форму заявки
+                  </Button>
                 </div>
               </div>
             </article>

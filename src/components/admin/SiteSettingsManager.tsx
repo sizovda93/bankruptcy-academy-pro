@@ -48,8 +48,6 @@ export function SiteSettingsManager() {
         "bfl_book_description",
         "sales_guide_title",
         "sales_guide_description",
-        "disputes_materials_title",
-        "disputes_materials_description",
         "nondischarge_materials_title",
         "nondischarge_materials_description",
       ];
@@ -322,82 +320,16 @@ export function SiteSettingsManager() {
         </div>
       </div>
 
-      <div className="rounded-lg bg-gradient-to-br from-amber-50 to-orange-50 p-6">
-        <h3 className="mb-4 text-xl font-bold">Материалы по оспариванию сделок в БФЛ</h3>
-        <div className="grid gap-4 lg:grid-cols-2">
-          <div className="space-y-3 rounded-lg border bg-white p-4">
-            <p className="text-sm font-semibold">Обложка материалов</p>
-            {settings.disputes_materials_banner_url ? (
-              <>
-                <img src={settings.disputes_materials_banner_url} alt="Materials banner" className="h-36 w-full rounded-md object-cover" />
-                <div className="flex flex-wrap gap-2">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => copyToClipboard(settings.disputes_materials_banner_url, "materials-banner")}
-                  >
-                    {copied === "materials-banner" ? <Check size={14} className="mr-1" /> : <Copy size={14} className="mr-1" />}
-                    URL
-                  </Button>
-                  <Button size="sm" variant="destructive" onClick={() => clearSetting("disputes_materials_banner_url", "обложка материалов")}>Удалить</Button>
-                </div>
-              </>
-            ) : (
-              <p className="text-sm text-gray-500">Обложка еще не загружена</p>
-            )}
-            <label className="inline-flex cursor-pointer items-center rounded-md border px-3 py-2 text-sm">
-              <Upload size={14} className="mr-2" />
-              Загрузить обложку
-              <Input
-                type="file"
-                accept="image/*"
-                onChange={(e) => uploadToSetting(e, "disputes_materials_banner_url", "Обложка материалов загружена")}
-                disabled={uploading}
-                className="hidden"
-              />
-            </label>
-          </div>
-
-          <div className="space-y-3 rounded-lg border bg-white p-4">
-            <p className="text-sm font-semibold">Файл материалов для скачивания</p>
-            {settings.disputes_materials_download_url ? (
-              <>
-                <a
-                  href={settings.disputes_materials_download_url}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="block break-all text-sm text-primary underline"
-                >
-                  {settings.disputes_materials_download_url}
-                </a>
-                <div className="flex flex-wrap gap-2">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => copyToClipboard(settings.disputes_materials_download_url, "materials-file")}
-                  >
-                    {copied === "materials-file" ? <Check size={14} className="mr-1" /> : <Copy size={14} className="mr-1" />}
-                    URL
-                  </Button>
-                  <Button size="sm" variant="destructive" onClick={() => clearSetting("disputes_materials_download_url", "файл материалов")}>Удалить</Button>
-                </div>
-              </>
-            ) : (
-              <p className="text-sm text-gray-500">Файл материалов еще не загружен</p>
-            )}
-            <label className="inline-flex cursor-pointer items-center rounded-md border px-3 py-2 text-sm">
-              <Upload size={14} className="mr-2" />
-              Загрузить материалы (PDF/DOCX)
-              <Input
-                type="file"
-                accept=".pdf,.doc,.docx,.rtf,.txt,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                onChange={(e) => uploadToSetting(e, "disputes_materials_download_url", "Файл материалов загружен")}
-                disabled={uploading}
-                className="hidden"
-              />
-            </label>
-          </div>
-        </div>
+      {/* Информация о перенесённых материалах */}
+      <div className="rounded-lg border-2 border-amber-200 bg-amber-50 p-6">
+        <h3 className="mb-2 text-lg font-bold text-amber-900">📦 Материалы по оспариванию сделок перенесены</h3>
+        <p className="text-sm text-amber-800">
+          Материалы по оспариванию сделок в БФЛ теперь находятся в разделе <strong>"Курсы"</strong> → 
+          выберите курс <strong>"Оспаривание сделок в БФЛ"</strong> → вкладка <strong>"Файлы"</strong>.
+        </p>
+        <p className="mt-2 text-sm text-amber-700">
+          Теперь каждый курс может иметь свои собственные материалы для скачивания.
+        </p>
       </div>
 
       <div className="rounded-lg bg-gradient-to-br from-rose-50 to-red-50 p-6">
@@ -502,13 +434,6 @@ export function SiteSettingsManager() {
             <strong>{settings.sales_guide_description || "Практическое руководство по технологии продаж, триггерам доверия и системе касаний."}</strong>
           </p>
           <p>
-            Заголовок материалов по оспариванию: <strong>{settings.disputes_materials_title || "Получите дополнительные материалы по оспариванию сделок"}</strong>
-          </p>
-          <p>
-            Описание материалов по оспариванию:{" "}
-            <strong>{settings.disputes_materials_description || "Практические инструменты для работы: чек-листы аудита, матрица риска, шаблоны документов."}</strong>
-          </p>
-          <p>
             Заголовок материалов по неосвобождению: <strong>{settings.nondischarge_materials_title || "Получите дополнительные материалы по неосвобождению"}</strong>
           </p>
           <p>
@@ -574,23 +499,6 @@ export function SiteSettingsManager() {
                 onChange={(e) => handleSettingChange("sales_guide_description", e.target.value)}
                 rows={4}
                 placeholder="Практическое руководство по технологии продаж, триггерам доверия и системе касаний"
-              />
-            </div>
-            <div>
-              <label className="mb-2 block text-sm font-medium">Заголовок материалов по оспариванию</label>
-              <Input
-                value={settings.disputes_materials_title || ""}
-                onChange={(e) => handleSettingChange("disputes_materials_title", e.target.value)}
-                placeholder="Получите дополнительные материалы по оспариванию сделок"
-              />
-            </div>
-            <div>
-              <label className="mb-2 block text-sm font-medium">Описание материалов по оспариванию</label>
-              <Textarea
-                value={settings.disputes_materials_description || ""}
-                onChange={(e) => handleSettingChange("disputes_materials_description", e.target.value)}
-                rows={4}
-                placeholder="Практические инструменты для работы: чек-листы аудита, матрица риска, шаблоны документов."
               />
             </div>
             <div>

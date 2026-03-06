@@ -47,6 +47,44 @@ export interface Course {
   cover_image_id?: string;
   price: number | string;
   level?: string;
+  
+  // Hero section
+  hero_title?: string;
+  hero_description?: string;
+  hero_highlights?: string[];
+  
+  // Target audience
+  target_audience?: string[];
+  
+  // Lessons/Program
+  lessons?: Array<{
+    title: string;
+    points: string[];
+  }>;
+  
+  // Selling points
+  selling_points?: string[];
+  
+  // FAQ
+  faq_items?: Array<{
+    question: string;
+    answer: string;
+  }>;
+  
+  // Team order
+  team_order?: string[];
+  
+  // Download form
+  download_form_banner_url?: string;
+  download_form_file_url?: string;
+  download_form_title?: string;
+  download_form_description?: string;
+  
+  // URL and publishing
+  slug?: string;
+  is_published?: boolean;
+  display_order?: number;
+  
   created_at: string;
   updated_at: string;
 }

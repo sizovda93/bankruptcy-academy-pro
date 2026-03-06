@@ -1,7 +1,7 @@
 ﻿import { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { UsersTable } from './UsersTable';
-import { CoursesManager } from './CoursesManager';
+import { CourseDetailEditor } from './CourseDetailEditor';
 import { ReviewsManager } from './ReviewsManager';
 import { SiteSettingsManager } from './SiteSettingsManager';
 import { TeachersManager } from './TeachersManager';
@@ -93,7 +93,7 @@ export function AdminPanel() {
               </TabsList>
 
               <TabsContent value="courses" className="rounded-lg bg-white p-6 shadow">
-                <CoursesManager />
+                <CourseDetailEditor />
               </TabsContent>
 
               <TabsContent value="teachers" className="rounded-lg bg-white p-6 shadow">

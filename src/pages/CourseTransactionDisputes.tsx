@@ -441,6 +441,20 @@ export default function CourseTransactionDisputes() {
           return;
         }
 
+        // Загружаем данные формы скачивания из курса
+        if (disputesCourse.download_form_banner_url) {
+          setMaterialsBannerUrl(disputesCourse.download_form_banner_url);
+        }
+        if (disputesCourse.download_form_file_url) {
+          setMaterialsDownloadUrl(disputesCourse.download_form_file_url);
+        }
+        if (disputesCourse.download_form_title) {
+          setMaterialsTitle(disputesCourse.download_form_title);
+        }
+        if (disputesCourse.download_form_description) {
+          setMaterialsDescription(disputesCourse.download_form_description);
+        }
+
         const data = await api.studentCases.list(true, disputesCourse?.id);
         setStudentCases(data?.length ? data : fallbackStudentCases);
       } catch {
@@ -448,26 +462,8 @@ export default function CourseTransactionDisputes() {
       }
     };
 
-    const fetchSettings = async () => {
-      try {
-        const settings = await api.settings.list();
-        const map = new Map(settings.map((item) => [item.setting_key, item.setting_value || ""]));
-        setMaterialsBannerUrl(map.get("disputes_materials_banner_url") || "");
-        setMaterialsDownloadUrl(map.get("disputes_materials_download_url") || "");
-        setMaterialsTitle(map.get("disputes_materials_title") || "Получите дополнительные материалы по оспариванию сделок");
-        setMaterialsDescription(
-          map.get("disputes_materials_description") ||
-            "Практические инструменты для работы: чек-листы аудита, матрица риска, шаблоны документов."
-        );
-      } catch {
-        setMaterialsBannerUrl("");
-        setMaterialsDownloadUrl("");
-      }
-    };
-
     fetchTeam();
     fetchCases();
-    fetchSettings();
   }, []);
 
   const teamMembers = useMemo(() => {
