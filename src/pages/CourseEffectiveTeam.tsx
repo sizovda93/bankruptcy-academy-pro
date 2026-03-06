@@ -280,22 +280,95 @@ const teamFallback: Teacher[] = [
   },
 ];
 
+const fallbackStudentCases: StudentCase[] = [
+  {
+    id: "fallback-case-1",
+    course_id: "",
+    student_name: "Дмитрий К.",
+    student_role: "Руководитель юридической компании",
+    case_text:
+      "Руководил командой из 5 человек, постоянно всё делал сам, срывались сроки. После курса построил оргструктуру, внедрил KPI, команда выросла до 12 человек.",
+    result_text: "Результат: освободил 60% времени на развитие бизнеса",
+    is_published: true,
+    display_order: 1,
+    created_at: "",
+    updated_at: "",
+  },
+  {
+    id: "fallback-case-2",
+    course_id: "",
+    student_name: "Елена М.",
+    student_role: "Владелец практики БФЛ",
+    case_text:
+      "Юридическая компания, 8 сотрудников, хаос в задачах, качество «прыгало». Внедрила регламенты и чек-листы по всем этапам БФЛ.",
+    result_text: "Результат: просрочки −80%, повторные обращения +40%",
+    is_published: true,
+    display_order: 2,
+    created_at: "",
+    updated_at: "",
+  },
+  {
+    id: "fallback-case-3",
+    course_id: "",
+    student_name: "Александр В.",
+    student_role: "Руководитель отдела",
+    case_text:
+      "Не мог нанять нужных людей, 3 из 5 кандидатов уходили в первый месяц. Создал систему найма и адаптации по модели из курса.",
+    result_text: "Результат: удержание новых сотрудников выросло до 90%",
+    is_published: true,
+    display_order: 3,
+    created_at: "",
+    updated_at: "",
+  },
+  {
+    id: "fallback-case-4",
+    course_id: "",
+    student_name: "Ирина С.",
+    student_role: "Собственник агентства",
+    case_text:
+      "Команда 15 человек, падение мотивации, текучка, конфликты между отделами. Внедрила систему KPI без токсичности, прозрачную мотивацию, культуру обратной связи.",
+    result_text: "Результат: текучка снизилась с 40% до 12% в год",
+    is_published: true,
+    display_order: 4,
+    created_at: "",
+    updated_at: "",
+  },
+  {
+    id: "fallback-case-5",
+    course_id: "",
+    student_name: "Михаил Т.",
+    student_role: "Директор компании",
+    case_text:
+      "Компания на грани кризиса: срывы сроков, недовольство клиентов, 3 ключевых сотрудника уволились. Применил антикризисный модуль курса.",
+    result_text: "Результат: за 2 недели стабилизация, за 3 месяца — новая система",
+    is_published: true,
+    display_order: 5,
+    created_at: "",
+    updated_at: "",
+  },
+  {
+    id: "fallback-case-6",
+    course_id: "",
+    student_name: "Анна П.",
+    student_role: "Основатель практики",
+    case_text:
+      "Хотела масштабировать бизнес, но боялась нанимать: непонятно, кого искать и как контролировать. Получила портреты ролей, воронку найма, план адаптации.",
+    result_text: "Результат: за 4 месяца наняла 6 человек, все дают результат",
+    is_published: true,
+    display_order: 6,
+    created_at: "",
+    updated_at: "",
+  },
+];
+
 export default function CourseEffectiveTeam() {
   const [openModuleIndex, setOpenModuleIndex] = useState<number | null>(0);
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [loadingTeachers, setLoadingTeachers] = useState(true);
-  const [studentCases, setStudentCases] = useState<StudentCase[]>([]);
+  const [studentCases, setStudentCases] = useState<StudentCase[]>(fallbackStudentCases);
   const [loadingCases, setLoadingCases] = useState(true);
-
-  // Download form states
-  const [isDownloadFormOpen, setIsDownloadFormOpen] = useState(false);
-  const [downloadName, setDownloadName] = useState("");
-  const [downloadEmail, setDownloadEmail] = useState("");
-  const [downloadPhone, setDownloadPhone] = useState("");
-  const [downloadConsent, setDownloadConsent] = useState(false);
-  const [isDownloading, setIsDownloading] = useState(false);
 
   useEffect(() => {
     const fetchTeachers = async () => {
@@ -311,22 +384,21 @@ export default function CourseEffectiveTeam() {
 
     const fetchCases = async () => {
       try {
-        const allCases = await api.studentCases.list();
-        const filtered = allCases.filter(
-          (c) => {
-            // Проверяем по course_id, если есть связь
-            if (c.course_id) {
-              // Здесь можно добавить проверку по ID курса, когда он будет загружен
-              return false; // пока фильтруем по названию ниже
-            }
-            // Или по тексту кейса, если содержит ключевые слова
-            const text = (c.case_text || '').toLowerCase();
-            return text.includes('команд') || text.includes('руководи') || text.includes('kpi') || text.includes('наним');
-          }
-        );
-        setStudentCases(filtered || []);
+        const courses = await api.courses.list();
+        const teamCourse = courses.find((course) => {
+          const title = course.title.toLowerCase();
+          return title.includes("эффективная команда") || title.includes("команд");
+        });
+
+        if (!teamCourse) {
+          setStudentCases(fallbackStudentCases);
+          return;
+        }
+
+        const data = await api.studentCases.list(true, teamCourse?.id);
+        setStudentCases(data?.length ? data : fallbackStudentCases);
       } catch {
-        setStudentCases([]);
+        setStudentCases(fallbackStudentCases);
       } finally {
         setLoadingCases(false);
       }
@@ -360,54 +432,6 @@ export default function CourseEffectiveTeam() {
     setOpenFaqIndex((prev) => (prev === index ? null : index));
   };
 
-  const handleDownloadMaterials = async () => {
-    if (!downloadName || !downloadEmail || !downloadPhone || !downloadConsent) {
-      toast({
-        title: "Заполните все поля",
-        description: "Пожалуйста, заполните все обязательные поля и дайте согласие на обработку данных",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setIsDownloading(true);
-
-    try {
-      await api.leads.create({
-        full_name: downloadName,
-        email: downloadEmail,
-        phone: downloadPhone,
-        source: "course_materials_effective_team",
-        consent_given: downloadConsent,
-      });
-
-      toast({
-        title: "Материалы отправлены",
-        description: "Ссылка на скачивание материалов курса отправлена на вашу почту",
-      });
-
-      // Simulate download link
-      const link = document.createElement("a");
-      link.href = "#";
-      link.download = "effective-team-materials.pdf";
-      link.click();
-
-      setIsDownloadFormOpen(false);
-      setDownloadName("");
-      setDownloadEmail("");
-      setDownloadPhone("");
-      setDownloadConsent(false);
-    } catch (error) {
-      toast({
-        title: "Ошибка",
-        description: "Не удалось отправить заявку. Попробуйте позже.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsDownloading(false);
-    }
-  };
-
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -418,50 +442,22 @@ export default function CourseEffectiveTeam() {
           <div className="container max-w-6xl">
             <div className="grid gap-6 rounded-3xl bg-gradient-to-br from-primary via-primary-glow to-blue-500 p-6 sm:p-8 lg:grid-cols-2 lg:p-10">
               <div className="text-white">
-                <p className="text-sm font-semibold uppercase tracking-wider text-white/70">Практический курс</p>
-                <h1 className="mt-2 font-heading text-3xl font-bold leading-tight sm:text-4xl lg:text-5xl">
-                  Эффективная команда
-                </h1>
+                <h1 className="font-heading text-4xl font-bold leading-tight sm:text-5xl">Эффективная команда</h1>
+                <p className="mt-2 text-lg font-medium text-white/90">Курс для руководителей юридического бизнеса</p>
                 <p className="mt-6 text-lg leading-relaxed text-white/90 sm:text-xl">
-                  Практический курс для руководителей, которые хотят собрать эффективную команду и выйти из
-                  операционки: оргструктура и роли, KPI и мотивация, процессы и регламенты, управление задачами и
-                  контроль качества, найм и адаптация.
+                  Практический курс для руководителей, которые хотят собрать эффективную команду и выйти из операционки:
+                  оргструктура и роли, KPI и мотивация, процессы и регламенты, найм и адаптация.
                 </p>
                 <div className="mt-8 grid gap-3">
                   {highlights.map((item) => (
-                    <div key={item} className="flex items-start gap-2">
-                      <div className="mt-1 h-5 w-5 flex-shrink-0 rounded-full bg-white/20 p-1">
-                        <div className="h-full w-full rounded-full bg-white" />
-                      </div>
-                      <span className="text-sm font-medium text-white">{item}</span>
+                    <div key={item} className="rounded-xl border border-white/20 bg-white/10 p-3 text-sm font-medium text-white">
+                      {item}
                     </div>
                   ))}
                 </div>
-                <div className="mt-8 flex flex-wrap gap-3">
-                  <Button
-                    size="lg"
-                    className="bg-white text-primary hover:bg-white/90"
-                    onClick={() => setIsFormOpen(true)}
-                  >
-                    Записаться на курс
-                  </Button>
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    className="border-white/40 bg-white/10 text-white hover:bg-white/20"
-                    onClick={() => setIsDownloadFormOpen(true)}
-                  >
-                    <Files className="mr-2 h-4 w-4" />
-                    Скачать программу
-                  </Button>
-                </div>
               </div>
-              <div className="relative">
-                <div className="aspect-square overflow-hidden rounded-2xl border-4 border-white/20 bg-white/10 backdrop-blur">
-                  <div className="flex h-full items-center justify-center">
-                    <Users className="h-32 w-32 text-white/40" />
-                  </div>
-                </div>
+              <div id="course-form">
+                <LeadFormContent compact />
               </div>
             </div>
           </div>
@@ -635,31 +631,6 @@ export default function CourseEffectiveTeam() {
           </div>
         </section>
 
-        {/* Кейсы студентов */}
-        {!loadingCases && studentCases.length > 0 && (
-          <section className="py-10">
-            <div className="container max-w-6xl space-y-5">
-              <h2 className="font-heading text-3xl font-bold">Результаты студентов</h2>
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {studentCases.map((studentCase) => (
-                  <article key={studentCase.id} className="rounded-2xl border bg-card p-6">
-                    <div className="mb-4 flex items-center gap-2">
-                      <Award className="h-5 w-5 text-primary" />
-                      <p className="font-semibold text-primary">{studentCase.student_name}</p>
-                    </div>
-                    <p className="text-base leading-relaxed text-foreground">{studentCase.case_text}</p>
-                    {studentCase.result_text && (
-                      <p className="mt-4 text-sm font-medium text-primary">
-                        Результат: {studentCase.result_text}
-                      </p>
-                    )}
-                  </article>
-                ))}
-              </div>
-            </div>
-          </section>
-        )}
-
         {/* CTA */}
         <section className="py-6">
           <div className="container max-w-6xl">
@@ -677,21 +648,30 @@ export default function CourseEffectiveTeam() {
                   Записывайтесь на курс и получите готовую систему управления за 8–10 недель
                 </p>
 
-                <div className="mt-8 flex flex-wrap justify-center gap-4">
-                  <Button size="lg" onClick={() => setIsFormOpen(true)}>
-                    Записаться на курс
-                  </Button>
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    onClick={() => setIsDownloadFormOpen(true)}
-                  >
-                    <Files className="mr-2 h-4 w-4" />
-                    Скачать программу
-                  </Button>
+                <div className="mt-8">
+                  <a href="#course-form">
+                    <Button className="h-14 w-full text-base font-semibold">Открыть форму заявки</Button>
+                  </a>
                 </div>
               </div>
             </article>
+          </div>
+        </section>
+
+        {/* Кейсы студентов */}
+        <section className="py-10">
+          <div className="container max-w-6xl space-y-5">
+            <h2 className="font-heading text-3xl font-bold">Кейсы наших студентов</h2>
+            <div className="grid gap-4 lg:grid-cols-3">
+              {studentCases.map((item) => (
+                <article key={item.id} className="rounded-3xl border bg-muted/30 p-6">
+                  <h3 className="text-2xl font-semibold text-foreground">{item.student_name}</h3>
+                  {item.student_role ? <p className="mt-2 text-muted-foreground">{item.student_role}</p> : null}
+                  <p className="mt-6 text-lg leading-relaxed text-foreground/80">{item.case_text}</p>
+                  {item.result_text ? <p className="mt-5 text-base font-semibold text-primary">{item.result_text}</p> : null}
+                </article>
+              ))}
+            </div>
           </div>
         </section>
 
@@ -756,72 +736,6 @@ export default function CourseEffectiveTeam() {
         <DialogContent className="w-[96vw] max-w-[760px] p-4 sm:p-6">
           <DialogTitle className="sr-only">Запись на курс</DialogTitle>
           <LeadFormContent compact />
-        </DialogContent>
-      </Dialog>
-
-      {/* Download Materials Dialog */}
-      <Dialog open={isDownloadFormOpen} onOpenChange={setIsDownloadFormOpen}>
-        <DialogContent className="w-[96vw] max-w-[500px] p-6">
-          <DialogTitle className="text-2xl font-bold">Скачать программу курса</DialogTitle>
-          <div className="mt-4 space-y-4">
-            <div className="space-y-2">
-              <label htmlFor="download-name" className="text-sm font-medium">
-                Ваше имя <span className="text-destructive">*</span>
-              </label>
-              <Input
-                id="download-name"
-                placeholder="Введите ваше имя"
-                value={downloadName}
-                onChange={(e) => setDownloadName(e.target.value)}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label htmlFor="download-email" className="text-sm font-medium">
-                Email <span className="text-destructive">*</span>
-              </label>
-              <Input
-                id="download-email"
-                type="email"
-                placeholder="your@email.com"
-                value={downloadEmail}
-                onChange={(e) => setDownloadEmail(e.target.value)}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label htmlFor="download-phone" className="text-sm font-medium">
-                Телефон <span className="text-destructive">*</span>
-              </label>
-              <Input
-                id="download-phone"
-                type="tel"
-                placeholder="+7 (___) ___-__-__"
-                value={downloadPhone}
-                onChange={(e) => setDownloadPhone(e.target.value)}
-              />
-            </div>
-
-            <div className="flex items-start gap-2">
-              <Checkbox
-                id="download-consent"
-                checked={downloadConsent}
-                onCheckedChange={(checked) => setDownloadConsent(checked === true)}
-              />
-              <label htmlFor="download-consent" className="text-sm text-muted-foreground">
-                Я даю согласие на обработку персональных данных <span className="text-destructive">*</span>
-              </label>
-            </div>
-
-            <Button
-              className="w-full"
-              size="lg"
-              onClick={handleDownloadMaterials}
-              disabled={isDownloading}
-            >
-              {isDownloading ? "Отправка..." : "Скачать материалы"}
-            </Button>
-          </div>
         </DialogContent>
       </Dialog>
 
