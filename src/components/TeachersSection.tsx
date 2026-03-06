@@ -1,5 +1,6 @@
 ﻿import { useEffect, useMemo, useState } from "react";
 import { api, Teacher } from "@/lib/api";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 
 const defaultTeachers: Teacher[] = [
   {
@@ -67,51 +68,66 @@ const TeachersSection = () => {
     return defaultTeachers;
   }, [teachers]);
 
+  // Группируем преподавателей по 3
+  const groupedTeachers = useMemo(() => {
+    const groups: Teacher[][] = [];
+    for (let i = 0; i < items.length; i += 3) {
+      groups.push(items.slice(i, i + 3));
+    }
+    return groups;
+  }, [items]);
+
   if (loading) {
     return <div className="py-12 text-center">Загрузка преподавателей...</div>;
   }
 
   return (
-    <section id="teachers" className="bg-white py-16">
-      <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
-        <div className="mb-12 text-center">
-          <h2 className="mb-4 text-4xl font-bold text-gray-900">Преподаватели</h2>
-          <p className="mx-auto max-w-3xl text-xl text-gray-600">
-            Эксперты-практики, которые ежедневно работают с кейсами по банкротству
-          </p>
-        </div>
+    <section id="teachers" className="bg-[#F5F5F5] py-12 md:py-16 lg:py-20">
+      <div className="container mx-auto px-4">
+        <h2 className="mb-8 text-center text-3xl font-bold text-gray-900 md:mb-12 md:text-4xl lg:text-5xl">
+          Преподаватели
+        </h2>
+        <Carousel className="mx-auto w-full max-w-[1200px]">
+          <CarouselContent>
+            {groupedTeachers.map((group, groupIndex) => (
+              <CarouselItem key={groupIndex}>
+                <div className="grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-3">
+                  {group.map((teacher) => (
+                    <article key={teacher.id} className="overflow-hidden rounded-2xl border border-gray-200 bg-gray-50">
+                      {teacher.photo_url ? (
+                        <img
+                          src={teacher.photo_url}
+                          alt={teacher.full_name}
+                          className="h-64 w-full bg-gray-100 object-contain"
+                        />
+                      ) : (
+                        <div className="h-64 w-full bg-gray-200" />
+                      )}
 
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-3">
-          {items.map((teacher) => (
-            <article key={teacher.id} className="overflow-hidden rounded-2xl border border-gray-200 bg-gray-50">
-              {teacher.photo_url ? (
-                <img
-                  src={teacher.photo_url}
-                  alt={teacher.full_name}
-                  className="h-64 w-full bg-gray-100 object-contain"
-                />
-              ) : (
-                <div className="h-64 w-full bg-gray-200" />
-              )}
+                      <div className="p-6">
+                        <div className="space-y-2">
+                          <h3 className="text-2xl font-bold leading-tight text-gray-900 break-normal sm:text-3xl">
+                            {teacher.full_name}
+                          </h3>
+                          {teacher.position ? <p className="text-[22px] leading-snug text-primary">{teacher.position}</p> : null}
+                        </div>
 
-              <div className="p-6">
-                <div className="space-y-2">
-                  <h3 className="text-2xl font-bold leading-tight text-gray-900 break-normal sm:text-3xl">
-                    {teacher.full_name}
-                  </h3>
-                  {teacher.position ? <p className="text-[22px] leading-snug text-primary">{teacher.position}</p> : null}
+                        <div className="mt-5 space-y-4">
+                          {teacher.bio ? <p className="text-[22px] leading-snug text-primary">{teacher.bio}</p> : null}
+                          <p className="text-[24px] leading-tight text-gray-900">
+                            Стаж работы: {teacher.experience ? teacher.experience : "не указан"}
+                          </p>
+                        </div>
+                      </div>
+                    </article>
+                  ))}
                 </div>
-
-                <div className="mt-5 space-y-4">
-                  {teacher.bio ? <p className="text-[22px] leading-snug text-primary">{teacher.bio}</p> : null}
-                  <p className="text-[24px] leading-tight text-gray-900">
-                    Стаж работы: {teacher.experience ? teacher.experience : "не указан"}
-                  </p>
-                </div>
-              </div>
-            </article>
-          ))}
-        </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious />
+          <CarouselNext />
+        </Carousel>
       </div>
     </section>
   );

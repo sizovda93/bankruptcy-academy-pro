@@ -576,7 +576,7 @@ export default function CourseEffectiveTeam() {
         {/* Материалы курса */}
         <section className="py-10">
           <div className="container max-w-6xl space-y-5">
-            <h2 className="font-heading text-3xl font-bold">Материалы курса (шаблоны)</h2>
+            <h2 className="font-heading text-3xl font-bold">Материалы курса</h2>
             <p className="text-lg text-muted-foreground">
               Все участники получают готовые шаблоны и инструменты для внедрения:
             </p>
