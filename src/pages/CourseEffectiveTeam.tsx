@@ -23,7 +23,7 @@ const audience = [
   "Собственникам юридических компаний в сфере БФЛ и смежных услуг, где критичны сроки, качество и массовое производство.",
 ];
 
-const modules = [
+const lessons = [
   {
     title: "Модуль 1. Диагностика команды и точка «А»",
     points: [
@@ -156,7 +156,7 @@ const modules = [
   },
 ];
 
-const benefits = [
+const sellingPoints = [
   "Перестанете тащить всё на себе: система ролей и ответственности",
   "Качество и сроки станут управляемыми: чек-листы и контроль",
   "Команда начнёт давать результат: KPI + мотивация без хаоса",
@@ -489,7 +489,7 @@ export default function CourseEffectiveTeam() {
           <div className="container max-w-6xl space-y-5">
             <h2 className="font-heading text-3xl font-bold">Что будет на выходе</h2>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {benefits.map((item, index) => {
+              {sellingPoints.map((item, index) => {
                 const icons = [Target, Settings, TrendingUp, Users, Sparkles];
                 const Icon = icons[index % icons.length];
                 return (
@@ -513,14 +513,14 @@ export default function CourseEffectiveTeam() {
           <div className="container max-w-6xl space-y-5">
             <div className="flex items-start justify-between gap-4">
               <h2 className="font-heading text-3xl font-bold">Программа курса</h2>
-              <p className="text-sm font-medium text-primary">{modules.length} модулей</p>
+              <p className="text-sm font-medium text-primary">{lessons.length} модулей</p>
             </div>
 
             <div className="space-y-3">
-              {modules.map((module, index) => {
+              {lessons.map((lesson, index) => {
                 const isOpen = openModuleIndex === index;
                 return (
-                  <article key={module.title} className="overflow-hidden rounded-2xl border bg-card">
+                  <article key={lesson.title} className="overflow-hidden rounded-2xl border bg-card">
                     <button
                       type="button"
                       onClick={() => toggleModule(index)}
@@ -530,7 +530,7 @@ export default function CourseEffectiveTeam() {
                         <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 font-semibold text-primary">
                           {index + 1}
                         </div>
-                        <h3 className="font-heading text-xl font-semibold text-foreground">{module.title}</h3>
+                        <h3 className="font-heading text-xl font-semibold text-foreground">{lesson.title}</h3>
                       </div>
                       <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
                         {isOpen ? <Minus className="h-5 w-5" /> : <Plus className="h-5 w-5" />}
@@ -540,7 +540,7 @@ export default function CourseEffectiveTeam() {
                     {isOpen ? (
                       <div className="border-t bg-muted/20 p-5">
                         <ul className="space-y-2">
-                          {module.points.map((point) => (
+                            {lesson.points.map((point) => (
                             <li key={point} className="flex items-start gap-3 text-muted-foreground">
                               <span className="mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-primary" />
                               <span>{point}</span>
