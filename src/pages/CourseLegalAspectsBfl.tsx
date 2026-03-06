@@ -348,6 +348,7 @@ export default function CourseLegalAspectsBfl() {
   const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [studentCases, setStudentCases] = useState<StudentCase[]>(fallbackStudentCases);
   const [openLessonIndex, setOpenLessonIndex] = useState<number | null>(0);
+  const [isFormOpen, setIsFormOpen] = useState(false);
   const [isDiscountFormOpen, setIsDiscountFormOpen] = useState(false);
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
   const [bookBannerUrl, setBookBannerUrl] = useState("");
@@ -924,11 +925,18 @@ export default function CourseLegalAspectsBfl() {
               <span className="pointer-events-none absolute right-[12%] top-0 h-full w-4 -rotate-[6deg] bg-primary/10" />
               <h2 className="relative font-heading text-3xl font-bold">Готовы усилить юридическую практику БФЛ?</h2>
               <p className="relative mt-3 text-muted-foreground">Оставьте заявку — пришлём программу, формат участия и условия потока.</p>
-              <div className="relative mt-6"><a href="#course-form"><Button className="h-12 px-8 text-base">Открыть форму заявки</Button></a></div>
+              <div className="relative mt-6"><Button className="h-12 px-8 text-base" onClick={() => setIsFormOpen(true)}>Открыть форму заявки</Button></div>
             </div>
           </div>
         </section>
       </main>
+
+      <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
+        <DialogContent className="w-[96vw] max-w-[760px] p-4 sm:p-6">
+          <DialogTitle className="sr-only">Запись на курс</DialogTitle>
+          <LeadFormContent compact />
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={isDiscountFormOpen} onOpenChange={setIsDiscountFormOpen}>
         <DialogContent className="w-[96vw] max-w-[760px] p-4 sm:p-6">
