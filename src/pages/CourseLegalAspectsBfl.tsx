@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Award, BookOpenCheck, Files, Minus, Plus, ShieldCheck, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LeadFormContent } from "@/components/LeadFormSection";
+import CourseInstallmentBlock from "@/components/course/CourseInstallmentBlock";
 import { api, StudentCase, Teacher } from "@/lib/api";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -868,6 +869,8 @@ export default function CourseLegalAspectsBfl() {
             </div>
           </div>
         </section>
+
+        <CourseInstallmentBlock courseName="Юридические аспекты процедуры банкротства граждан 2.0" />
 
         <section id="apply" className="py-14">
           <div className="container max-w-6xl">

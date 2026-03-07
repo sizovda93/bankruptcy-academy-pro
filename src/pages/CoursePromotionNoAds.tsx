@@ -3,6 +3,7 @@ import Footer from "@/components/Footer";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { LeadFormContent } from "@/components/LeadFormSection";
+import CourseInstallmentBlock from "@/components/course/CourseInstallmentBlock";
 
 const keyBenefits = [
   "Клиенты без рекламных бюджетов — за счёт сети доверия",
@@ -179,6 +180,8 @@ export default function CoursePromotionNoAds() {
         <section className="py-10"><div className="container max-w-6xl rounded-xl border bg-card p-6"><h2 className="font-heading text-3xl font-bold">Ведущий</h2><p className="mt-3 text-muted-foreground">Василий Алексеевич Артин — к.ю.н., Председатель Совета партнёров группы «Федеральная экспертная служба».</p></div></section>
 
         <section className="py-10"><div className="container max-w-6xl space-y-4"><h2 className="font-heading text-3xl font-bold">FAQ</h2><div className="space-y-3">{faq.map((item) => (<article key={item.q} className="rounded-xl border bg-card p-5"><h3 className="font-heading text-lg font-semibold">{item.q}</h3><p className="mt-2 text-muted-foreground">{item.a}</p></article>))}</div></div></section>
+
+        <CourseInstallmentBlock courseName="Продвижение без вложений в рекламу" />
 
         <section id="apply" className="py-14">
           <div className="container max-w-6xl rounded-2xl border bg-card p-6 sm:p-8">

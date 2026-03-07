@@ -1,9 +1,10 @@
-import Header from "@/components/Header";
+﻿import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useEffect, useMemo, useState } from "react";
 import { Award, BookOpenCheck, Files, ShieldCheck, Sparkles, Minus, Plus, Target } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LeadFormContent } from "@/components/LeadFormSection";
+import CourseInstallmentBlock from "@/components/course/CourseInstallmentBlock";
 import { api, StudentCase, Teacher } from "@/lib/api";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -798,6 +799,8 @@ export default function CourseTransactionDisputes() {
             </div>
           </div>
         </section>
+
+        <CourseInstallmentBlock courseName="Оспаривание сделок в банкротстве" />
 
         <section className="py-10">
           <div className="container max-w-6xl space-y-5">

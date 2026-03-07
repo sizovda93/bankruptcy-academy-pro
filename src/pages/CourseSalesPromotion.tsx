@@ -1,9 +1,10 @@
-import Header from "@/components/Header";
+﻿import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useEffect, useMemo, useState } from "react";
 import { Award, BookOpenCheck, Target, TrendingUp, Users, Sparkles, Minus, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LeadFormContent } from "@/components/LeadFormSection";
+import CourseInstallmentBlock from "@/components/course/CourseInstallmentBlock";
 import { api, StudentCase, Teacher } from "@/lib/api";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -217,19 +218,19 @@ const teamFallback: Teacher[] = [
 ];
 
 const teamExpertiseByName: Record<string, string> = {
-  артин:
+  "артин":
     "Построение систем продаж юридических услуг, технология консультации от первого контакта до договора, психология доверия.",
-  дрыгваль:
+  "дрыгваль":
     "Выстраивание долгосрочных отношений с клиентами, разработка системы касаний и агентских программ, клиентский сервис.",
-  лященко:
+  "лященко":
     "Стандартизация процессов сопровождения клиентов, регламенты коммуникации, контроль качества работы команды.",
 };
 
 const getTeamExpertise = (fullName: string) => {
   const lower = fullName.toLowerCase();
-  if (lower.includes("артин")) return teamExpertiseByName.артин;
-  if (lower.includes("дрыгваль")) return teamExpertiseByName.дрыгваль;
-  if (lower.includes("лященко")) return teamExpertiseByName.лященко;
+  if (lower.includes("артин")) return teamExpertiseByName["артин"];
+  if (lower.includes("дрыгваль")) return teamExpertiseByName["дрыгваль"];
+  if (lower.includes("лященко")) return teamExpertiseByName["лященко"];
   return "Практическая экспертиза в продажах юридических услуг и построении систем доверия.";
 };
 
@@ -754,6 +755,8 @@ export default function CourseSalesPromotion() {
           </div>
         </section>
 
+        <CourseInstallmentBlock courseName="Маркетинг в сфере банкротства" />
+
         <section className="py-10">
           <div className="container max-w-6xl space-y-5">
             <h2 className="font-heading text-3xl font-bold">Практические материалы</h2>
@@ -915,3 +918,4 @@ export default function CourseSalesPromotion() {
     </div>
   );
 }
+

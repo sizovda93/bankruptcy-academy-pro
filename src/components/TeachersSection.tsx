@@ -48,6 +48,8 @@ const TeachersSection = () => {
   const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const isLargePortrait = (teacher: Teacher) => teacher.full_name.toLowerCase().includes("артин");
+
   const fetchTeachers = async () => {
     try {
       const data = await api.teachers.list(true);
@@ -95,11 +97,13 @@ const TeachersSection = () => {
                   {group.map((teacher) => (
                     <article key={teacher.id} className="overflow-hidden rounded-2xl border border-gray-200 bg-gray-50">
                       {teacher.photo_url ? (
-                        <img
-                          src={teacher.photo_url}
-                          alt={teacher.full_name}
-                          className="h-64 w-full bg-gray-100 object-contain"
-                        />
+                        <div className={`flex h-64 w-full items-center justify-center bg-gray-100 ${isLargePortrait(teacher) ? "p-8" : "p-4"}`}>
+                          <img
+                            src={teacher.photo_url}
+                            alt={teacher.full_name}
+                            className="h-full w-full object-contain"
+                          />
+                        </div>
                       ) : (
                         <div className="h-64 w-full bg-gray-200" />
                       )}

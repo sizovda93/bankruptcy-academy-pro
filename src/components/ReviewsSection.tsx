@@ -3,6 +3,7 @@ import { Star } from "lucide-react";
 import { api, Review } from "@/lib/api";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { LeadFormContent } from "@/components/LeadFormSection";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 
 const defaultReviews: Review[] = [
   {
@@ -74,29 +75,41 @@ const ReviewsSection = () => {
           <p className="mx-auto max-w-2xl text-xl text-gray-600">Что говорят люди, которые уже прошли обучение</p>
         </div>
 
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {items.map((review) => (
-            <div key={review.id} className="rounded-lg bg-white p-6 shadow-lg transition-shadow hover:shadow-xl">
-              <div className="mb-4 flex items-center gap-1">
-                {Array.from({ length: review.rating }).map((_, idx) => (
-                  <Star key={`${review.id}-star-${idx}`} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                ))}
-              </div>
+        <Carousel
+          className="mx-auto w-full max-w-[1160px]"
+          opts={{
+            align: "start",
+            loop: items.length > 3,
+          }}
+        >
+          <CarouselContent>
+            {items.map((review) => (
+              <CarouselItem key={review.id} className="md:basis-1/2 lg:basis-1/3">
+                <div className="h-full rounded-lg bg-white p-6 shadow-lg transition-shadow hover:shadow-xl">
+                  <div className="mb-4 flex items-center gap-1">
+                    {Array.from({ length: review.rating }).map((_, idx) => (
+                      <Star key={`${review.id}-star-${idx}`} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                    ))}
+                  </div>
 
-              <p className="mb-6 line-clamp-4 text-gray-700">"{review.comment}"</p>
+                  <p className="mb-6 line-clamp-4 text-gray-700">"{review.comment}"</p>
 
-              <div className="flex items-center gap-3 border-t border-gray-100 pt-4">
-                {review.author_avatar_url ? (
-                  <img src={review.author_avatar_url} alt={review.author_name} className="h-12 w-12 rounded-full object-cover" />
-                ) : null}
-                <div>
-                  <p className="font-semibold text-gray-900">{review.author_name}</p>
-                  <p className="text-sm text-gray-500">Студент курса</p>
+                  <div className="flex items-center gap-3 border-t border-gray-100 pt-4">
+                    {review.author_avatar_url ? (
+                      <img src={review.author_avatar_url} alt={review.author_name} className="h-12 w-12 rounded-full object-cover" />
+                    ) : null}
+                    <div>
+                      <p className="font-semibold text-gray-900">{review.author_name}</p>
+                      <p className="text-sm text-gray-500">Студент курса</p>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          ))}
-        </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious className="left-2 top-[42%] border-gray-200 bg-white text-gray-900 hover:bg-gray-50 md:-left-4" />
+          <CarouselNext className="right-2 top-[42%] border-gray-200 bg-white text-gray-900 hover:bg-gray-50 md:-right-4" />
+        </Carousel>
 
         <div className="mt-12 text-center">
           <p className="mb-4 text-gray-600">Готовы усилить экспертизу в банкротстве и повысить ценность вашей юридической практики?</p>
