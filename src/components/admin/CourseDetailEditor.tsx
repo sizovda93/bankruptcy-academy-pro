@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
 import { toast } from "@/hooks/use-toast";
-import { ChevronLeft, Plus, Trash2, Upload, GripVertical } from "lucide-react";
+import { ChevronLeft, Eye, EyeOff, Pencil, Plus, Trash2, Upload, GripVertical } from "lucide-react";
 import { resizeImageToCover } from "@/lib/image";
 
 const FormLabel = ({ className = "", ...props }: any) => (
@@ -37,8 +37,28 @@ export function CourseDetailEditor() {
 
   const [heroSection, setHeroSection] = useState({
     hero_title: "",
+    hero_subtitle: "",
     hero_description: "",
     hero_highlights: [] as string[],
+  });
+
+  const [contentBlocks, setContentBlocks] = useState({
+    intro_title: "",
+    intro_description: "",
+    learning_results: [] as Array<{ title: string; text: string }>,
+    program_badge: "",
+    program_features: [] as string[],
+    program_format_title: "",
+    program_format_description: "",
+    practice_tasks: [] as string[],
+    special_offer_title: "",
+    special_offer_description: "",
+    special_offer_badge: "",
+    special_offer_button_text: "",
+    materials_includes: [] as string[],
+    cta_title: "",
+    cta_description: "",
+    cta_button_text: "",
   });
 
   const [targetAudience, setTargetAudience] = useState<string[]>([]);
@@ -70,8 +90,17 @@ export function CourseDetailEditor() {
     title: "",
     description: "",
   });
-
   const [studentCases, setStudentCases] = useState<StudentCase[]>([]);
+  const [editingCaseId, setEditingCaseId] = useState<string | null>(null);
+  const [caseSaving, setCaseSaving] = useState(false);
+  const [caseForm, setCaseForm] = useState({
+    student_name: "",
+    student_role: "",
+    case_text: "",
+    result_text: "",
+    display_order: 0,
+    is_published: true,
+  });
 
   useEffect(() => {
     fetchCourses();
@@ -126,8 +155,28 @@ export function CourseDetailEditor() {
     // Загружаем hero секцию
     setHeroSection({
       hero_title: course.hero_title || "",
+      hero_subtitle: course.hero_subtitle || "",
       hero_description: course.hero_description || "",
       hero_highlights: course.hero_highlights || [],
+    });
+
+    setContentBlocks({
+      intro_title: course.intro_title || "",
+      intro_description: course.intro_description || "",
+      learning_results: course.learning_results || [],
+      program_badge: course.program_badge || "",
+      program_features: course.program_features || [],
+      program_format_title: course.program_format_title || "",
+      program_format_description: course.program_format_description || "",
+      practice_tasks: course.practice_tasks || [],
+      special_offer_title: course.special_offer_title || "",
+      special_offer_description: course.special_offer_description || "",
+      special_offer_badge: course.special_offer_badge || "",
+      special_offer_button_text: course.special_offer_button_text || "",
+      materials_includes: course.materials_includes || [],
+      cta_title: course.cta_title || "",
+      cta_description: course.cta_description || "",
+      cta_button_text: course.cta_button_text || "",
     });
 
     setTargetAudience(course.target_audience || []);
@@ -287,6 +336,113 @@ export function CourseDetailEditor() {
     }
   };
 
+  const resetCaseForm = () => {
+    setEditingCaseId(null);
+    setCaseForm({
+      student_name: "",
+      student_role: "",
+      case_text: "",
+      result_text: "",
+      display_order: studentCases.length,
+      is_published: true,
+    });
+  };
+
+  const updateCaseForm = (field: keyof typeof caseForm, value: string | number | boolean) => {
+    setCaseForm((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const editStudentCase = (caseItem: StudentCase) => {
+    setEditingCaseId(caseItem.id);
+    setCaseForm({
+      student_name: caseItem.student_name || "",
+      student_role: caseItem.student_role || "",
+      case_text: caseItem.case_text || "",
+      result_text: caseItem.result_text || "",
+      display_order: caseItem.display_order || 0,
+      is_published: caseItem.is_published,
+    });
+  };
+
+  const saveStudentCase = async () => {
+    if (!selectedCourse) return;
+    if (!caseForm.student_name.trim() || !caseForm.case_text.trim()) {
+      toast({
+        title: "Заполните обязательные поля",
+        description: "Укажите имя студента и текст кейса",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      setCaseSaving(true);
+      const payload = {
+        course_id: selectedCourse.id,
+        student_name: caseForm.student_name.trim(),
+        student_role: caseForm.student_role.trim() || null,
+        case_text: caseForm.case_text.trim(),
+        result_text: caseForm.result_text.trim() || null,
+        display_order: Number(caseForm.display_order) || 0,
+        is_published: caseForm.is_published,
+      };
+
+      const savedCase = editingCaseId
+        ? await api.studentCases.update(editingCaseId, payload)
+        : await api.studentCases.create(payload);
+
+      setStudentCases((prev) => {
+        const nextCases = editingCaseId
+          ? prev.map((item) => (item.id === editingCaseId ? savedCase : item))
+          : [...prev, savedCase];
+        return nextCases.sort(
+          (a, b) => (a.display_order ?? Number.MAX_SAFE_INTEGER) - (b.display_order ?? Number.MAX_SAFE_INTEGER)
+        );
+      });
+
+      toast({
+        title: "Кейс сохранён",
+        description: editingCaseId ? "Изменения применены" : "Новый кейс добавлен",
+      });
+      resetCaseForm();
+    } catch (error: any) {
+      toast({ title: "Ошибка", description: error.message, variant: "destructive" });
+    } finally {
+      setCaseSaving(false);
+    }
+  };
+
+  const toggleStudentCasePublish = async (caseItem: StudentCase) => {
+    try {
+      const updatedCase = await api.studentCases.togglePublish(caseItem.id, !caseItem.is_published);
+      setStudentCases((prev) => prev.map((item) => (item.id === caseItem.id ? updatedCase : item)));
+      if (editingCaseId === caseItem.id) {
+        setCaseForm((prev) => ({ ...prev, is_published: updatedCase.is_published }));
+      }
+      toast({
+        title: "Статус обновлён",
+        description: updatedCase.is_published ? "Кейс опубликован" : "Кейс скрыт",
+      });
+    } catch (error: any) {
+      toast({ title: "Ошибка", description: error.message, variant: "destructive" });
+    }
+  };
+
+  const deleteStudentCase = async (caseItem: StudentCase) => {
+    if (!confirm(`Удалить кейс "${caseItem.student_name}"?`)) return;
+
+    try {
+      await api.studentCases.delete(caseItem.id);
+      setStudentCases((prev) => prev.filter((item) => item.id !== caseItem.id));
+      if (editingCaseId === caseItem.id) {
+        resetCaseForm();
+      }
+      toast({ title: "Кейс удалён" });
+    } catch (error: any) {
+      toast({ title: "Ошибка", description: error.message, variant: "destructive" });
+    }
+  };
+
   const clearNondischargeSetting = async (
     settingKey: "nondischarge_materials_banner_url" | "nondischarge_materials_download_url"
   ) => {
@@ -382,6 +538,7 @@ export function CourseDetailEditor() {
       const updateData: Partial<Course> = {
         ...basicInfo,
         ...heroSection,
+        ...contentBlocks,
         target_audience: targetAudience,
         lessons,
         selling_points: sellingPoints,
@@ -412,6 +569,12 @@ export function CourseDetailEditor() {
     }
   };
 
+  useEffect(() => {
+    if (!editingCaseId) {
+      setCaseForm((prev) => ({ ...prev, display_order: studentCases.length }));
+    }
+  }, [editingCaseId, studentCases.length]);
+
   // Вспомогательные функции для работы с массивами
   const addToArray = (setter: React.Dispatch<React.SetStateAction<string[]>>) => {
     setter((prev) => [...prev, ""]);
@@ -427,6 +590,29 @@ export function CourseDetailEditor() {
 
   const removeFromArray = (index: number, setter: React.Dispatch<React.SetStateAction<string[]>>) => {
     setter((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const addLearningResult = () => {
+    setContentBlocks((prev) => ({
+      ...prev,
+      learning_results: [...prev.learning_results, { title: "", text: "" }],
+    }));
+  };
+
+  const updateLearningResult = (index: number, field: "title" | "text", value: string) => {
+    setContentBlocks((prev) => ({
+      ...prev,
+      learning_results: prev.learning_results.map((item, itemIndex) =>
+        itemIndex === index ? { ...item, [field]: value } : item
+      ),
+    }));
+  };
+
+  const removeLearningResult = (index: number) => {
+    setContentBlocks((prev) => ({
+      ...prev,
+      learning_results: prev.learning_results.filter((_, itemIndex) => itemIndex !== index),
+    }));
   };
 
   // Функции для работы с уроками
@@ -535,9 +721,10 @@ export function CourseDetailEditor() {
       </div>
 
       <Tabs defaultValue="basic" className="w-full">
-        <TabsList className="grid w-full grid-cols-7">
+        <TabsList className="grid w-full grid-cols-8">
           <TabsTrigger value="basic">Основное</TabsTrigger>
           <TabsTrigger value="hero">Hero</TabsTrigger>
+          <TabsTrigger value="blocks">Блоки</TabsTrigger>
           <TabsTrigger value="program">Программа</TabsTrigger>
           <TabsTrigger value="selling">Преимущества</TabsTrigger>
           <TabsTrigger value="faq">FAQ</TabsTrigger>
@@ -715,8 +902,319 @@ export function CourseDetailEditor() {
           </Card>
         </TabsContent>
 
+        <TabsContent value="blocks" className="space-y-4">
+          <Card className="p-6">
+            <h3 className="mb-4 text-lg font-semibold">Вводный блок</h3>
+            <div className="space-y-4">
+              <div>
+                <FormLabel className="mb-2 block">Заголовок вводного блока</FormLabel>
+                <Textarea
+                  value={contentBlocks.intro_title}
+                  onChange={(e) => setContentBlocks((prev) => ({ ...prev, intro_title: e.target.value }))}
+                  rows={2}
+                  placeholder="Защищать должника и/или возвращать активы..."
+                />
+              </div>
+              <div>
+                <FormLabel className="mb-2 block">Текст вводного блока</FormLabel>
+                <Textarea
+                  value={contentBlocks.intro_description}
+                  onChange={(e) => setContentBlocks((prev) => ({ ...prev, intro_description: e.target.value }))}
+                  rows={4}
+                  placeholder="Подробное описание блока"
+                />
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-6">
+            <div className="mb-4 flex items-center justify-between">
+              <h3 className="text-lg font-semibold">Что вы получите на выходе</h3>
+              <Button size="sm" onClick={addLearningResult}>
+                <Plus size={16} /> Добавить карточку
+              </Button>
+            </div>
+            <div className="space-y-4">
+              {contentBlocks.learning_results.map((item, index) => (
+                <Card key={index} className="border-2 p-4">
+                  <div className="mb-4 flex items-start justify-between gap-2">
+                    <div className="flex-1 space-y-3">
+                      <div>
+                        <FormLabel className="mb-2 block">Заголовок карточки</FormLabel>
+                        <Input
+                          value={item.title}
+                          onChange={(e) => updateLearningResult(index, "title", e.target.value)}
+                          placeholder="Аудит сделок за проверяемые периоды"
+                        />
+                      </div>
+                      <div>
+                        <FormLabel className="mb-2 block">Текст карточки</FormLabel>
+                        <Textarea
+                          value={item.text}
+                          onChange={(e) => updateLearningResult(index, "text", e.target.value)}
+                          rows={3}
+                          placeholder="Описание результата обучения"
+                        />
+                      </div>
+                    </div>
+                    <Button size="sm" variant="destructive" onClick={() => removeLearningResult(index)}>
+                      <Trash2 size={16} />
+                    </Button>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          </Card>
+
+          <Card className="p-6">
+            <h3 className="mb-4 text-lg font-semibold">Спецпредложение</h3>
+            <div className="space-y-4">
+              <div>
+                <FormLabel className="mb-2 block">Заголовок</FormLabel>
+                <Textarea
+                  value={contentBlocks.special_offer_title}
+                  onChange={(e) => setContentBlocks((prev) => ({ ...prev, special_offer_title: e.target.value }))}
+                  rows={2}
+                />
+              </div>
+              <div>
+                <FormLabel className="mb-2 block">Описание</FormLabel>
+                <Textarea
+                  value={contentBlocks.special_offer_description}
+                  onChange={(e) => setContentBlocks((prev) => ({ ...prev, special_offer_description: e.target.value }))}
+                  rows={3}
+                />
+              </div>
+              <div className="grid gap-4 md:grid-cols-2">
+                <div>
+                  <FormLabel className="mb-2 block">Бейдж / скидка</FormLabel>
+                  <Input
+                    value={contentBlocks.special_offer_badge}
+                    onChange={(e) => setContentBlocks((prev) => ({ ...prev, special_offer_badge: e.target.value }))}
+                    placeholder="-20%"
+                  />
+                </div>
+                <div>
+                  <FormLabel className="mb-2 block">Текст кнопки</FormLabel>
+                  <Input
+                    value={contentBlocks.special_offer_button_text}
+                    onChange={(e) => setContentBlocks((prev) => ({ ...prev, special_offer_button_text: e.target.value }))}
+                    placeholder="Забронировать цену со скидкой"
+                  />
+                </div>
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-6">
+            <div className="mb-4 flex items-center justify-between">
+              <h3 className="text-lg font-semibold">Практические задания</h3>
+              <Button
+                size="sm"
+                onClick={() =>
+                  setContentBlocks((prev) => ({
+                    ...prev,
+                    practice_tasks: [...prev.practice_tasks, ""],
+                  }))
+                }
+              >
+                <Plus size={16} /> Добавить задание
+              </Button>
+            </div>
+            <div className="space-y-2">
+              {contentBlocks.practice_tasks.map((item, index) => (
+                <div key={index} className="flex gap-2">
+                  <Textarea
+                    value={item}
+                    onChange={(e) =>
+                      setContentBlocks((prev) => ({
+                        ...prev,
+                        practice_tasks: prev.practice_tasks.map((current, currentIndex) =>
+                          currentIndex === index ? e.target.value : current
+                        ),
+                      }))
+                    }
+                    rows={2}
+                    placeholder="Формулировка практического задания"
+                  />
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    onClick={() =>
+                      setContentBlocks((prev) => ({
+                        ...prev,
+                        practice_tasks: prev.practice_tasks.filter((_, currentIndex) => currentIndex !== index),
+                      }))
+                    }
+                  >
+                    <Trash2 size={16} />
+                  </Button>
+                </div>
+              ))}
+            </div>
+          </Card>
+
+          <Card className="p-6">
+            <div className="mb-4 flex items-center justify-between">
+              <h3 className="text-lg font-semibold">Список материалов</h3>
+              <Button
+                size="sm"
+                onClick={() =>
+                  setContentBlocks((prev) => ({
+                    ...prev,
+                    materials_includes: [...prev.materials_includes, ""],
+                  }))
+                }
+              >
+                <Plus size={16} /> Добавить пункт
+              </Button>
+            </div>
+            <div className="space-y-2">
+              {contentBlocks.materials_includes.map((item, index) => (
+                <div key={index} className="flex gap-2">
+                  <Textarea
+                    value={item}
+                    onChange={(e) =>
+                      setContentBlocks((prev) => ({
+                        ...prev,
+                        materials_includes: prev.materials_includes.map((current, currentIndex) =>
+                          currentIndex === index ? e.target.value : current
+                        ),
+                      }))
+                    }
+                    rows={2}
+                    placeholder="Пункт списка материалов"
+                  />
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    onClick={() =>
+                      setContentBlocks((prev) => ({
+                        ...prev,
+                        materials_includes: prev.materials_includes.filter((_, currentIndex) => currentIndex !== index),
+                      }))
+                    }
+                  >
+                    <Trash2 size={16} />
+                  </Button>
+                </div>
+              ))}
+            </div>
+          </Card>
+
+          <Card className="p-6">
+            <h3 className="mb-4 text-lg font-semibold">Финальный CTA</h3>
+            <div className="space-y-4">
+              <div>
+                <FormLabel className="mb-2 block">Заголовок</FormLabel>
+                <Textarea
+                  value={contentBlocks.cta_title}
+                  onChange={(e) => setContentBlocks((prev) => ({ ...prev, cta_title: e.target.value }))}
+                  rows={2}
+                />
+              </div>
+              <div>
+                <FormLabel className="mb-2 block">Описание</FormLabel>
+                <Textarea
+                  value={contentBlocks.cta_description}
+                  onChange={(e) => setContentBlocks((prev) => ({ ...prev, cta_description: e.target.value }))}
+                  rows={3}
+                />
+              </div>
+              <div>
+                <FormLabel className="mb-2 block">Текст кнопки</FormLabel>
+                <Input
+                  value={contentBlocks.cta_button_text}
+                  onChange={(e) => setContentBlocks((prev) => ({ ...prev, cta_button_text: e.target.value }))}
+                />
+              </div>
+            </div>
+          </Card>
+        </TabsContent>
+
         {/* Программа обучения */}
         <TabsContent value="program" className="space-y-4">
+          <Card className="p-6">
+            <h3 className="mb-4 text-lg font-semibold">Дополнительные тексты программы</h3>
+            <div className="space-y-4">
+              <div>
+                <FormLabel className="mb-2 block">Бейдж программы</FormLabel>
+                <Input
+                  value={contentBlocks.program_badge}
+                  onChange={(e) => setContentBlocks((prev) => ({ ...prev, program_badge: e.target.value }))}
+                  placeholder="15 модулей + экзамен"
+                />
+              </div>
+
+              <div>
+                <div className="mb-2 flex items-center justify-between">
+                  <FormLabel>Пункты левой карточки</FormLabel>
+                  <Button
+                    size="sm"
+                    onClick={() =>
+                      setContentBlocks((prev) => ({
+                        ...prev,
+                        program_features: [...prev.program_features, ""],
+                      }))
+                    }
+                  >
+                    <Plus size={16} /> Добавить
+                  </Button>
+                </div>
+                {contentBlocks.program_features.map((item, index) => (
+                  <div key={index} className="mb-2 flex gap-2">
+                    <Textarea
+                      value={item}
+                      onChange={(e) =>
+                        setContentBlocks((prev) => ({
+                          ...prev,
+                          program_features: prev.program_features.map((current, currentIndex) =>
+                            currentIndex === index ? e.target.value : current
+                          ),
+                        }))
+                      }
+                      rows={2}
+                      placeholder="Пункт карточки"
+                    />
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      onClick={() =>
+                        setContentBlocks((prev) => ({
+                          ...prev,
+                          program_features: prev.program_features.filter((_, currentIndex) => currentIndex !== index),
+                        }))
+                      }
+                    >
+                      <Trash2 size={16} />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+
+              <div>
+                <FormLabel className="mb-2 block">Заголовок правой карточки</FormLabel>
+                <Input
+                  value={contentBlocks.program_format_title}
+                  onChange={(e) => setContentBlocks((prev) => ({ ...prev, program_format_title: e.target.value }))}
+                  placeholder="Что будет на курсе"
+                />
+              </div>
+
+              <div>
+                <FormLabel className="mb-2 block">Текст правой карточки</FormLabel>
+                <Textarea
+                  value={contentBlocks.program_format_description}
+                  onChange={(e) =>
+                    setContentBlocks((prev) => ({ ...prev, program_format_description: e.target.value }))
+                  }
+                  rows={3}
+                  placeholder="Описание формата и содержимого"
+                />
+              </div>
+            </div>
+          </Card>
+
           <Card className="p-6">
             <div className="mb-4 flex items-center justify-between">
               <h3 className="text-lg font-semibold">Программа обучения</h3>
@@ -848,27 +1346,126 @@ export function CourseDetailEditor() {
         <TabsContent value="cases" className="space-y-4">
           <Card className="p-6">
             <h3 className="mb-4 text-lg font-semibold">Кейсы студентов</h3>
-            <p className="mb-4 text-sm text-muted-foreground">
-              Для управления кейсами используйте вкладку "Кейсы" в основном меню админ-панели
-            </p>
-            
-            <div className="space-y-2">
+            <div className="mb-6 grid gap-4 md:grid-cols-2">
+              <div>
+                <FormLabel className="mb-2 block">Имя студента</FormLabel>
+                <Input
+                  value={caseForm.student_name}
+                  onChange={(e) => updateCaseForm("student_name", e.target.value)}
+                  placeholder="Александр М."
+                />
+              </div>
+
+              <div>
+                <FormLabel className="mb-2 block">Подзаголовок Hero</FormLabel>
+                <Input
+                  value={heroSection.hero_subtitle}
+                  onChange={(e) => setHeroSection((prev) => ({ ...prev, hero_subtitle: e.target.value }))}
+                  placeholder="Короткий подзаголовок под H1"
+                />
+              </div>
+              <div>
+                <FormLabel className="mb-2 block">Статус / роль</FormLabel>
+                <Input
+                  value={caseForm.student_role}
+                  onChange={(e) => updateCaseForm("student_role", e.target.value)}
+                  placeholder="Выпускник курса"
+                />
+              </div>
+              <div className="md:col-span-2">
+                <FormLabel className="mb-2 block">Кейс</FormLabel>
+                <Textarea
+                  value={caseForm.case_text}
+                  onChange={(e) => updateCaseForm("case_text", e.target.value)}
+                  placeholder="Описание результата, внедрения и контекста"
+                  rows={5}
+                />
+              </div>
+              <div className="md:col-span-2">
+                <FormLabel className="mb-2 block">Итог</FormLabel>
+                <Textarea
+                  value={caseForm.result_text}
+                  onChange={(e) => updateCaseForm("result_text", e.target.value)}
+                  placeholder="Например: Результат: ROI 1067%"
+                  rows={3}
+                />
+              </div>
+              <div>
+                <FormLabel className="mb-2 block">Порядок</FormLabel>
+                <Input
+                  type="number"
+                  value={caseForm.display_order}
+                  onChange={(e) => updateCaseForm("display_order", Number(e.target.value))}
+                />
+              </div>
+              <div className="flex items-end">
+                <label className="flex cursor-pointer items-center gap-2 text-sm font-medium">
+                  <input
+                    type="checkbox"
+                    checked={caseForm.is_published}
+                    onChange={(e) => updateCaseForm("is_published", e.target.checked)}
+                  />
+                  Опубликовать кейс
+                </label>
+              </div>
+              <div className="flex gap-2 md:col-span-2">
+                <Button type="button" onClick={saveStudentCase} disabled={caseSaving}>
+                  {editingCaseId ? "Сохранить изменения" : "Добавить кейс"}
+                </Button>
+                {editingCaseId ? (
+                  <Button type="button" variant="outline" onClick={resetCaseForm} disabled={caseSaving}>
+                    Отмена
+                  </Button>
+                ) : null}
+              </div>
+            </div>
+
+            <div className="space-y-3">
               {studentCases.length === 0 ? (
                 <p className="text-sm text-muted-foreground">Нет кейсов для этого курса</p>
               ) : (
                 studentCases.map((caseItem) => (
                   <Card key={caseItem.id} className="p-4">
-                    <div className="flex items-start justify-between">
-                      <div>
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
                         <h4 className="font-semibold">{caseItem.student_name}</h4>
                         {caseItem.student_role && (
                           <p className="text-sm text-muted-foreground">{caseItem.student_role}</p>
                         )}
-                        <p className="mt-2 text-sm line-clamp-2">{caseItem.case_text}</p>
+                        <p className="mt-2 text-sm whitespace-pre-wrap">{caseItem.case_text}</p>
+                        {caseItem.result_text ? (
+                          <p className="mt-2 text-sm font-medium text-primary whitespace-pre-wrap">
+                            {caseItem.result_text}
+                          </p>
+                        ) : null}
+                        <p className="mt-3 text-xs text-muted-foreground">
+                          Порядок: {caseItem.display_order || 0}
+                        </p>
                       </div>
-                      <span className={`text-xs ${caseItem.is_published ? "text-green-600" : "text-gray-400"}`}>
-                        {caseItem.is_published ? "Опубликован" : "Черновик"}
-                      </span>
+                      <div className="flex shrink-0 items-start gap-2">
+                        <span className={`pt-2 text-xs ${caseItem.is_published ? "text-green-600" : "text-gray-400"}`}>
+                          {caseItem.is_published ? "Опубликован" : "Черновик"}
+                        </span>
+                        <Button type="button" size="sm" variant="outline" onClick={() => editStudentCase(caseItem)}>
+                          <Pencil size={16} />
+                        </Button>
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => toggleStudentCasePublish(caseItem)}
+                        >
+                          {caseItem.is_published ? <Eye size={16} /> : <EyeOff size={16} />}
+                        </Button>
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="destructive"
+                          onClick={() => deleteStudentCase(caseItem)}
+                        >
+                          <Trash2 size={16} />
+                        </Button>
+                      </div>
                     </div>
                   </Card>
                 ))

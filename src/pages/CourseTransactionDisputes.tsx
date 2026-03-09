@@ -1,11 +1,11 @@
 ﻿import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useEffect, useMemo, useState } from "react";
-import { Award, BookOpenCheck, Files, ShieldCheck, Sparkles, Minus, Plus, Target } from "lucide-react";
+import { BookOpenCheck, Files, ShieldCheck, Sparkles, Minus, Plus, Target } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LeadFormContent } from "@/components/LeadFormSection";
 import CourseInstallmentBlock from "@/components/course/CourseInstallmentBlock";
-import { api, StudentCase, Teacher } from "@/lib/api";
+import { api, Course, StudentCase, Teacher } from "@/lib/api";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -238,7 +238,7 @@ const faqItems = [
   },
 ];
 
-const teamOrder = ["артин", "абукаев", "герасимов", "лященко"];
+const teamOrderFallback = ["артин", "абукаев", "герасимов", "лященко"];
 
 const teamFallback: Teacher[] = [
   {
@@ -397,6 +397,7 @@ const fallbackStudentCases: StudentCase[] = [
 ];
 
 export default function CourseTransactionDisputes() {
+  const [course, setCourse] = useState<Course | null>(null);
   const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [studentCases, setStudentCases] = useState<StudentCase[]>(fallbackStudentCases);
   const [openModuleIndex, setOpenModuleIndex] = useState<number | null>(0);
@@ -442,6 +443,8 @@ export default function CourseTransactionDisputes() {
           return;
         }
 
+        setCourse(disputesCourse);
+
         // Загружаем данные формы скачивания из курса
         if (disputesCourse.download_form_banner_url) {
           setMaterialsBannerUrl(disputesCourse.download_form_banner_url);
@@ -466,6 +469,46 @@ export default function CourseTransactionDisputes() {
     fetchTeam();
     fetchCases();
   }, []);
+
+  const heroTitle = course?.hero_title || "Оспаривание сделок в БФЛ";
+  const heroSubtitle = course?.hero_subtitle || course?.description || "Полный обзор практики банкротства граждан";
+  const heroDescription = course?.hero_description || course?.benefits || "";
+  const heroHighlights = course?.hero_highlights?.length ? course.hero_highlights : highlights;
+  const introTitle =
+    course?.intro_title || "Защищать должника и/или возвращать активы — системный подход к оспариванию сделок в банкротстве";
+  const introDescription =
+    course?.intro_description ||
+    "Курс учит находить рисковые сделки до подачи заявления, понимать какие сделки оспаривают чаще всего и почему, строить стратегию защиты должника и/или стратегию атаки (для кредитора/АУ), грамотно работать с сроками, доказательствами, экономической обоснованностью и минимизировать риски неосвобождения от долгов.";
+  const learningResults = course?.learning_results?.length ? course.learning_results : results;
+  const programBadge = course?.program_badge || "15 модулей + экзамен";
+  const programFeatures = course?.program_features?.length
+    ? course.program_features
+    : ["Дистанционное обучение в удобном формате", "Домашние задания после каждого модуля"];
+  const programFormatTitle = course?.program_format_title || "Что будет на курсе";
+  const programFormatDescription =
+    course?.program_format_description || "Теория, практические разборы кейсов, шаблоны документов, чат сопровождения.";
+  const modulesList = course?.lessons?.length ? course.lessons : modules;
+  const audienceList = course?.target_audience?.length ? course.target_audience : audience;
+  const sellingPointsList = course?.selling_points?.length ? course.selling_points : sellingPoints;
+  const faqList = course?.faq_items?.length ? course.faq_items : faqItems;
+  const materialsIncludes = course?.materials_includes?.length
+    ? course.materials_includes
+    : [
+        "Чек-лист аудита сделок за проверяемые периоды",
+        "Матрица риска: оценка перспективы оспаривания",
+        "Анкета клиента по сделкам и активам для предбанкротного анализа",
+        "Шаблоны заявлений об оспаривании и возражений",
+        "Список «идеальных доказательств» по каждому типу сделки",
+      ];
+  const specialOfferTitle = course?.special_offer_title || "Специальное предложение для комплексного обучения";
+  const specialOfferDescription = course?.special_offer_description || "При покупке всех курсов сразу, скидка 20% на все";
+  const specialOfferBadge = course?.special_offer_badge || "-20%";
+  const specialOfferButtonText = course?.special_offer_button_text || "Забронировать цену со скидкой";
+  const ctaTitle = course?.cta_title || "Готовы освоить оспаривание сделок в БФЛ?";
+  const ctaDescription = course?.cta_description || "Оставьте заявку — пришлём программу, формат участия и условия потока.";
+  const ctaButtonText = course?.cta_button_text || "Открыть форму заявки";
+  const teamOrder = course?.team_order?.length ? course.team_order : teamOrderFallback;
+  const resultIcons = [Target, ShieldCheck, BookOpenCheck, Files];
 
   const teamMembers = useMemo(() => {
     const found = teamOrder
@@ -558,16 +601,12 @@ export default function CourseTransactionDisputes() {
             <div className="grid gap-6 rounded-3xl bg-gradient-to-br from-red-600 via-red-500 to-orange-500 p-6 sm:p-8 lg:grid-cols-2 lg:p-10">
               <div className="text-white">
                 <h1 className="font-heading text-4xl font-bold leading-tight sm:text-5xl">
-                  Оспаривание сделок в БФЛ
+                  {heroTitle}
                 </h1>
-                <p className="mt-2 text-lg font-medium text-white/90">Полный обзор практики банкротства граждан</p>
-                <p className="mt-6 text-lg leading-relaxed text-white/90 sm:text-xl">
-                  Практический курс по оспариванию сделок в банкротстве граждан: аудит предбанкротных действий, сроки
-                  и основания, сделки с недвижимостью/авто/переводами/займами, доказательства и процессуальная тактика,
-                  шаблоны документов и разборы кейсов.
-                </p>
+                <p className="mt-2 text-lg font-medium text-white/90">{heroSubtitle}</p>
+                <p className="mt-6 text-lg leading-relaxed text-white/90 sm:text-xl">{heroDescription}</p>
                 <div className="mt-8 grid gap-3">
-                  {highlights.map((item) => (
+                  {heroHighlights.map((item) => (
                     <div key={item} className="rounded-xl border border-white/20 bg-white/10 p-3 text-sm font-medium text-white">
                       {item}
                     </div>
@@ -592,16 +631,8 @@ export default function CourseTransactionDisputes() {
               </div>
 
               <div className="relative grid gap-6 lg:grid-cols-2 lg:gap-10">
-                <h2 className="font-heading text-2xl font-semibold text-foreground sm:text-3xl">
-                  <span className="font-bold text-red-600">Защищать должника и/или возвращать активы</span> — системный
-                  подход к оспариванию сделок в банкротстве
-                </h2>
-                <p className="text-base leading-relaxed text-foreground sm:text-lg">
-                  Курс учит находить рисковые сделки до подачи заявления, понимать какие сделки оспаривают чаще всего и
-                  почему, строить стратегию защиты должника и/или стратегию атаки (для кредитора/АУ), грамотно работать
-                  с сроками, доказательствами, экономической обоснованностью и минимизировать риски неосвобождения от
-                  долгов.
-                </p>
+                <h2 className="font-heading text-2xl font-semibold text-foreground sm:text-3xl">{introTitle}</h2>
+                <p className="text-base leading-relaxed text-foreground sm:text-lg">{introDescription}</p>
               </div>
             </article>
           </div>
@@ -611,8 +642,8 @@ export default function CourseTransactionDisputes() {
           <div className="container max-w-6xl space-y-6">
             <h2 className="font-heading text-3xl font-bold">Что вы получите на выходе</h2>
             <div className="grid gap-4 md:grid-cols-2">
-              {results.map((item) => {
-                const Icon = item.icon;
+              {learningResults.map((item, index) => {
+                const Icon = resultIcons[index] || Target;
                 return (
                   <article key={item.title} className="rounded-2xl border bg-card p-5">
                     <div className="flex items-start gap-3">
@@ -683,7 +714,7 @@ export default function CourseTransactionDisputes() {
           <div className="container max-w-6xl space-y-5">
             <div className="flex items-start justify-between gap-4">
               <h2 className="font-heading text-3xl font-bold">Программа обучения</h2>
-              <p className="text-sm font-medium text-red-600">15 модулей + экзамен</p>
+              <p className="text-sm font-medium text-red-600">{programBadge}</p>
             </div>
 
             <div className="grid gap-4 md:grid-cols-2">
@@ -691,21 +722,20 @@ export default function CourseTransactionDisputes() {
                 <div className="flex items-start gap-3">
                   <Sparkles className="mt-0.5 h-5 w-5 text-red-600" />
                   <div className="space-y-2 text-muted-foreground">
-                    <p>Дистанционное обучение в удобном формате</p>
-                    <p>Домашние задания после каждого модуля</p>
+                    {programFeatures.map((item) => (
+                      <p key={item}>{item}</p>
+                    ))}
                   </div>
                 </div>
               </article>
               <article className="rounded-2xl border bg-card p-5">
-                <h3 className="text-lg font-semibold text-red-600">Что будет на курсе</h3>
-                <p className="mt-2 text-muted-foreground">
-                  Теория, практические разборы кейсов, шаблоны документов, чат сопровождения.
-                </p>
+                <h3 className="text-lg font-semibold text-red-600">{programFormatTitle}</h3>
+                <p className="mt-2 text-muted-foreground">{programFormatDescription}</p>
               </article>
             </div>
 
             <div className="space-y-3">
-              {modules.map((module, index) => {
+              {modulesList.map((module, index) => {
                 const isOpen = openModuleIndex === index;
 
                 return (
@@ -747,19 +777,17 @@ export default function CourseTransactionDisputes() {
 
               <div className="relative">
                 <h2 className="text-center font-heading text-3xl font-bold text-foreground">
-                  Специальное предложение для комплексного обучения
+                  {specialOfferTitle}
                 </h2>
-                <p className="mt-3 text-center text-lg font-semibold text-red-600">
-                  При покупке всех курсов сразу, скидка 20% на все
-                </p>
+                <p className="mt-3 text-center text-lg font-semibold text-red-600">{specialOfferDescription}</p>
 
                 <div className="mx-auto mt-6 flex max-w-3xl flex-wrap justify-center gap-3">
-                  <div className="rounded-xl bg-primary px-6 py-4 text-lg font-bold text-primary-foreground">-20%</div>
+                  <div className="rounded-xl bg-primary px-6 py-4 text-lg font-bold text-primary-foreground">{specialOfferBadge}</div>
                 </div>
 
                 <div className="mt-8">
                     <Button className="h-14 w-full bg-red-600 text-base font-semibold text-white hover:bg-red-700" onClick={() => setIsDiscountFormOpen(true)}>
-                    Забронировать цену со скидкой
+                    {specialOfferButtonText}
                   </Button>
                 </div>
               </div>
@@ -771,7 +799,7 @@ export default function CourseTransactionDisputes() {
           <div className="container max-w-6xl space-y-5">
             <h2 className="font-heading text-3xl font-bold">Кому подойдет программа</h2>
             <div className="grid gap-4">
-              {audience.map((item, index) => (
+              {audienceList.map((item, index) => (
                 <article key={item} className="relative overflow-hidden rounded-2xl border bg-card p-6">
                     <span className="pointer-events-none absolute -left-6 top-0 h-full w-4 -rotate-12 bg-red-600/10" />
                     <span className="pointer-events-none absolute right-10 top-0 h-full w-3 rotate-6 bg-red-600/10" />
@@ -827,11 +855,9 @@ export default function CourseTransactionDisputes() {
                 <h3 className="font-heading text-3xl font-bold leading-tight">{materialsTitle}</h3>
                 <p className="mt-5 text-lg leading-relaxed text-white/90">{materialsDescription}</p>
                 <ul className="mt-7 list-disc space-y-2 pl-5 text-base text-white/90">
-                  <li>Чек-лист аудита сделок за проверяемые периоды</li>
-                  <li>Матрица риска: оценка перспективы оспаривания</li>
-                  <li>Анкета клиента по сделкам и активам для предбанкротного анализа</li>
-                  <li>Шаблоны заявлений об оспаривании и возражений</li>
-                  <li>Список «идеальных доказательств» по каждому типу сделки</li>
+                  {materialsIncludes.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
                 </ul>
               </article>
 
@@ -894,7 +920,7 @@ export default function CourseTransactionDisputes() {
           <div className="container max-w-6xl space-y-5">
             <h2 className="font-heading text-3xl font-bold">Преимущества курса</h2>
             <div className="grid gap-4 md:grid-cols-2">
-              {sellingPoints.map((item) => (
+              {sellingPointsList.map((item) => (
                 <article key={item} className="relative overflow-hidden rounded-2xl border bg-card p-6">
                   <span className="pointer-events-none absolute -left-5 top-0 h-full w-3 -rotate-12 bg-red-600/10" />
                   <span className="pointer-events-none absolute right-10 top-0 h-full w-2 rotate-6 bg-red-600/10" />
@@ -910,7 +936,7 @@ export default function CourseTransactionDisputes() {
           <div className="container max-w-6xl space-y-5">
             <h2 className="font-heading text-3xl font-bold">Отвечаем на вопросы</h2>
             <div className="space-y-3">
-              {faqItems.map((faq, index) => {
+              {faqList.map((faq, index) => {
                 const isOpen = openFaqIndex === index;
                 return (
                   <article key={faq.question} className="overflow-hidden rounded-2xl border bg-card">
@@ -943,13 +969,11 @@ export default function CourseTransactionDisputes() {
               <span className="pointer-events-none absolute left-[5%] top-0 h-full w-4 -rotate-12 bg-red-600/10" />
               <span className="pointer-events-none absolute left-[42%] top-0 h-full w-3 rotate-[8deg] bg-red-600/10" />
               <span className="pointer-events-none absolute right-[12%] top-0 h-full w-4 -rotate-[6deg] bg-red-600/10" />
-              <h2 className="relative font-heading text-3xl font-bold">Готовы освоить оспаривание сделок в БФЛ?</h2>
-              <p className="relative mt-3 text-muted-foreground">
-                Оставьте заявку — пришлём программу, формат участия и условия потока.
-              </p>
+              <h2 className="relative font-heading text-3xl font-bold">{ctaTitle}</h2>
+              <p className="relative mt-3 text-muted-foreground">{ctaDescription}</p>
               <div className="relative mt-6">
                 <a href="#course-form">
-                  <Button className="h-12 bg-red-600 px-8 text-base text-white hover:bg-red-700">Открыть форму заявки</Button>
+                  <Button className="h-12 bg-red-600 px-8 text-base text-white hover:bg-red-700">{ctaButtonText}</Button>
                 </a>
               </div>
             </div>

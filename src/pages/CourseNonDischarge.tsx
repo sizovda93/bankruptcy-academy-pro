@@ -1,11 +1,11 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useEffect, useMemo, useState } from "react";
-import { AlertTriangle, BookOpenCheck, Files, ShieldCheck, Sparkles, Minus, Plus, Target } from "lucide-react";
+import { BookOpenCheck, Files, ShieldCheck, Sparkles, Minus, Plus, Target } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LeadFormContent } from "@/components/LeadFormSection";
 import CourseInstallmentBlock from "@/components/course/CourseInstallmentBlock";
-import { api, StudentCase, Teacher } from "@/lib/api";
+import { api, Course, StudentCase, Teacher } from "@/lib/api";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -232,7 +232,7 @@ const faqItems = [
   },
 ];
 
-const teamOrder = ["артин", "герасимов", "абукаев", "лященко"];
+const teamOrderFallback = ["артин", "герасимов", "абукаев", "лященко"];
 
 const teamFallback: Teacher[] = [
   {
@@ -417,6 +417,7 @@ const fallbackStudentCases: StudentCase[] = [
 ];
 
 export default function CourseNonDischarge() {
+  const [course, setCourse] = useState<Course | null>(null);
   const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [studentCases, setStudentCases] = useState<StudentCase[]>(fallbackStudentCases);
   const [openModuleIndex, setOpenModuleIndex] = useState<number | null>(0);
@@ -462,6 +463,8 @@ export default function CourseNonDischarge() {
           return;
         }
 
+        setCourse(nondischargeCourse);
+
         const data = await api.studentCases.list(true, nondischargeCourse?.id);
         setStudentCases(data?.length ? data : fallbackStudentCases);
       } catch {
@@ -490,6 +493,47 @@ export default function CourseNonDischarge() {
     fetchCases();
     fetchSettings();
   }, []);
+
+  const heroTitle = course?.hero_title || "Неосвобождение от обязательств в БФЛ";
+  const heroSubtitle = course?.hero_subtitle || course?.description || "Защита от самого «болезненного» риска процедуры";
+  const heroDescription = course?.hero_description || course?.benefits || "";
+  const heroHighlights = course?.hero_highlights?.length ? course.hero_highlights : highlights;
+  const introTitle =
+    course?.intro_title || "Самый «болезненный» риск в БФЛ — когда процедура прошла, а суд не списывает долги";
+  const introDescription =
+    course?.intro_description ||
+    "Курс учит предугадывать риск неосвобождения ещё до подачи заявления, правильно «упаковывать» позицию должника и доказательства добросовестности, защищаться от возражений кредиторов и позиции ФНС/уполномоченного органа, работать с «триггерами суда» и строить стратегию успешного списания.";
+  const learningResults = course?.learning_results?.length ? course.learning_results : results;
+  const programBadge = course?.program_badge || "14 модулей + аттестация";
+  const programFeatures = course?.program_features?.length
+    ? course.program_features
+    : ["Дистанционное обучение: 8–12 занятий по 90–120 минут", "Домашние задания: мини-кейс + сбор документов/позиции"];
+  const programFormatTitle = course?.program_format_title || "Что будет на курсе";
+  const programFormatDescription =
+    course?.program_format_description || "Теория, практические разборы кейсов, шаблоны документов, живые разборные сессии, чат сопровождения.";
+  const modulesList = course?.lessons?.length ? course.lessons : modules;
+  const audienceList = course?.target_audience?.length ? course.target_audience : audience;
+  const sellingPointsList = course?.selling_points?.length ? course.selling_points : sellingPoints;
+  const faqList = course?.faq_items?.length ? course.faq_items : faqItems;
+  const materialsIncludes = course?.materials_includes?.length
+    ? course.materials_includes
+    : [
+        "Анкета клиента «риски неосвобождения»",
+        "Чек-лист «что нельзя делать до/во время банкротства»",
+        "Матрица риска (скоринг клиента)",
+        "Шаблон объяснений должника для суда",
+        "Шаблон ответа на возражения кредитора/ФНС",
+        "Регламент коммуникации должник ↔ юрист ↔ ФУ",
+      ];
+  const specialOfferTitle = course?.special_offer_title || "Специальное предложение для комплексного обучения";
+  const specialOfferDescription = course?.special_offer_description || "При покупке всех курсов сразу, скидка 20% на все";
+  const specialOfferBadge = course?.special_offer_badge || "-20%";
+  const specialOfferButtonText = course?.special_offer_button_text || "Забронировать цену со скидкой";
+  const ctaTitle = course?.cta_title || "Готовы защитить клиентов от неосвобождения?";
+  const ctaDescription = course?.cta_description || "Оставьте заявку — пришлём программу, формат участия и условия потока.";
+  const ctaButtonText = course?.cta_button_text || "Открыть форму заявки";
+  const teamOrder = course?.team_order?.length ? course.team_order : teamOrderFallback;
+  const resultIcons = [Target, ShieldCheck, BookOpenCheck, Files];
 
   const teamMembers = useMemo(() => {
     const found = teamOrder
@@ -582,16 +626,12 @@ export default function CourseNonDischarge() {
             <div className="grid gap-6 rounded-3xl bg-gradient-to-br from-red-600 via-red-500 to-orange-500 p-6 sm:p-8 lg:grid-cols-2 lg:p-10">
               <div className="text-white">
                 <h1 className="font-heading text-4xl font-bold leading-tight sm:text-5xl">
-                  Неосвобождение от обязательств в БФЛ
+                  {heroTitle}
                 </h1>
-                <p className="mt-2 text-lg font-medium text-white/90">Защита от самого «болезненного» риска процедуры</p>
-                <p className="mt-6 text-lg leading-relaxed text-white/90 sm:text-xl">
-                  Практический курс о риске неосвобождения: как выявлять «красные флаги» ещё до подачи заявления,
-                  собирать доказательства добросовестности, выстраивать позицию должника, отбивать возражения
-                  кредиторов и ФНС и доводить сложные дела до списания.
-                </p>
+                <p className="mt-2 text-lg font-medium text-white/90">{heroSubtitle}</p>
+                <p className="mt-6 text-lg leading-relaxed text-white/90 sm:text-xl">{heroDescription}</p>
                 <div className="mt-8 grid gap-3">
-                  {highlights.map((item) => (
+                  {heroHighlights.map((item) => (
                     <div key={item} className="rounded-xl border border-white/20 bg-white/10 p-3 text-sm font-medium text-white">
                       {item}
                     </div>
@@ -616,15 +656,8 @@ export default function CourseNonDischarge() {
               </div>
 
               <div className="relative grid gap-6 lg:grid-cols-2 lg:gap-10">
-                <h2 className="font-heading text-2xl font-semibold text-foreground sm:text-3xl">
-                  <span className="font-bold text-red-600">Самый «болезненный» риск в БФЛ</span> — когда процедура
-                  прошла, а суд не списывает долги
-                </h2>
-                <p className="text-base leading-relaxed text-foreground sm:text-lg">
-                  Курс учит предугадывать риск неосвобождения ещё до подачи заявления, правильно «упаковывать» позицию
-                  должника и доказательства добросовестности, защищаться от возражений кредиторов и позиции
-                  ФНС/уполномоченного органа, работать с «триггерами суда» и строить стратегию успешного списания.
-                </p>
+                <h2 className="font-heading text-2xl font-semibold text-foreground sm:text-3xl">{introTitle}</h2>
+                <p className="text-base leading-relaxed text-foreground sm:text-lg">{introDescription}</p>
               </div>
             </article>
           </div>
@@ -634,8 +667,8 @@ export default function CourseNonDischarge() {
           <div className="container max-w-6xl space-y-6">
             <h2 className="font-heading text-3xl font-bold">Что вы получите на выходе</h2>
             <div className="grid gap-4 md:grid-cols-2">
-              {results.map((item) => {
-                const Icon = item.icon;
+              {learningResults.map((item, index) => {
+                const Icon = resultIcons[index] || Target;
                 return (
                   <article key={item.title} className="rounded-2xl border bg-card p-5">
                     <div className="flex items-start gap-3">
@@ -706,7 +739,7 @@ export default function CourseNonDischarge() {
           <div className="container max-w-6xl space-y-5">
             <div className="flex items-start justify-between gap-4">
               <h2 className="font-heading text-3xl font-bold">Программа обучения</h2>
-              <p className="text-sm font-medium text-red-600">14 модулей + аттестация</p>
+              <p className="text-sm font-medium text-red-600">{programBadge}</p>
             </div>
 
             <div className="grid gap-4 md:grid-cols-2">
@@ -714,21 +747,20 @@ export default function CourseNonDischarge() {
                 <div className="flex items-start gap-3">
                   <Sparkles className="mt-0.5 h-5 w-5 text-red-600" />
                   <div className="space-y-2 text-muted-foreground">
-                    <p>Дистанционное обучение: 8–12 занятий по 90–120 минут</p>
-                    <p>Домашние задания: мини-кейс + сбор документов/позиции</p>
+                    {programFeatures.map((item) => (
+                      <p key={item}>{item}</p>
+                    ))}
                   </div>
                 </div>
               </article>
               <article className="rounded-2xl border bg-card p-5">
-                <h3 className="text-lg font-semibold text-red-600">Что будет на курсе</h3>
-                <p className="mt-2 text-muted-foreground">
-                  Теория, практические разборы кейсов, шаблоны документов, живые разборные сессии, чат сопровождения.
-                </p>
+                <h3 className="text-lg font-semibold text-red-600">{programFormatTitle}</h3>
+                <p className="mt-2 text-muted-foreground">{programFormatDescription}</p>
               </article>
             </div>
 
             <div className="space-y-3">
-              {modules.map((module, index) => {
+              {modulesList.map((module, index) => {
                 const isOpen = openModuleIndex === index;
 
                 return (
@@ -770,19 +802,17 @@ export default function CourseNonDischarge() {
 
               <div className="relative">
                 <h2 className="text-center font-heading text-3xl font-bold text-foreground">
-                  Специальное предложение для комплексного обучения
+                  {specialOfferTitle}
                 </h2>
-                <p className="mt-3 text-center text-lg font-semibold text-red-600">
-                  При покупке всех курсов сразу, скидка 20% на все
-                </p>
+                <p className="mt-3 text-center text-lg font-semibold text-red-600">{specialOfferDescription}</p>
 
                 <div className="mx-auto mt-6 flex max-w-3xl flex-wrap justify-center gap-3">
-                  <div className="rounded-xl bg-red-600 px-6 py-4 text-lg font-bold text-white">-20%</div>
+                  <div className="rounded-xl bg-red-600 px-6 py-4 text-lg font-bold text-white">{specialOfferBadge}</div>
                 </div>
 
                 <div className="mt-8">
                   <Button className="h-14 w-full text-base font-semibold" onClick={() => setIsDiscountFormOpen(true)}>
-                    Забронировать цену со скидкой
+                    {specialOfferButtonText}
                   </Button>
                 </div>
               </div>
@@ -794,7 +824,7 @@ export default function CourseNonDischarge() {
           <div className="container max-w-6xl space-y-5">
             <h2 className="font-heading text-3xl font-bold">Кому подойдет программа</h2>
             <div className="grid gap-4">
-              {audience.map((item, index) => (
+              {audienceList.map((item, index) => (
                 <article key={item} className="relative overflow-hidden rounded-2xl border bg-card p-6">
                   <span className="pointer-events-none absolute -left-6 top-0 h-full w-4 -rotate-12 bg-red-600/10" />
                   <span className="pointer-events-none absolute right-10 top-0 h-full w-3 rotate-6 bg-red-600/10" />
@@ -848,12 +878,9 @@ export default function CourseNonDischarge() {
                 <h3 className="font-heading text-3xl font-bold leading-tight">{materialsTitle}</h3>
                 <p className="mt-5 text-lg leading-relaxed text-white/90">{materialsDescription}</p>
                 <ul className="mt-7 list-disc space-y-2 pl-5 text-base text-white/90">
-                  <li>Анкета клиента «риски неосвобождения»</li>
-                  <li>Чек-лист «что нельзя делать до/во время банкротства»</li>
-                  <li>Матрица риска (скоринг клиента)</li>
-                  <li>Шаблон объяснений должника для суда</li>
-                  <li>Шаблон ответа на возражения кредитора/ФНС</li>
-                  <li>Регламент коммуникации должник ↔ юрист ↔ ФУ</li>
+                  {materialsIncludes.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
                 </ul>
               </article>
 
@@ -916,7 +943,7 @@ export default function CourseNonDischarge() {
           <div className="container max-w-6xl space-y-5">
             <h2 className="font-heading text-3xl font-bold">Преимущества курса</h2>
             <div className="grid gap-4 md:grid-cols-2">
-              {sellingPoints.map((item) => (
+              {sellingPointsList.map((item) => (
                 <article key={item} className="relative overflow-hidden rounded-2xl border bg-card p-6">
                   <span className="pointer-events-none absolute -left-5 top-0 h-full w-3 -rotate-12 bg-red-600/10" />
                   <span className="pointer-events-none absolute right-10 top-0 h-full w-2 rotate-6 bg-red-600/10" />
@@ -932,7 +959,7 @@ export default function CourseNonDischarge() {
           <div className="container max-w-6xl space-y-5">
             <h2 className="font-heading text-3xl font-bold">Отвечаем на вопросы</h2>
             <div className="space-y-3">
-              {faqItems.map((faq, index) => {
+              {faqList.map((faq, index) => {
                 const isOpen = openFaqIndex === index;
                 return (
                   <article key={faq.question} className="overflow-hidden rounded-2xl border bg-card">
@@ -967,13 +994,11 @@ export default function CourseNonDischarge() {
               <span className="pointer-events-none absolute left-[5%] top-0 h-full w-4 -rotate-12 bg-red-600/10" />
               <span className="pointer-events-none absolute left-[42%] top-0 h-full w-3 rotate-[8deg] bg-red-600/10" />
               <span className="pointer-events-none absolute right-[12%] top-0 h-full w-4 -rotate-[6deg] bg-red-600/10" />
-              <h2 className="relative font-heading text-3xl font-bold">Готовы защитить клиентов от неосвобождения?</h2>
-              <p className="relative mt-3 text-muted-foreground">
-                Оставьте заявку — пришлём программу, формат участия и условия потока.
-              </p>
+              <h2 className="relative font-heading text-3xl font-bold">{ctaTitle}</h2>
+              <p className="relative mt-3 text-muted-foreground">{ctaDescription}</p>
               <div className="relative mt-6">
                 <a href="#course-form">
-                  <Button className="h-12 px-8 text-base">Открыть форму заявки</Button>
+                  <Button className="h-12 px-8 text-base">{ctaButtonText}</Button>
                 </a>
               </div>
             </div>

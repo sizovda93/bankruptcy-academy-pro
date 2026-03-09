@@ -5,7 +5,7 @@ import { Award, BookOpenCheck, Target, TrendingUp, Users, Sparkles, Minus, Plus 
 import { Button } from "@/components/ui/button";
 import { LeadFormContent } from "@/components/LeadFormSection";
 import CourseInstallmentBlock from "@/components/course/CourseInstallmentBlock";
-import { api, StudentCase, Teacher } from "@/lib/api";
+import { api, Course, StudentCase, Teacher } from "@/lib/api";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -173,7 +173,7 @@ const faqItems = [
   },
 ];
 
-const teamOrder = ["артин", "дрыгваль", "лященко"];
+const teamOrderFallback = ["артин", "дрыгваль", "лященко"];
 
 const teamFallback: Teacher[] = [
   {
@@ -316,6 +316,7 @@ const fallbackStudentCases: StudentCase[] = [
 ];
 
 export default function CourseSalesPromotion() {
+  const [course, setCourse] = useState<Course | null>(null);
   const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [studentCases, setStudentCases] = useState<StudentCase[]>(fallbackStudentCases);
   const [openLessonIndex, setOpenLessonIndex] = useState<number | null>(0);
@@ -361,6 +362,8 @@ export default function CourseSalesPromotion() {
           return;
         }
 
+        setCourse(salesCourse);
+
         const data = await api.studentCases.list(true, salesCourse?.id);
         setStudentCases(data?.length ? data : fallbackStudentCases);
       } catch {
@@ -389,6 +392,47 @@ export default function CourseSalesPromotion() {
     fetchCases();
     fetchSettings();
   }, []);
+
+  const heroTitle = course?.hero_title || "Как продавать на 1,5 млн рублей";
+  const heroSubtitle =
+    course?.hero_subtitle || course?.description || "Практический курс по продажам юридических услуг в нише долгов/банкротства";
+  const heroDescription = course?.hero_description || course?.benefits || "";
+  const heroHighlights = course?.hero_highlights?.length ? course.hero_highlights : highlights;
+  const introTitle =
+    course?.intro_title || "Продажи начинаются с доверия — клиент не покупает услугу, он покупает уверенность и безопасное будущее";
+  const introDescription =
+    course?.intro_description ||
+    "Этот курс — про системный подход к продажам юридических услуг: как формировать доверие и готовность клиента действовать, как проводить аудит → встреча → договор, как не конкурировать по цене и продавать дороже, как управлять конверсией и метриками, как строить серийные касания и превращать клиента в агента/рекомендателя.";
+  const learningResults = course?.learning_results?.length ? course.learning_results : results;
+  const programBadge = course?.program_badge || "6 занятий + практика";
+  const programFeatures = course?.program_features?.length
+    ? course.program_features
+    : ["Дистанционное обучение в удобном формате", "Практические задания уровня «взял и внедрил»"];
+  const programFormatTitle = course?.program_format_title || "Что будет на курсе";
+  const programFormatDescription =
+    course?.program_format_description || "Теория продаж, психология клиента, скрипты, метрики, практические разборы кейсов.";
+  const lessonsList = course?.lessons?.length ? course.lessons : lessons;
+  const practiceTasks = course?.practice_tasks?.length ? course.practice_tasks : tasks;
+  const audienceList = course?.target_audience?.length ? course.target_audience : audience;
+  const sellingPointsList = course?.selling_points?.length ? course.selling_points : sellingPoints;
+  const faqList = course?.faq_items?.length ? course.faq_items : faqItems;
+  const materialsIncludes = course?.materials_includes?.length
+    ? course.materials_includes
+    : [
+        "Скрипты продаж для консультаций по банкротству и работе с долгами",
+        "Чек-листы триггеров доверия и техники работы с возражениями клиентов",
+        "Шаблоны для выстраивания системы касаний и агентских программ",
+        "Метрики отслеживания конверсии на каждом этапе воронки продаж",
+      ];
+  const specialOfferTitle = course?.special_offer_title || "Специальное предложение для комплексного обучения";
+  const specialOfferDescription = course?.special_offer_description || "При покупке всех курсов сразу, скидка 20% на все";
+  const specialOfferBadge = course?.special_offer_badge || "-20%";
+  const specialOfferButtonText = course?.special_offer_button_text || "Забронировать цену со скидкой";
+  const ctaTitle = course?.cta_title || "Готовы вывести продажи на новый уровень?";
+  const ctaDescription = course?.cta_description || "Оставьте заявку — пришлём программу, формат участия и условия потока.";
+  const ctaButtonText = course?.cta_button_text || "Открыть форму заявки";
+  const teamOrder = course?.team_order?.length ? course.team_order : teamOrderFallback;
+  const resultIcons = [Target, Users, Award, TrendingUp, BookOpenCheck, Sparkles];
 
   const teamMembers = useMemo(() => {
     const found = teamOrder
@@ -481,18 +525,12 @@ export default function CourseSalesPromotion() {
             <div className="grid gap-6 rounded-3xl bg-gradient-to-br from-primary via-primary-glow to-emerald-500 p-6 sm:p-8 lg:grid-cols-2 lg:p-10">
               <div className="text-white">
                 <h1 className="font-heading text-4xl font-bold leading-tight sm:text-5xl">
-                  Как продавать на 1,5 млн рублей
+                  {heroTitle}
                 </h1>
-                <p className="mt-2 text-lg font-medium text-white/90">
-                  Практический курс по продажам юридических услуг в нише долгов/банкротства
-                </p>
-                <p className="mt-6 text-lg leading-relaxed text-white/90 sm:text-xl">
-                  Как продавать юридические услуги по банкротству на чеки 300–800 тыс и выстраивать продажи до 1,5 млн в
-                  месяц: технология консультации и доверия, воронка и метрики, отстройка от конкурентов без скидок,
-                  типология клиентов, система касаний и превращение доверителей в источник рекомендаций.
-                </p>
+                <p className="mt-2 text-lg font-medium text-white/90">{heroSubtitle}</p>
+                <p className="mt-6 text-lg leading-relaxed text-white/90 sm:text-xl">{heroDescription}</p>
                 <div className="mt-8 grid gap-3">
-                  {highlights.map((item) => (
+                  {heroHighlights.map((item) => (
                     <div key={item} className="rounded-xl border border-white/20 bg-white/10 p-3 text-sm font-medium text-white">
                       {item}
                     </div>
@@ -517,16 +555,8 @@ export default function CourseSalesPromotion() {
               </div>
 
               <div className="relative grid gap-6 lg:grid-cols-2 lg:gap-10">
-                <h2 className="font-heading text-2xl font-semibold text-foreground sm:text-3xl">
-                  <span className="font-bold text-primary">Продажи начинаются с доверия</span> — клиент не покупает
-                  услугу, он покупает уверенность и безопасное будущее
-                </h2>
-                <p className="text-base leading-relaxed text-foreground sm:text-lg">
-                  Этот курс — про системный подход к продажам юридических услуг: как формировать доверие и готовность
-                  клиента действовать, как проводить аудит → встреча → договор, как не конкурировать по цене и продавать
-                  дороже, как управлять конверсией и метриками, как строить серийные касания и превращать клиента в
-                  агента/рекомендателя.
-                </p>
+                <h2 className="font-heading text-2xl font-semibold text-foreground sm:text-3xl">{introTitle}</h2>
+                <p className="text-base leading-relaxed text-foreground sm:text-lg">{introDescription}</p>
               </div>
             </article>
           </div>
@@ -536,8 +566,8 @@ export default function CourseSalesPromotion() {
           <div className="container max-w-6xl space-y-6">
             <h2 className="font-heading text-3xl font-bold">Что вы получите на выходе</h2>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {results.map((item) => {
-                const Icon = item.icon;
+              {learningResults.map((item, index) => {
+                const Icon = resultIcons[index] || Target;
                 return (
                   <article key={item.title} className="rounded-2xl border bg-card p-5">
                     <div className="flex items-start gap-3">
@@ -608,7 +638,7 @@ export default function CourseSalesPromotion() {
           <div className="container max-w-6xl space-y-5">
             <div className="flex items-start justify-between gap-4">
               <h2 className="font-heading text-3xl font-bold">Программа обучения</h2>
-              <p className="text-sm font-medium text-primary">6 занятий + практика</p>
+              <p className="text-sm font-medium text-primary">{programBadge}</p>
             </div>
 
             <div className="grid gap-4 md:grid-cols-2">
@@ -616,21 +646,20 @@ export default function CourseSalesPromotion() {
                 <div className="flex items-start gap-3">
                   <Sparkles className="mt-0.5 h-5 w-5 text-primary" />
                   <div className="space-y-2 text-muted-foreground">
-                    <p>Дистанционное обучение в удобном формате</p>
-                    <p>Практические задания уровня «взял и внедрил»</p>
+                    {programFeatures.map((item) => (
+                      <p key={item}>{item}</p>
+                    ))}
                   </div>
                 </div>
               </article>
               <article className="rounded-2xl border bg-card p-5">
-                <h3 className="text-lg font-semibold text-primary">Что будет на курсе</h3>
-                <p className="mt-2 text-muted-foreground">
-                  Теория продаж, психология клиента, скрипты, метрики, практические разборы кейсов.
-                </p>
+                <h3 className="text-lg font-semibold text-primary">{programFormatTitle}</h3>
+                <p className="mt-2 text-muted-foreground">{programFormatDescription}</p>
               </article>
             </div>
 
             <div className="space-y-3">
-              {lessons.map((lesson, index) => {
+              {lessonsList.map((lesson, index) => {
                 const isOpen = openLessonIndex === index;
 
                 return (
@@ -666,7 +695,7 @@ export default function CourseSalesPromotion() {
           <div className="container max-w-6xl space-y-5">
             <h2 className="font-heading text-3xl font-bold">Практические задания</h2>
             <div className="grid gap-4 md:grid-cols-2">
-              {tasks.map((task, index) => (
+              {practiceTasks.map((task, index) => (
                 <article key={task} className="relative overflow-hidden rounded-2xl border bg-card p-5">
                   <span className="pointer-events-none absolute -left-4 top-0 h-full w-3 -rotate-12 bg-primary/10" />
                   <span className="pointer-events-none absolute right-8 top-0 h-full w-2 rotate-6 bg-primary/10" />
@@ -692,19 +721,17 @@ export default function CourseSalesPromotion() {
 
               <div className="relative">
                 <h2 className="text-center font-heading text-3xl font-bold text-foreground">
-                  Специальное предложение для комплексного обучения
+                  {specialOfferTitle}
                 </h2>
-                <p className="mt-3 text-center text-lg font-semibold text-primary">
-                  При покупке всех курсов сразу, скидка 20% на все
-                </p>
+                <p className="mt-3 text-center text-lg font-semibold text-primary">{specialOfferDescription}</p>
 
                 <div className="mx-auto mt-6 flex max-w-3xl flex-wrap justify-center gap-3">
-                  <div className="rounded-xl bg-primary px-6 py-4 text-lg font-bold text-primary-foreground">-20%</div>
+                  <div className="rounded-xl bg-primary px-6 py-4 text-lg font-bold text-primary-foreground">{specialOfferBadge}</div>
                 </div>
 
                 <div className="mt-8">
                   <Button className="h-14 w-full text-base font-semibold" onClick={() => setIsDiscountFormOpen(true)}>
-                    Забронировать цену со скидкой
+                    {specialOfferButtonText}
                   </Button>
                 </div>
               </div>
@@ -721,7 +748,7 @@ export default function CourseSalesPromotion() {
                 <span className="pointer-events-none absolute right-10 top-0 h-full w-3 rotate-6 bg-primary/10" />
                 <span className="absolute right-4 top-4 h-8 w-8 rounded-lg bg-primary/15" />
                 <h3 className="pr-12 text-2xl font-semibold text-foreground">Юристам/аудиторам/менеджерам</h3>
-                <p className="mt-4 text-muted-foreground">{audience[0]}</p>
+                <p className="mt-4 text-muted-foreground">{audienceList[0] || audience[0]}</p>
               </article>
 
               <article className="relative overflow-hidden rounded-2xl border bg-card p-6">
@@ -729,7 +756,7 @@ export default function CourseSalesPromotion() {
                 <span className="pointer-events-none absolute right-16 top-0 h-full w-4 rotate-12 bg-primary/10" />
                 <span className="absolute right-4 top-4 h-8 w-8 rounded-lg bg-primary/15" />
                 <h3 className="pr-12 text-2xl font-semibold text-foreground">Руководителям юридических компаний</h3>
-                <p className="mt-4 text-muted-foreground">{audience[1]}</p>
+                <p className="mt-4 text-muted-foreground">{audienceList[1] || audience[1]}</p>
               </article>
 
               <article className="relative overflow-hidden rounded-2xl border bg-card p-6 md:col-span-2">
@@ -737,7 +764,7 @@ export default function CourseSalesPromotion() {
                 <span className="pointer-events-none absolute left-[58%] top-0 h-full w-3 rotate-[9deg] bg-primary/10" />
                 <span className="absolute right-4 top-4 h-8 w-8 rounded-lg bg-primary/15" />
                 <h3 className="pr-12 text-2xl font-semibold text-foreground">Командам, которые «сливают» лиды</h3>
-                <p className="mt-4 text-muted-foreground">{audience[2]}</p>
+                <p className="mt-4 text-muted-foreground">{audienceList[2] || audience[2]}</p>
               </article>
             </div>
           </div>
@@ -782,10 +809,9 @@ export default function CourseSalesPromotion() {
                 <h3 className="font-heading text-3xl font-bold leading-tight">{guideTitle}</h3>
                 <p className="mt-5 text-lg leading-relaxed text-white/90">{guideDescription}</p>
                 <ul className="mt-7 list-disc space-y-2 pl-5 text-base text-white/90">
-                  <li>Скрипты продаж для консультаций по банкротству и работе с долгами</li>
-                  <li>Чек-листы триггеров доверия и техники работы с возражениями клиентов</li>
-                  <li>Шаблоны для выстраивания системы касаний и агентских программ</li>
-                  <li>Метрики отслеживания конверсии на каждом этапе воронки продаж</li>
+                  {materialsIncludes.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
                 </ul>
               </article>
 
@@ -848,7 +874,7 @@ export default function CourseSalesPromotion() {
           <div className="container max-w-6xl space-y-5">
             <h2 className="font-heading text-3xl font-bold">Ключевые преимущества курса</h2>
             <div className="grid gap-4 md:grid-cols-2">
-              {sellingPoints.map((item) => (
+              {sellingPointsList.map((item) => (
                 <article key={item} className="relative overflow-hidden rounded-2xl border bg-card p-6">
                   <span className="pointer-events-none absolute -left-5 top-0 h-full w-3 -rotate-12 bg-primary/10" />
                   <span className="pointer-events-none absolute right-10 top-0 h-full w-2 rotate-6 bg-primary/10" />
@@ -864,7 +890,7 @@ export default function CourseSalesPromotion() {
           <div className="container max-w-6xl space-y-5">
             <h2 className="font-heading text-3xl font-bold">Отвечаем на вопросы</h2>
             <div className="space-y-3">
-              {faqItems.map((faq, index) => {
+              {faqList.map((faq, index) => {
                 const isOpen = openFaqIndex === index;
                 return (
                   <article key={faq.question} className="overflow-hidden rounded-2xl border bg-card">
@@ -897,13 +923,11 @@ export default function CourseSalesPromotion() {
               <span className="pointer-events-none absolute left-[5%] top-0 h-full w-4 -rotate-12 bg-primary/10" />
               <span className="pointer-events-none absolute left-[42%] top-0 h-full w-3 rotate-[8deg] bg-primary/10" />
               <span className="pointer-events-none absolute right-[12%] top-0 h-full w-4 -rotate-[6deg] bg-primary/10" />
-              <h2 className="relative font-heading text-3xl font-bold">Готовы вывести продажи на новый уровень?</h2>
-              <p className="relative mt-3 text-muted-foreground">
-                Оставьте заявку — пришлём программу, формат участия и условия потока.
-              </p>
+              <h2 className="relative font-heading text-3xl font-bold">{ctaTitle}</h2>
+              <p className="relative mt-3 text-muted-foreground">{ctaDescription}</p>
               <div className="relative mt-6">
                 <a href="#course-form">
-                  <Button className="h-12 px-8 text-base">Открыть форму заявки</Button>
+                  <Button className="h-12 px-8 text-base">{ctaButtonText}</Button>
                 </a>
               </div>
             </div>
@@ -922,4 +946,3 @@ export default function CourseSalesPromotion() {
     </div>
   );
 }
-

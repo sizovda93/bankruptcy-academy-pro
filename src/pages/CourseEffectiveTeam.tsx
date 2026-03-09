@@ -5,7 +5,7 @@ import { Award, BookOpenCheck, Files, Minus, Plus, ShieldCheck, Sparkles, Users,
 import { Button } from "@/components/ui/button";
 import { LeadFormContent } from "@/components/LeadFormSection";
 import CourseInstallmentBlock from "@/components/course/CourseInstallmentBlock";
-import { api, StudentCase, Teacher } from "@/lib/api";
+import { api, Course, StudentCase, Teacher } from "@/lib/api";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -224,7 +224,7 @@ const faqItems = [
   },
 ];
 
-const teamOrder = ["артин", "сизов", "герасимов", "лященко"];
+const teamOrderFallback = ["артин", "сизов", "герасимов", "лященко"];
 
 const teamFallback: Teacher[] = [
   {
@@ -363,6 +363,7 @@ const fallbackStudentCases: StudentCase[] = [
 ];
 
 export default function CourseEffectiveTeam() {
+  const [course, setCourse] = useState<Course | null>(null);
   const [openModuleIndex, setOpenModuleIndex] = useState<number | null>(0);
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -396,6 +397,8 @@ export default function CourseEffectiveTeam() {
           return;
         }
 
+        setCourse(teamCourse);
+
         const data = await api.studentCases.list(true, teamCourse?.id);
         setStudentCases(data?.length ? data : fallbackStudentCases);
       } catch {
@@ -408,6 +411,26 @@ export default function CourseEffectiveTeam() {
     fetchTeachers();
     fetchCases();
   }, []);
+
+  const heroTitle = course?.hero_title || "Эффективная команда";
+  const heroSubtitle = course?.hero_subtitle || course?.description || "Курс для руководителей юридического бизнеса";
+  const heroDescription = course?.hero_description || course?.benefits || "";
+  const heroHighlights = course?.hero_highlights?.length ? course.hero_highlights : highlights;
+  const audienceList = course?.target_audience?.length ? course.target_audience : audience;
+  const learningResults = course?.learning_results?.length ? course.learning_results : sellingPoints.map((item) => ({ title: item, text: "" }));
+  const lessonsList = course?.lessons?.length ? course.lessons : lessons;
+  const programBadge = course?.program_badge || `${lessons.length} модулей`;
+  const practiceTasks = course?.practice_tasks?.length ? course.practice_tasks : practicalTasks;
+  const materialsList = course?.materials_includes?.length ? course.materials_includes : materials;
+  const faqList = course?.faq_items?.length ? course.faq_items : faqItems;
+  const teamOrder = course?.team_order?.length ? course.team_order : teamOrderFallback;
+  const specialOfferTitle = course?.special_offer_title || "Готовы построить эффективную команду?";
+  const specialOfferDescription = course?.special_offer_description || "Записывайтесь на курс и получите готовую систему управления за 8–10 недель";
+  const specialOfferButtonText = course?.special_offer_button_text || "Открыть форму заявки";
+  const ctaTitle = course?.cta_title || "Начните строить команду, которая приносит результат";
+  const ctaDescription =
+    course?.cta_description || "Оставьте заявку — получите программу курса, условия участия и консультацию по подбору формата обучения.";
+  const ctaButtonText = course?.cta_button_text || "Записаться на курс";
 
   const sortedTeachers = useMemo(() => {
     const allTeachers = loadingTeachers ? teamFallback : teachers.length > 0 ? teachers : teamFallback;
@@ -423,7 +446,7 @@ export default function CourseEffectiveTeam() {
     });
 
     return sorted.filter((_, index) => index < teamOrder.length);
-  }, [teachers, loadingTeachers]);
+  }, [teachers, loadingTeachers, teamOrder]);
 
   const toggleModule = (index: number) => {
     setOpenModuleIndex((prev) => (prev === index ? null : index));
@@ -443,14 +466,11 @@ export default function CourseEffectiveTeam() {
           <div className="container max-w-6xl">
             <div className="grid gap-6 rounded-3xl bg-gradient-to-br from-primary via-primary-glow to-blue-500 p-6 sm:p-8 lg:grid-cols-2 lg:p-10">
               <div className="text-white">
-                <h1 className="font-heading text-4xl font-bold leading-tight sm:text-5xl">Эффективная команда</h1>
-                <p className="mt-2 text-lg font-medium text-white/90">Курс для руководителей юридического бизнеса</p>
-                <p className="mt-6 text-lg leading-relaxed text-white/90 sm:text-xl">
-                  Практический курс для руководителей, которые хотят собрать эффективную команду и выйти из операционки:
-                  оргструктура и роли, KPI и мотивация, процессы и регламенты, найм и адаптация.
-                </p>
+                <h1 className="font-heading text-4xl font-bold leading-tight sm:text-5xl">{heroTitle}</h1>
+                <p className="mt-2 text-lg font-medium text-white/90">{heroSubtitle}</p>
+                <p className="mt-6 text-lg leading-relaxed text-white/90 sm:text-xl">{heroDescription}</p>
                 <div className="mt-8 grid gap-3">
-                  {highlights.map((item) => (
+                  {heroHighlights.map((item) => (
                     <div key={item} className="rounded-xl border border-white/20 bg-white/10 p-3 text-sm font-medium text-white">
                       {item}
                     </div>
@@ -469,7 +489,7 @@ export default function CourseEffectiveTeam() {
           <div className="container max-w-6xl space-y-5">
             <h2 className="font-heading text-3xl font-bold">Для кого этот курс</h2>
             <div className="grid gap-4 md:grid-cols-2">
-              {audience.map((item) => (
+              {audienceList.map((item) => (
                 <article key={item} className="relative overflow-hidden rounded-2xl border bg-card p-6">
                   <span className="pointer-events-none absolute -left-6 top-0 h-full w-4 -rotate-12 bg-primary/10" />
                   <span className="pointer-events-none absolute right-10 top-0 h-full w-3 rotate-6 bg-primary/10" />
@@ -486,17 +506,20 @@ export default function CourseEffectiveTeam() {
           <div className="container max-w-6xl space-y-5">
             <h2 className="font-heading text-3xl font-bold">Что будет на выходе</h2>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {sellingPoints.map((item, index) => {
+              {learningResults.map((item, index) => {
                 const icons = [Target, Settings, TrendingUp, Users, Sparkles];
                 const Icon = icons[index % icons.length];
                 return (
-                  <article key={item} className="relative overflow-hidden rounded-2xl border bg-card p-6">
+                  <article key={item.title} className="relative overflow-hidden rounded-2xl border bg-card p-6">
                     <span className="pointer-events-none absolute -left-5 top-0 h-full w-3 -rotate-12 bg-primary/10" />
                     <div className="flex items-start gap-3">
                       <div className="rounded-lg bg-primary/10 p-2">
                         <Icon className="h-5 w-5 text-primary" />
                       </div>
-                      <p className="text-base font-medium text-foreground">{item}</p>
+                      <div>
+                        <p className="text-base font-medium text-foreground">{item.title}</p>
+                        {item.text ? <p className="mt-2 text-sm text-muted-foreground">{item.text}</p> : null}
+                      </div>
                     </div>
                   </article>
                 );
@@ -510,11 +533,11 @@ export default function CourseEffectiveTeam() {
           <div className="container max-w-6xl space-y-5">
             <div className="flex items-start justify-between gap-4">
               <h2 className="font-heading text-3xl font-bold">Программа курса</h2>
-              <p className="text-sm font-medium text-primary">{lessons.length} модулей</p>
+              <p className="text-sm font-medium text-primary">{programBadge}</p>
             </div>
 
             <div className="space-y-3">
-              {lessons.map((lesson, index) => {
+              {lessonsList.map((lesson, index) => {
                 const isOpen = openModuleIndex === index;
                 return (
                   <article key={lesson.title} className="overflow-hidden rounded-2xl border bg-card">
@@ -561,7 +584,7 @@ export default function CourseEffectiveTeam() {
               Курс построен на практике — вы не просто слушаете теорию, а создаёте инструменты для своей команды:
             </p>
             <div className="grid gap-3 md:grid-cols-2">
-              {practicalTasks.map((task) => (
+              {practiceTasks.map((task) => (
                 <article
                   key={task}
                   className="flex items-start gap-3 rounded-xl border bg-card p-4"
@@ -582,7 +605,7 @@ export default function CourseEffectiveTeam() {
               Все участники получают готовые шаблоны и инструменты для внедрения:
             </p>
             <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
-              {materials.map((material) => (
+              {materialsList.map((material) => (
                 <article
                   key={material}
                   className="flex items-start gap-3 rounded-xl border bg-card p-4"
@@ -659,10 +682,10 @@ export default function CourseEffectiveTeam() {
 
               <div className="relative">
                 <h2 className="text-center font-heading text-3xl font-bold text-foreground">
-                  Готовы построить эффективную команду?
+                  {specialOfferTitle}
                 </h2>
                 <p className="mt-3 text-center text-lg text-muted-foreground">
-                  Записывайтесь на курс и получите готовую систему управления за 8–10 недель
+                  {specialOfferDescription}
                 </p>
 
                 <div className="mt-8">
@@ -670,7 +693,7 @@ export default function CourseEffectiveTeam() {
                     className="h-14 w-full text-base font-semibold"
                     onClick={() => setIsFormOpen(true)}
                   >
-                    Открыть форму заявки
+                    {specialOfferButtonText}
                   </Button>
                 </div>
               </div>
@@ -702,7 +725,7 @@ export default function CourseEffectiveTeam() {
           <div className="container max-w-6xl space-y-5">
             <h2 className="font-heading text-3xl font-bold">Часто задаваемые вопросы</h2>
             <div className="space-y-3">
-              {faqItems.map((faq, index) => {
+              {faqList.map((faq, index) => {
                 const isOpen = openFaqIndex === index;
                 return (
                   <article key={faq.question} className="overflow-hidden rounded-2xl border bg-card">
@@ -738,15 +761,14 @@ export default function CourseEffectiveTeam() {
               <span className="pointer-events-none absolute left-[42%] top-0 h-full w-3 rotate-[8deg] bg-primary/10" />
               <span className="pointer-events-none absolute right-[12%] top-0 h-full w-4 -rotate-[6deg] bg-primary/10" />
               <h2 className="relative font-heading text-3xl font-bold">
-                Начните строить команду, которая приносит результат
+                {ctaTitle}
               </h2>
               <p className="relative mt-3 text-muted-foreground">
-                Оставьте заявку — получите программу курса, условия участия и консультацию по подбору формата
-                обучения.
+                {ctaDescription}
               </p>
               <div className="relative mt-6">
                 <Button size="lg" onClick={() => setIsFormOpen(true)}>
-                  Записаться на курс
+                  {ctaButtonText}
                 </Button>
               </div>
             </div>
@@ -766,4 +788,3 @@ export default function CourseEffectiveTeam() {
     </div>
   );
 }
-

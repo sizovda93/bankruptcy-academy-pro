@@ -5,7 +5,7 @@ import { Award, BookOpenCheck, Files, Minus, Plus, ShieldCheck, Sparkles } from 
 import { Button } from "@/components/ui/button";
 import { LeadFormContent } from "@/components/LeadFormSection";
 import CourseInstallmentBlock from "@/components/course/CourseInstallmentBlock";
-import { api, StudentCase, Teacher } from "@/lib/api";
+import { api, Course, StudentCase, Teacher } from "@/lib/api";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -139,7 +139,7 @@ const faqItems = [
   },
 ];
 
-const teamOrder = ["артин", "абукаев", "герасимов", "лященко"];
+const teamOrderFallback = ["артин", "абукаев", "герасимов", "лященко"];
 
 const teamFallback: Teacher[] = [
   {
@@ -298,6 +298,7 @@ const fallbackStudentCases: StudentCase[] = [
 ];
 
 export default function CourseLegalAspectsBfl() {
+  const [course, setCourse] = useState<Course | null>(null);
   const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [studentCases, setStudentCases] = useState<StudentCase[]>(fallbackStudentCases);
   const [openLessonIndex, setOpenLessonIndex] = useState<number | null>(0);
@@ -343,6 +344,8 @@ export default function CourseLegalAspectsBfl() {
           return;
         }
 
+        setCourse(legalCourse);
+
         const data = await api.studentCases.list(true, legalCourse?.id);
         setStudentCases(data?.length ? data : fallbackStudentCases);
       } catch {
@@ -371,6 +374,47 @@ export default function CourseLegalAspectsBfl() {
     fetchCases();
     fetchSettings();
   }, []);
+
+  const heroTitle = course?.hero_title || "Юридические аспекты БФЛ";
+  const heroSubtitle = course?.hero_subtitle || course?.description || "Курс для старта юридической практики БФЛ";
+  const heroDescription = course?.hero_description || course?.benefits || "";
+  const heroHighlights = course?.hero_highlights?.length ? course.hero_highlights : highlights;
+  const introTitle =
+    course?.intro_title || "Быть квалифицированным специалистом в области БФЛ — значит управлять результатом, а не надеяться на случай";
+  const introDescription =
+    course?.intro_description ||
+    "Квалифицированный юрист по банкротству физлиц видит дело системно: оценивает риски до входа в процедуру, выстраивает стратегию под позицию суда и кредиторов, грамотно взаимодействует с арбитражным управляющим и ведёт доверителя к прогнозируемому итогу. Это уровень, на котором вы снижаете процессуальные ошибки, экономите время команды, усиливаете доверие клиентов и формируете устойчивую профессиональную репутацию.";
+  const learningResults = course?.learning_results?.length ? course.learning_results : [
+    { title: "Удостоверение о повышении квалификации", text: "После обучения и итогового тестирования можно получить удостоверение о повышении квалификации." },
+    { title: "Неограниченный доступ к материалам", text: "Конспекты, шаблоны, чек-листы и другие материалы курса остаются у вас без ограничения по времени." },
+    { title: "Готовые шаблоны документов и чек-листы", text: "Практические инструменты для работы по БФЛ: от подготовки дела до сопровождения процедуры." },
+    { title: "Алгоритмы снижения рисков в процедурах БФЛ", text: "Системные подходы к сложным кейсам, торгам, взаимодействию с АУ и оценке рисков на входе." },
+  ];
+  const programBadge = course?.program_badge || "Последние обновления курса";
+  const programFeatures = course?.program_features?.length
+    ? course.program_features
+    : ["Дистанционное обучение в удобном формате", "Живые онлайн-вебинары с доступом к записи"];
+  const programFormatTitle = course?.program_format_title || "Что будет на курсе";
+  const programFormatDescription = course?.program_format_description || "Занятия по теории, практические вебинары, тесты и задания онлайн.";
+  const lessonsList = course?.lessons?.length ? course.lessons : lessons;
+  const audienceList = course?.target_audience?.length ? course.target_audience : audience;
+  const sellingPointsList = course?.selling_points?.length ? course.selling_points : sellingPoints;
+  const faqList = course?.faq_items?.length ? course.faq_items : faqItems;
+  const materialsIncludes = course?.materials_includes?.length
+    ? course.materials_includes
+    : [
+        "Актуальные изменения и практика 2026 года по банкротству граждан",
+        "Чек-листы по подготовке дела и оценке рисков до подачи в суд",
+        "Рабочие рекомендации по взаимодействию с АУ, кредиторами и доверителем",
+      ];
+  const specialOfferTitle = course?.special_offer_title || "Специальное предложение для комплексного обучения";
+  const specialOfferDescription = course?.special_offer_description || "При покупке всех курсов сразу, скидка 20% на все";
+  const specialOfferBadge = course?.special_offer_badge || "-20%";
+  const specialOfferButtonText = course?.special_offer_button_text || "Забронировать цену со скидкой";
+  const ctaTitle = course?.cta_title || "Готовы усилить юридическую практику БФЛ?";
+  const ctaDescription = course?.cta_description || "Оставьте заявку — пришлём программу, формат участия и условия потока.";
+  const ctaButtonText = course?.cta_button_text || "Открыть форму заявки";
+  const teamOrder = course?.team_order?.length ? course.team_order : teamOrderFallback;
 
   const teamMembers = useMemo(() => {
     const found = teamOrder
@@ -462,14 +506,11 @@ export default function CourseLegalAspectsBfl() {
           <div className="container max-w-6xl">
             <div className="grid gap-6 rounded-3xl bg-gradient-to-br from-primary via-primary-glow to-emerald-500 p-6 sm:p-8 lg:grid-cols-2 lg:p-10">
               <div className="text-white">
-                <h1 className="font-heading text-4xl font-bold leading-tight sm:text-5xl">Юридические аспекты БФЛ</h1>
-                <p className="mt-2 text-lg font-medium text-white/90">Курс для старта юридической практики БФЛ</p>
-                <p className="mt-6 text-lg leading-relaxed text-white/90 sm:text-xl">
-                  «Юридические аспекты процедуры банкротства граждан 2.0» — практико-ориентированный курс по банкротству
-                  физлиц от старта до торгов и распределения конкурсной массы.
-                </p>
+                <h1 className="font-heading text-4xl font-bold leading-tight sm:text-5xl">{heroTitle}</h1>
+                <p className="mt-2 text-lg font-medium text-white/90">{heroSubtitle}</p>
+                <p className="mt-6 text-lg leading-relaxed text-white/90 sm:text-xl">{heroDescription}</p>
                 <div className="mt-8 grid gap-3">
-                  {highlights.map((item) => (
+                  {heroHighlights.map((item) => (
                     <div key={item} className="rounded-xl border border-white/20 bg-white/10 p-3 text-sm font-medium text-white">
                       {item}
                     </div>
@@ -491,7 +532,7 @@ export default function CourseLegalAspectsBfl() {
                   <Award className="mt-0.5 h-5 w-5 text-primary" />
                   <div>
                     <p className="text-sm text-muted-foreground">После обучения</p>
-                    <p className="mt-1 text-base font-semibold text-foreground">Удостоверение о повышении квалификации</p>
+                    <p className="mt-1 text-base font-semibold text-foreground">{learningResults[0]?.title}</p>
                   </div>
                 </div>
               </article>
@@ -501,7 +542,7 @@ export default function CourseLegalAspectsBfl() {
                   <BookOpenCheck className="mt-0.5 h-5 w-5 text-primary" />
                   <div>
                     <p className="text-sm text-muted-foreground">Материалы курса</p>
-                    <p className="mt-1 text-base font-semibold text-foreground">Неограниченный доступ к материалам</p>
+                    <p className="mt-1 text-base font-semibold text-foreground">{learningResults[1]?.title}</p>
                   </div>
                 </div>
               </article>
@@ -511,7 +552,7 @@ export default function CourseLegalAspectsBfl() {
                   <Files className="mt-0.5 h-5 w-5 text-primary" />
                   <div>
                     <p className="text-sm text-muted-foreground">Практика в работе</p>
-                    <p className="mt-1 text-base font-semibold text-foreground">Готовые шаблоны документов и чек-листы</p>
+                    <p className="mt-1 text-base font-semibold text-foreground">{learningResults[2]?.title}</p>
                   </div>
                 </div>
               </article>
@@ -521,7 +562,7 @@ export default function CourseLegalAspectsBfl() {
                   <ShieldCheck className="mt-0.5 h-5 w-5 text-primary" />
                   <div>
                     <p className="text-sm text-muted-foreground">Сложные кейсы</p>
-                    <p className="mt-1 text-base font-semibold text-foreground">Алгоритмы снижения рисков в процедурах БФЛ</p>
+                    <p className="mt-1 text-base font-semibold text-foreground">{learningResults[3]?.title}</p>
                   </div>
                 </div>
               </article>
@@ -536,15 +577,8 @@ export default function CourseLegalAspectsBfl() {
               </div>
 
               <div className="relative grid gap-6 lg:grid-cols-2 lg:gap-10">
-                <h2 className="font-heading text-2xl font-semibold text-foreground sm:text-3xl">
-                  <span className="font-bold text-primary">Быть квалифицированным специалистом в области БФЛ</span> — значит управлять результатом, а не надеяться на случай
-                </h2>
-                <p className="text-base leading-relaxed text-foreground sm:text-lg">
-                  Квалифицированный юрист по банкротству физлиц видит дело системно: оценивает риски до входа в процедуру,
-                  выстраивает стратегию под позицию суда и кредиторов, грамотно взаимодействует с арбитражным управляющим и
-                  ведёт доверителя к прогнозируемому итогу. Это уровень, на котором вы снижаете процессуальные ошибки,
-                  экономите время команды, усиливаете доверие клиентов и формируете устойчивую профессиональную репутацию.
-                </p>
+                <h2 className="font-heading text-2xl font-semibold text-foreground sm:text-3xl">{introTitle}</h2>
+                <p className="text-base leading-relaxed text-foreground sm:text-lg">{introDescription}</p>
               </div>
             </article>
           </div>
@@ -604,7 +638,7 @@ export default function CourseLegalAspectsBfl() {
           <div className="container max-w-6xl space-y-5">
             <div className="flex items-start justify-between gap-4">
               <h2 className="font-heading text-3xl font-bold">Программа обучения</h2>
-              <p className="text-sm font-medium text-primary">Последние обновления курса</p>
+              <p className="text-sm font-medium text-primary">{programBadge}</p>
             </div>
 
             <div className="grid gap-4 md:grid-cols-2">
@@ -612,21 +646,22 @@ export default function CourseLegalAspectsBfl() {
                 <div className="flex items-start gap-3">
                   <Sparkles className="mt-0.5 h-5 w-5 text-primary" />
                   <div className="space-y-2 text-muted-foreground">
-                    <p>Дистанционное обучение в удобном формате</p>
-                    <p>Живые онлайн-вебинары с доступом к записи</p>
+                    {programFeatures.map((item) => (
+                      <p key={item}>{item}</p>
+                    ))}
                   </div>
                 </div>
               </article>
               <article className="rounded-2xl border bg-card p-5">
-                <h3 className="text-lg font-semibold text-primary">Что будет на курсе</h3>
-                <p className="mt-2 text-muted-foreground">Занятия по теории, практические вебинары, тесты и задания онлайн.</p>
+                <h3 className="text-lg font-semibold text-primary">{programFormatTitle}</h3>
+                <p className="mt-2 text-muted-foreground">{programFormatDescription}</p>
               </article>
             </div>
 
             <div className="space-y-3">
-              {lessons.map((lesson, index) => {
+              {lessonsList.map((lesson, index) => {
                 const isOpen = openLessonIndex === index;
-                const isLastLesson = index === lessons.length - 1;
+                const isLastLesson = index === lessonsList.length - 1;
                 const materials = [
                   "Конспект и чек-лист по теме",
                   "Шаблоны документов для практики",
@@ -683,19 +718,17 @@ export default function CourseLegalAspectsBfl() {
 
               <div className="relative">
                 <h2 className="text-center font-heading text-3xl font-bold text-foreground">
-                  Специальное предложение для комплексного обучения
+                  {specialOfferTitle}
                 </h2>
-                <p className="mt-3 text-center text-lg font-semibold text-primary">
-                  При покупке всех курсов сразу, скидка 20% на все
-                </p>
+                <p className="mt-3 text-center text-lg font-semibold text-primary">{specialOfferDescription}</p>
 
                 <div className="mx-auto mt-6 flex max-w-3xl flex-wrap justify-center gap-3">
-                  <div className="rounded-xl bg-primary px-6 py-4 text-lg font-bold text-primary-foreground">-20%</div>
+                  <div className="rounded-xl bg-primary px-6 py-4 text-lg font-bold text-primary-foreground">{specialOfferBadge}</div>
                 </div>
 
                 <div className="mt-8">
                   <Button className="h-14 w-full text-base font-semibold" onClick={() => setIsDiscountFormOpen(true)}>
-                    Забронировать цену со скидкой
+                    {specialOfferButtonText}
                   </Button>
                 </div>
               </div>
@@ -712,7 +745,7 @@ export default function CourseLegalAspectsBfl() {
                 <span className="pointer-events-none absolute right-10 top-0 h-full w-3 rotate-6 bg-primary/10" />
                 <span className="absolute right-4 top-4 h-8 w-8 rounded-lg bg-primary/15" />
                 <h3 className="pr-12 text-2xl font-semibold text-foreground">Юристам по БФЛ</h3>
-                <p className="mt-4 text-muted-foreground">{audience[0]}</p>
+                <p className="mt-4 text-muted-foreground">{audienceList[0] || audience[0]}</p>
               </article>
 
               <article className="relative overflow-hidden rounded-2xl border bg-card p-6">
@@ -720,7 +753,7 @@ export default function CourseLegalAspectsBfl() {
                 <span className="pointer-events-none absolute right-16 top-0 h-full w-4 rotate-12 bg-primary/10" />
                 <span className="absolute right-4 top-4 h-8 w-8 rounded-lg bg-primary/15" />
                 <h3 className="pr-12 text-2xl font-semibold text-foreground">Руководителям юридических компаний</h3>
-                <p className="mt-4 text-muted-foreground">{audience[1]}</p>
+                <p className="mt-4 text-muted-foreground">{audienceList[1] || audience[1]}</p>
               </article>
 
               <article className="relative overflow-hidden rounded-2xl border bg-card p-6 md:col-span-2">
@@ -728,7 +761,7 @@ export default function CourseLegalAspectsBfl() {
                 <span className="pointer-events-none absolute left-[58%] top-0 h-full w-3 rotate-[9deg] bg-primary/10" />
                 <span className="absolute right-4 top-4 h-8 w-8 rounded-lg bg-primary/15" />
                 <h3 className="pr-12 text-2xl font-semibold text-foreground">Специалистам без системной подготовки</h3>
-                <p className="mt-4 text-muted-foreground">{audience[2]}</p>
+                <p className="mt-4 text-muted-foreground">{audienceList[2] || audience[2]}</p>
               </article>
             </div>
           </div>
@@ -771,9 +804,9 @@ export default function CourseLegalAspectsBfl() {
                 <h3 className="font-heading text-3xl font-bold leading-tight">{bookTitle}</h3>
                 <p className="mt-5 text-lg leading-relaxed text-white/90">{bookDescription}</p>
                 <ul className="mt-7 list-disc space-y-2 pl-5 text-base text-white/90">
-                  <li>Актуальные изменения и практика 2026 года по банкротству граждан</li>
-                  <li>Чек-листы по подготовке дела и оценке рисков до подачи в суд</li>
-                  <li>Рабочие рекомендации по взаимодействию с АУ, кредиторами и доверителем</li>
+                  {materialsIncludes.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
                 </ul>
               </article>
 
@@ -835,7 +868,7 @@ export default function CourseLegalAspectsBfl() {
           <div className="container max-w-6xl space-y-5">
             <h2 className="font-heading text-3xl font-bold">Преимущества курса</h2>
             <div className="grid gap-4 md:grid-cols-2">
-              {sellingPoints.map((item) => (
+              {sellingPointsList.map((item) => (
                 <article key={item} className="relative overflow-hidden rounded-2xl border bg-card p-6">
                   <span className="pointer-events-none absolute -left-5 top-0 h-full w-3 -rotate-12 bg-primary/10" />
                   <span className="pointer-events-none absolute right-10 top-0 h-full w-2 rotate-6 bg-primary/10" />
@@ -851,7 +884,7 @@ export default function CourseLegalAspectsBfl() {
           <div className="container max-w-6xl space-y-5">
             <h2 className="font-heading text-3xl font-bold">Отвечаем на вопросы</h2>
             <div className="space-y-3">
-              {faqItems.map((faq, index) => {
+              {faqList.map((faq, index) => {
                 const isOpen = openFaqIndex === index;
                 return (
                   <article key={faq.question} className="overflow-hidden rounded-2xl border bg-card">
@@ -886,9 +919,9 @@ export default function CourseLegalAspectsBfl() {
               <span className="pointer-events-none absolute left-[5%] top-0 h-full w-4 -rotate-12 bg-primary/10" />
               <span className="pointer-events-none absolute left-[42%] top-0 h-full w-3 rotate-[8deg] bg-primary/10" />
               <span className="pointer-events-none absolute right-[12%] top-0 h-full w-4 -rotate-[6deg] bg-primary/10" />
-              <h2 className="relative font-heading text-3xl font-bold">Готовы усилить юридическую практику БФЛ?</h2>
-              <p className="relative mt-3 text-muted-foreground">Оставьте заявку — пришлём программу, формат участия и условия потока.</p>
-              <div className="relative mt-6"><Button className="h-12 px-8 text-base" onClick={() => setIsFormOpen(true)}>Открыть форму заявки</Button></div>
+              <h2 className="relative font-heading text-3xl font-bold">{ctaTitle}</h2>
+              <p className="relative mt-3 text-muted-foreground">{ctaDescription}</p>
+              <div className="relative mt-6"><Button className="h-12 px-8 text-base" onClick={() => setIsFormOpen(true)}>{ctaButtonText}</Button></div>
             </div>
           </div>
         </section>

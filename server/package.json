@@ -8,7 +8,8 @@
     "start": "node dist/index.js",
     "build": "tsc",
     "migrate": "tsx src/migrate.ts",
-    "migrate:seed": "tsx src/migrate.ts --seed"
+    "migrate:seed": "tsx src/migrate.ts --seed",
+    "migrate:media": "tsx src/migrate-media-to-db.ts"
   },
   "dependencies": {
     "cors": "^2.8.5",

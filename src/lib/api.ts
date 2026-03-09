@@ -50,8 +50,33 @@ export interface Course {
   
   // Hero section
   hero_title?: string;
+  hero_subtitle?: string;
   hero_description?: string;
   hero_highlights?: string[];
+
+  intro_title?: string;
+  intro_description?: string;
+  learning_results?: Array<{
+    title: string;
+    text: string;
+  }>;
+
+  program_badge?: string;
+  program_features?: string[];
+  program_format_title?: string;
+  program_format_description?: string;
+  practice_tasks?: string[];
+
+  special_offer_title?: string;
+  special_offer_description?: string;
+  special_offer_badge?: string;
+  special_offer_button_text?: string;
+
+  materials_includes?: string[];
+
+  cta_title?: string;
+  cta_description?: string;
+  cta_button_text?: string;
   
   // Target audience
   target_audience?: string[];
