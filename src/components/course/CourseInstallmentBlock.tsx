@@ -41,8 +41,8 @@ export default function CourseInstallmentBlock({ courseName }: CourseInstallment
                 Оплата курса в рассрочку на 4 месяца
               </h2>
               <p className="mt-4 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-                Если хотите начать обучение без полной оплаты сразу, оставьте заявку. Поможем оформить рассрочку,
-                расскажем по графику платежей и подберем удобный формат участия
+                Если хотите начать обучение без полной оплаты сразу, оставьте заявку. Поможем оформить
+                рассрочку, расскажем по графику платежей и подберем удобный формат участия
                 {courseName ? ` для курса «${courseName}».` : "."}
               </p>
             </div>
@@ -61,8 +61,8 @@ export default function CourseInstallmentBlock({ courseName }: CourseInstallment
 
             <div className="relative mt-8 rounded-2xl border border-primary/15 bg-primary/5 p-4 sm:p-5">
               <p className="text-sm leading-relaxed text-foreground/80 sm:text-base">
-                Оставьте заявку в форме справа. Мы свяжемся с вами, уточним детали по курсу и предложим вариант оплаты
-                с распределением на четыре месяца.
+                Оставьте заявку в форме справа. Мы свяжемся с вами, уточним детали по курсу и предложим
+                вариант оплаты с распределением на четыре месяца.
               </p>
             </div>
           </div>

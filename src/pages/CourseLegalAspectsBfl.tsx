@@ -559,7 +559,15 @@ export default function CourseLegalAspectsBfl() {
                   <div className="flex items-center gap-4">
                     <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-full bg-muted aspect-square">
                       {member.photo_url ? (
-                        <img src={member.photo_url} alt={member.full_name} className="h-full w-full object-cover object-center" />
+                        <img
+                          src={member.photo_url}
+                          alt={member.full_name}
+                          className={`h-full w-full ${
+                            member.full_name.includes("Артин")
+                              ? "object-contain object-center p-1"
+                              : "object-cover object-center"
+                          }`}
+                        />
                       ) : (
                         <div className="flex h-full w-full items-center justify-center bg-primary/15 text-2xl font-bold text-primary">
                           {member.full_name

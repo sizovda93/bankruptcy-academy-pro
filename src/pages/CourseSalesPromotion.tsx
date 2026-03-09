@@ -566,7 +566,11 @@ export default function CourseSalesPromotion() {
                         <img
                           src={member.photo_url}
                           alt={member.full_name}
-                          className="h-full w-full object-cover object-center"
+                          className={`h-full w-full ${
+                            member.full_name.includes("Артин")
+                              ? "object-contain object-center p-1"
+                              : "object-cover object-center"
+                          }`}
                         />
                       ) : (
                         <div className="flex h-full w-full items-center justify-center bg-primary/15 text-2xl font-bold text-primary">

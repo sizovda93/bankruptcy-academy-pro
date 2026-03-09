@@ -555,7 +555,7 @@ export default function CourseTransactionDisputes() {
       <main className="animate-page-enter">
         <section className="py-16 sm:py-20">
           <div className="container max-w-6xl">
-            <div className="grid gap-6 rounded-3xl bg-gradient-to-br from-primary via-primary-glow to-emerald-500 p-6 sm:p-8 lg:grid-cols-2 lg:p-10">
+            <div className="grid gap-6 rounded-3xl bg-gradient-to-br from-red-600 via-red-500 to-orange-500 p-6 sm:p-8 lg:grid-cols-2 lg:p-10">
               <div className="text-white">
                 <h1 className="font-heading text-4xl font-bold leading-tight sm:text-5xl">
                   Оспаривание сделок в БФЛ
@@ -585,15 +585,15 @@ export default function CourseTransactionDisputes() {
           <div className="container max-w-6xl">
             <article className="relative overflow-hidden rounded-3xl border bg-card p-6 sm:p-8">
               <div className="pointer-events-none absolute inset-0">
-                <span className="absolute left-[6%] top-[12%] h-[120%] w-6 -rotate-12 bg-primary/10" />
-                <span className="absolute left-[38%] top-[-10%] h-[130%] w-4 rotate-6 bg-primary/10" />
-                <span className="absolute left-[62%] top-[5%] h-[120%] w-5 -rotate-[18deg] bg-primary/10" />
-                <span className="absolute left-[83%] top-[-6%] h-[140%] w-3 rotate-12 bg-primary/10" />
+                <span className="absolute left-[6%] top-[12%] h-[120%] w-6 -rotate-12 bg-red-600/10" />
+                <span className="absolute left-[38%] top-[-10%] h-[130%] w-4 rotate-6 bg-red-600/10" />
+                <span className="absolute left-[62%] top-[5%] h-[120%] w-5 -rotate-[18deg] bg-red-600/10" />
+                <span className="absolute left-[83%] top-[-6%] h-[140%] w-3 rotate-12 bg-red-600/10" />
               </div>
 
               <div className="relative grid gap-6 lg:grid-cols-2 lg:gap-10">
                 <h2 className="font-heading text-2xl font-semibold text-foreground sm:text-3xl">
-                  <span className="font-bold text-primary">Защищать должника и/или возвращать активы</span> — системный
+                  <span className="font-bold text-red-600">Защищать должника и/или возвращать активы</span> — системный
                   подход к оспариванию сделок в банкротстве
                 </h2>
                 <p className="text-base leading-relaxed text-foreground sm:text-lg">
@@ -616,7 +616,7 @@ export default function CourseTransactionDisputes() {
                 return (
                   <article key={item.title} className="rounded-2xl border bg-card p-5">
                     <div className="flex items-start gap-3">
-                      <Icon className="mt-0.5 h-6 w-6 flex-shrink-0 text-primary" />
+                      <Icon className="mt-0.5 h-6 w-6 flex-shrink-0 text-red-600" />
                       <div>
                         <h3 className="text-lg font-semibold text-foreground">{item.title}</h3>
                         <p className="mt-2 text-sm text-muted-foreground">{item.text}</p>
@@ -641,10 +641,14 @@ export default function CourseTransactionDisputes() {
                         <img
                           src={member.photo_url}
                           alt={member.full_name}
-                          className="h-full w-full object-cover object-center"
+                          className={`h-full w-full ${
+                            member.full_name.includes("Артин")
+                              ? "object-contain object-center p-1"
+                              : "object-cover object-center"
+                          }`}
                         />
                       ) : (
-                        <div className="flex h-full w-full items-center justify-center bg-primary/15 text-2xl font-bold text-primary">
+                        <div className="flex h-full w-full items-center justify-center bg-red-600/15 text-2xl font-bold text-red-600">
                           {member.full_name
                             .split(" ")
                             .filter(Boolean)
@@ -657,7 +661,7 @@ export default function CourseTransactionDisputes() {
                     </div>
                     <div>
                       <h3 className="font-heading text-2xl font-bold leading-tight text-foreground">{member.full_name}</h3>
-                      <p className="mt-1 text-sm font-medium text-primary">Эксперт курса</p>
+                      <p className="mt-1 text-sm font-medium text-red-600">Эксперт курса</p>
                     </div>
                   </div>
 
@@ -666,7 +670,7 @@ export default function CourseTransactionDisputes() {
                   ) : null}
                   {member.bio ? <p className="mt-3 text-foreground">{member.bio}</p> : null}
                   <p className="mt-3 text-sm text-foreground">
-                    <span className="font-semibold text-primary">Экспертиза:</span>{" "}
+                    <span className="font-semibold text-red-600">Экспертиза:</span>{" "}
                     {member.expertise?.trim() || getTeamExpertise(member.full_name)}
                   </p>
                 </article>
@@ -679,13 +683,13 @@ export default function CourseTransactionDisputes() {
           <div className="container max-w-6xl space-y-5">
             <div className="flex items-start justify-between gap-4">
               <h2 className="font-heading text-3xl font-bold">Программа обучения</h2>
-              <p className="text-sm font-medium text-primary">15 модулей + экзамен</p>
+              <p className="text-sm font-medium text-red-600">15 модулей + экзамен</p>
             </div>
 
             <div className="grid gap-4 md:grid-cols-2">
               <article className="rounded-2xl border bg-card p-5">
                 <div className="flex items-start gap-3">
-                  <Sparkles className="mt-0.5 h-5 w-5 text-primary" />
+                  <Sparkles className="mt-0.5 h-5 w-5 text-red-600" />
                   <div className="space-y-2 text-muted-foreground">
                     <p>Дистанционное обучение в удобном формате</p>
                     <p>Домашние задания после каждого модуля</p>
@@ -693,7 +697,7 @@ export default function CourseTransactionDisputes() {
                 </div>
               </article>
               <article className="rounded-2xl border bg-card p-5">
-                <h3 className="text-lg font-semibold text-primary">Что будет на курсе</h3>
+                <h3 className="text-lg font-semibold text-red-600">Что будет на курсе</h3>
                 <p className="mt-2 text-muted-foreground">
                   Теория, практические разборы кейсов, шаблоны документов, чат сопровождения.
                 </p>
@@ -712,7 +716,7 @@ export default function CourseTransactionDisputes() {
                       className="flex w-full items-center justify-between gap-4 p-5 text-left"
                     >
                       <h3 className="font-heading text-xl font-semibold text-foreground">{module.title}</h3>
-                      <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                      <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-red-600/10 text-red-600">
                         {isOpen ? <Minus className="h-5 w-5" /> : <Plus className="h-5 w-5" />}
                       </span>
                     </button>
@@ -745,7 +749,7 @@ export default function CourseTransactionDisputes() {
                 <h2 className="text-center font-heading text-3xl font-bold text-foreground">
                   Специальное предложение для комплексного обучения
                 </h2>
-                <p className="mt-3 text-center text-lg font-semibold text-primary">
+                <p className="mt-3 text-center text-lg font-semibold text-red-600">
                   При покупке всех курсов сразу, скидка 20% на все
                 </p>
 
@@ -754,7 +758,7 @@ export default function CourseTransactionDisputes() {
                 </div>
 
                 <div className="mt-8">
-                  <Button className="h-14 w-full text-base font-semibold" onClick={() => setIsDiscountFormOpen(true)}>
+                    <Button className="h-14 w-full bg-red-600 text-base font-semibold text-white hover:bg-red-700" onClick={() => setIsDiscountFormOpen(true)}>
                     Забронировать цену со скидкой
                   </Button>
                 </div>
@@ -769,11 +773,11 @@ export default function CourseTransactionDisputes() {
             <div className="grid gap-4">
               {audience.map((item, index) => (
                 <article key={item} className="relative overflow-hidden rounded-2xl border bg-card p-6">
-                  <span className="pointer-events-none absolute -left-6 top-0 h-full w-4 -rotate-12 bg-primary/10" />
-                  <span className="pointer-events-none absolute right-10 top-0 h-full w-3 rotate-6 bg-primary/10" />
-                  <span className="absolute right-4 top-4 h-8 w-8 rounded-lg bg-primary/15" />
+                    <span className="pointer-events-none absolute -left-6 top-0 h-full w-4 -rotate-12 bg-red-600/10" />
+                    <span className="pointer-events-none absolute right-10 top-0 h-full w-3 rotate-6 bg-red-600/10" />
+                    <span className="absolute right-4 top-4 h-8 w-8 rounded-lg bg-red-600/15" />
                   <div className="relative flex items-start gap-4">
-                    <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-primary text-lg font-bold text-primary-foreground">
+                    <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-red-600 text-lg font-bold text-white">
                       {index + 1}
                     </span>
                     <p className="pt-1 text-muted-foreground">{item}</p>
@@ -793,7 +797,7 @@ export default function CourseTransactionDisputes() {
                   <h3 className="text-2xl font-semibold text-foreground">{item.student_name}</h3>
                   {item.student_role ? <p className="mt-2 text-muted-foreground">{item.student_role}</p> : null}
                   <p className="mt-6 text-lg leading-relaxed text-foreground/80">{item.case_text}</p>
-                  {item.result_text ? <p className="mt-5 text-base font-semibold text-primary">{item.result_text}</p> : null}
+                  {item.result_text ? <p className="mt-5 text-base font-semibold text-red-600">{item.result_text}</p> : null}
                 </article>
               ))}
             </div>
@@ -875,7 +879,7 @@ export default function CourseTransactionDisputes() {
 
                   <Button
                     type="submit"
-                    className="mt-2 h-14 w-full rounded-xl bg-foreground text-base font-semibold text-background hover:bg-foreground/90"
+                    className="mt-2 h-14 w-full rounded-xl bg-red-600 text-base font-semibold text-white hover:bg-red-700"
                     disabled={!materialsConsentPolicy || materialsSubmitting}
                   >
                     {materialsSubmitting ? "Отправка..." : "Получить материалы и скачать"}
@@ -892,9 +896,9 @@ export default function CourseTransactionDisputes() {
             <div className="grid gap-4 md:grid-cols-2">
               {sellingPoints.map((item) => (
                 <article key={item} className="relative overflow-hidden rounded-2xl border bg-card p-6">
-                  <span className="pointer-events-none absolute -left-5 top-0 h-full w-3 -rotate-12 bg-primary/10" />
-                  <span className="pointer-events-none absolute right-10 top-0 h-full w-2 rotate-6 bg-primary/10" />
-                  <span className="absolute right-4 top-4 h-8 w-8 rounded-lg bg-primary/15" />
+                  <span className="pointer-events-none absolute -left-5 top-0 h-full w-3 -rotate-12 bg-red-600/10" />
+                  <span className="pointer-events-none absolute right-10 top-0 h-full w-2 rotate-6 bg-red-600/10" />
+                  <span className="absolute right-4 top-4 h-8 w-8 rounded-lg bg-red-600/15" />
                   <p className="pr-12 text-xl font-semibold text-foreground">{item}</p>
                 </article>
               ))}
@@ -916,13 +920,13 @@ export default function CourseTransactionDisputes() {
                       className="flex w-full items-center justify-between gap-4 p-5 text-left"
                     >
                       <h3 className="text-2xl font-semibold text-foreground">{faq.question}</h3>
-                      <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                      <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-red-600/10 text-red-600">
                         {isOpen ? <Minus className="h-5 w-5" /> : <Plus className="h-5 w-5" />}
                       </span>
                     </button>
                     {isOpen ? (
                       <div className="relative border-t bg-muted/20 p-5">
-                        <span className="pointer-events-none absolute left-6 top-0 h-full w-2 -rotate-12 bg-primary/10" />
+                        <span className="pointer-events-none absolute left-6 top-0 h-full w-2 -rotate-12 bg-red-600/10" />
                         <p className="relative pl-3 text-muted-foreground">{faq.answer}</p>
                       </div>
                     ) : null}
@@ -936,16 +940,16 @@ export default function CourseTransactionDisputes() {
         <section id="apply" className="py-14">
           <div className="container max-w-6xl">
             <div className="relative overflow-hidden rounded-2xl border bg-card p-6 sm:p-8">
-              <span className="pointer-events-none absolute left-[5%] top-0 h-full w-4 -rotate-12 bg-primary/10" />
-              <span className="pointer-events-none absolute left-[42%] top-0 h-full w-3 rotate-[8deg] bg-primary/10" />
-              <span className="pointer-events-none absolute right-[12%] top-0 h-full w-4 -rotate-[6deg] bg-primary/10" />
+              <span className="pointer-events-none absolute left-[5%] top-0 h-full w-4 -rotate-12 bg-red-600/10" />
+              <span className="pointer-events-none absolute left-[42%] top-0 h-full w-3 rotate-[8deg] bg-red-600/10" />
+              <span className="pointer-events-none absolute right-[12%] top-0 h-full w-4 -rotate-[6deg] bg-red-600/10" />
               <h2 className="relative font-heading text-3xl font-bold">Готовы освоить оспаривание сделок в БФЛ?</h2>
               <p className="relative mt-3 text-muted-foreground">
                 Оставьте заявку — пришлём программу, формат участия и условия потока.
               </p>
               <div className="relative mt-6">
                 <a href="#course-form">
-                  <Button className="h-12 px-8 text-base">Открыть форму заявки</Button>
+                  <Button className="h-12 bg-red-600 px-8 text-base text-white hover:bg-red-700">Открыть форму заявки</Button>
                 </a>
               </div>
             </div>
