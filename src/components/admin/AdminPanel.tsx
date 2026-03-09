@@ -20,7 +20,7 @@ export function AdminPanel() {
   const [error, setError] = useState('');
 
   const handleLogin = () => {
-    const adminPassword = '279286';
+    const adminPassword = import.meta.env.VITE_ADMIN_PASSWORD || '279286';
 
     if (password === adminPassword) {
       localStorage.setItem('admin_authenticated', 'true');
