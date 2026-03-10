@@ -13,7 +13,6 @@ export function SiteSettingsManager() {
   const [uploading, setUploading] = useState(false);
   const [copied, setCopied] = useState<string | null>(null);
   const [editOpen, setEditOpen] = useState(false);
-  const [backgroundImage, setBackgroundImage] = useState<string>("");
 
   useEffect(() => {
     fetchSettings();
@@ -97,20 +96,6 @@ export function SiteSettingsManager() {
       setTimeout(() => setCopied(null), 1500);
     } catch {
       toast({ title: "Ошибка", description: "Не удалось скопировать", variant: "destructive" });
-    }
-  };
-
-  const handleBackgroundImageUpload = async (file: File) => {
-    try {
-      setUploading(true);
-      const uploadedImageUrl: string = "https://example.com/path-to-uploaded-image"; // Placeholder for now
-      setBackgroundImage(uploadedImageUrl);
-      handleSettingChange("cover_background", uploadedImageUrl);
-      toast({ title: "Успех", description: "Фон успешно обновлен", variant: "default" });
-    } catch (error: any) {
-      toast({ title: "Ошибка", description: error.message, variant: "destructive" });
-    } finally {
-      setUploading(false);
     }
   };
 
@@ -212,7 +197,7 @@ export function SiteSettingsManager() {
         )}
       </div>
 
-
+      <div className="rounded-lg bg-gradient-to-br from-green-50 to-emerald-50 p-6">
         <h3 className="mb-4 text-xl font-bold">Тексты блоков</h3>
         <div className="space-y-2 text-sm text-gray-600">
           <p>
@@ -225,22 +210,6 @@ export function SiteSettingsManager() {
         <Button onClick={() => setEditOpen(true)} variant="outline" className="mt-4 w-full">
           Редактировать тексты
         </Button>
-      </div>
-
-      <div className="mb-4">
-        <h3 className="text-lg font-medium">Фон обложки</h3>
-        <p className="text-sm text-gray-600 mb-4">Это баннер на постер "Поможем определиться"</p>
-        <input
-          type="file"
-          onChange={(e) => e.target.files && handleBackgroundImageUpload(e.target.files[0])}
-          disabled={uploading}
-        />
-        {backgroundImage && (
-          <div className="mt-4">
-            <p>Текущий фон:</p>
-            <img src={backgroundImage} alt="Текущий фон" className="rounded-lg shadow-md max-w-full h-auto" />
-          </div>
-        )}
       </div>
 
       <Dialog open={editOpen} onOpenChange={setEditOpen}>
