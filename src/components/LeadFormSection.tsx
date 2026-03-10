@@ -2,7 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { api } from "@/lib/api";
 import { toast } from "@/hooks/use-toast";
 
@@ -19,6 +19,14 @@ export const LeadFormContent = ({ compact = false }: LeadFormContentProps) => {
   const [consentPolicy, setConsentPolicy] = useState(false);
   const [consentOffers, setConsentOffers] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [contactBgUrl, setContactBgUrl] = useState<string>("");
+
+  useEffect(() => {
+    api.settings.list().then((data) => {
+      const setting = data?.find((s) => s.setting_key === "contact_block_bg_url");
+      if (setting?.setting_value) setContactBgUrl(setting.setting_value);
+    }).catch(() => {});
+  }, []);
 
   const resetForm = () => {
     setFullName("");
@@ -67,10 +75,22 @@ export const LeadFormContent = ({ compact = false }: LeadFormContentProps) => {
   return (
     <div className={compact ? "grid gap-6" : "grid gap-6 lg:grid-cols-2"}>
           {!compact ? (
-          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary via-primary-glow to-emerald-500 p-8 text-white sm:p-12">
+          <div
+            className="relative overflow-hidden rounded-3xl p-8 text-white sm:p-12"
+            style={
+              contactBgUrl
+                ? { backgroundImage: `url(${contactBgUrl})`, backgroundSize: "cover", backgroundPosition: "center" }
+                : undefined
+            }
+          >
+            {!contactBgUrl && (
+              <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-primary via-primary-glow to-emerald-500" />
+            )}
+            {contactBgUrl && (
+              <div className="absolute inset-0 rounded-3xl bg-black/40" />
+            )}
             <div className="absolute -bottom-12 -right-10 h-56 w-56 rounded-full bg-white/10 blur-2xl" />
-            <div className="absolute -left-10 -top-10 h-40 w-40 rounded-full bg-white/10 blur-2xl" />
-            <div className="relative">
+            <div className="absolute -left-10 -top-10 h-40 w-40 rounded-full bg-white/10 blur-2xl" />            <div className="relative">
               <h3 className="font-heading text-3xl font-bold leading-tight sm:text-4xl">
                 Поможем определиться
               </h3>

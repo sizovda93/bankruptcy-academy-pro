@@ -119,8 +119,7 @@ export function SiteSettingsManager() {
   return (
     <div className="space-y-6">
       <div className="rounded-lg bg-gradient-to-br from-blue-50 to-indigo-50 p-6">
-        <h3 className="mb-4 text-xl font-bold">Фон главного баннера</h3>
-        {settings.hero_background_url ? (
+        <h3 className="mb-4 text-xl font-bold">Фон главного баннера</h3>        {settings.hero_background_url ? (
           <div className="space-y-4">
             <div className="relative h-40 overflow-hidden rounded-lg border-2 border-dashed border-blue-300">
               <img src={settings.hero_background_url} alt="Hero background" className="h-full w-full object-cover" />
@@ -169,7 +168,51 @@ export function SiteSettingsManager() {
         </p>
       </div>
 
-      <div className="rounded-lg bg-gradient-to-br from-green-50 to-emerald-50 p-6">
+      <div className="rounded-lg bg-gradient-to-br from-emerald-50 to-green-50 p-6">
+        <h3 className="mb-4 text-xl font-bold">Фон блока «Поможем определиться»</h3>
+        {settings.contact_block_bg_url ? (
+          <div className="space-y-4">
+            <div className="relative h-40 overflow-hidden rounded-lg border-2 border-dashed border-emerald-300">
+              <img src={settings.contact_block_bg_url} alt="Contact block background" className="h-full w-full object-cover" />
+            </div>
+            <div className="flex flex-col gap-2 sm:flex-row">
+              <Button variant="outline" onClick={() => copyToClipboard(settings.contact_block_bg_url, "contact")}>
+                {copied === "contact" ? <Check size={16} className="mr-2" /> : <Copy size={16} className="mr-2" />}
+                {copied === "contact" ? "Скопировано" : "Копировать URL"}
+              </Button>
+              <Button variant="destructive" onClick={() => clearSetting("contact_block_bg_url", "фон блока")}>
+                <X size={16} className="mr-2" />
+                Удалить
+              </Button>
+              <label className="inline-flex cursor-pointer items-center rounded-md border px-3 py-2 text-sm">
+                <Upload size={16} className="mr-2" />
+                Заменить
+                <Input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => uploadToSetting(e, "contact_block_bg_url", "Фон блока обновлен")}
+                  disabled={uploading}
+                  className="hidden"
+                />
+              </label>
+            </div>
+          </div>
+        ) : (
+          <label className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border-2 border-dashed border-emerald-300 p-8 text-center hover:bg-emerald-50">
+            <Upload size={20} />
+            <span>{uploading ? "Загрузка..." : "Загрузить фон блока"}</span>
+            <Input
+              type="file"
+              accept="image/*"
+              onChange={(e) => uploadToSetting(e, "contact_block_bg_url", "Фон блока загружен")}
+              disabled={uploading}
+              className="hidden"
+            />
+          </label>
+        )}
+      </div>
+
+
         <h3 className="mb-4 text-xl font-bold">Тексты блоков</h3>
         <div className="space-y-2 text-sm text-gray-600">
           <p>
