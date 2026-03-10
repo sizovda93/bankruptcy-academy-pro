@@ -120,6 +120,7 @@ export function SiteSettingsManager() {
     <div className="space-y-6">
       <div className="rounded-lg bg-gradient-to-br from-blue-50 to-indigo-50 p-6">
         <h3 className="mb-4 text-xl font-bold">Фон главного баннера</h3>
+        <p className="text-sm text-gray-600 mb-4">Это баннер на постер "Поможем определиться"</p>
         {settings.hero_background_url ? (
           <div className="space-y-4">
             <div className="relative h-40 overflow-hidden rounded-lg border-2 border-dashed border-blue-300">
