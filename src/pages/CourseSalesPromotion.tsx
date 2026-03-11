@@ -775,30 +775,23 @@ export default function CourseSalesPromotion() {
             <h2 className="font-heading text-3xl font-bold">Кейсы наших студентов</h2>
             <div className="grid gap-4 lg:grid-cols-3">
               {studentCases.map((item) => (
-                <article key={item.id} className="flex flex-col overflow-hidden rounded-3xl border bg-muted/30">
-                  {item.case_video_url && (
-                    <video
-                      src={item.case_video_url}
-                      controls
-                      preload="metadata"
-                      className="aspect-video w-full bg-black"
-                    />
-                  )}
-                  <div className="flex flex-1 flex-col p-6">
-                    <div className="flex items-center gap-3">
-                      {item.case_image_url ? (
-                        <img src={item.case_image_url} alt={item.student_name} className="h-12 w-12 flex-shrink-0 rounded-full object-cover" />
-                      ) : null}
-                      <div>
-                        <h3 className="text-lg font-semibold text-foreground">{item.student_name}</h3>
-                        {item.student_role ? <p className="mt-0.5 text-sm text-muted-foreground">{item.student_role}</p> : null}
-                      </div>
-                    </div>
-                    {item.case_text ? <p className="mt-4 flex-1 text-base leading-relaxed text-foreground/80">{item.case_text}</p> : null}
-                    {item.result_text ? (
-                      <p className="mt-4 rounded-xl bg-primary/10 px-4 py-2 text-sm font-semibold text-primary">{item.result_text}</p>
+                <article key={item.id} className="flex flex-col overflow-hidden rounded-3xl border bg-muted/30 p-6">
+                  <div className="flex items-center gap-3">
+                    {item.case_image_url ? (
+                      <img src={item.case_image_url} alt={item.student_name} className="h-12 w-12 flex-shrink-0 rounded-full object-cover" />
                     ) : null}
+                    <div>
+                      <h3 className="text-lg font-semibold text-foreground">{item.student_name}</h3>
+                      {item.student_role ? <p className="mt-0.5 text-sm text-muted-foreground">{item.student_role}</p> : null}
+                    </div>
                   </div>
+                  {item.case_text ? <p className="mt-4 flex-1 text-base leading-relaxed text-foreground/80">{item.case_text}</p> : null}
+                  {item.result_text ? (
+                    <p className="mt-4 rounded-xl bg-primary/10 px-4 py-2 text-sm font-semibold text-primary">{item.result_text}</p>
+                  ) : null}
+                  {item.case_video_url ? (
+                    <video src={item.case_video_url} controls preload="metadata" className="mt-4 aspect-video w-full rounded-xl bg-black" />
+                  ) : null}
                 </article>
               ))}
             </div>

@@ -398,10 +398,10 @@ export function CourseDetailEditor() {
 
   const saveStudentCase = async () => {
     if (!selectedCourse) return;
-    if (!caseForm.student_name.trim() || !caseForm.case_text.trim()) {
+    if (!caseForm.student_name.trim()) {
       toast({
         title: "Заполните обязательные поля",
-        description: "Укажите имя студента и текст кейса",
+        description: "Укажите имя студента",
         variant: "destructive",
       });
       return;
@@ -1402,8 +1402,32 @@ export function CourseDetailEditor() {
                 />
               </div>
 
+              <div>
+                <FormLabel className="mb-2 block">Аватар студента</FormLabel>
+                {caseForm.case_image_url ? (
+                  <img src={caseForm.case_image_url} alt="Аватар" className="mb-2 h-14 w-14 rounded-full object-cover" />
+                ) : null}
+                <div className="flex items-center gap-2">
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => uploadCaseMedia(e, "case_image_url")}
+                    disabled={uploadingCaseField !== null}
+                    className="cursor-pointer"
+                  />
+                  {uploadingCaseField === "image" ? <span className="text-sm text-gray-500">Загрузка...</span> : null}
+                </div>
+                <p className="mt-1 text-xs text-gray-500">или вставьте URL:</p>
+                <Input
+                  className="mt-1"
+                  value={caseForm.case_image_url}
+                  onChange={(e) => updateCaseForm("case_image_url", e.target.value)}
+                  placeholder="https://..."
+                />
+              </div>
+
               <div className="md:col-span-2">
-                <FormLabel className="mb-2 block">Кейс</FormLabel>
+                <FormLabel className="mb-2 block">Кейс (необязательно)</FormLabel>
                 <Textarea
                   value={caseForm.case_text}
                   onChange={(e) => updateCaseForm("case_text", e.target.value)}
