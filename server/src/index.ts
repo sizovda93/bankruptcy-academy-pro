@@ -25,7 +25,8 @@ app.use(cors({
   origin: ['http://localhost:8080', 'http://localhost:5173', 'http://localhost:3000'],
   credentials: true,
 }));
-app.use(express.json({ limit: '10mb' }));
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 // Статические файлы (загруженные изображения)
 const uploadDir = process.env.UPLOAD_DIR || path.resolve(__dirname, '../../uploads');
