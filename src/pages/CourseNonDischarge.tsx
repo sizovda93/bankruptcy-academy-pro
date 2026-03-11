@@ -847,30 +847,25 @@ export default function CourseNonDischarge() {
             <div className="grid gap-4 lg:grid-cols-4">
               {studentCases.map((item) => (
                 <article key={item.id} className="flex flex-col overflow-hidden rounded-3xl border bg-muted/30">
-                  {(item.case_image_url || item.case_video_url) && (
-                    <div className="relative w-full bg-black">
-                      {item.case_video_url ? (
-                        <video
-                          src={item.case_video_url}
-                          controls
-                          preload="metadata"
-                          className="aspect-video w-full object-cover"
-                        />
-                      ) : (
-                        <img
-                          src={item.case_image_url!}
-                          alt={`Фото кейса ${item.student_name}`}
-                          className="aspect-video w-full object-cover"
-                        />
-                      )}
-                    </div>
+                  {item.case_video_url && (
+                    <video
+                      src={item.case_video_url}
+                      controls
+                      preload="metadata"
+                      className="aspect-video w-full bg-black"
+                    />
                   )}
                   <div className="flex flex-1 flex-col p-5">
-                    <div>
-                      <h3 className="text-lg font-semibold text-foreground">{item.student_name}</h3>
-                      {item.student_role ? <p className="mt-0.5 text-sm text-muted-foreground">{item.student_role}</p> : null}
+                    <div className="flex items-center gap-3">
+                      {item.case_image_url ? (
+                        <img src={item.case_image_url} alt={item.student_name} className="h-12 w-12 flex-shrink-0 rounded-full object-cover" />
+                      ) : null}
+                      <div>
+                        <h3 className="text-lg font-semibold text-foreground">{item.student_name}</h3>
+                        {item.student_role ? <p className="mt-0.5 text-sm text-muted-foreground">{item.student_role}</p> : null}
+                      </div>
                     </div>
-                    <p className="mt-3 flex-1 text-sm leading-relaxed text-foreground/80">{item.case_text}</p>
+                    {item.case_text ? <p className="mt-3 flex-1 text-sm leading-relaxed text-foreground/80">{item.case_text}</p> : null}
                     {item.result_text ? (
                       <p className="mt-4 rounded-xl bg-red-50 px-4 py-2 text-sm font-semibold text-red-600">{item.result_text}</p>
                     ) : null}

@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
-import { Eye, EyeOff, Pencil, Trash2 } from "lucide-react";
+import { Eye, EyeOff, Pencil, Trash2, Upload } from "lucide-react";
 import { api, Course, StudentCase } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,6 +24,11 @@ export function StudentCasesManager() {
   const [open, setOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [selectedCourse, setSelectedCourse] = useState("all");
+  const [caseImage, setCaseImage] = useState<{ url: string; file: File | null }>({ url: "", file: null });
+  const [caseVideo, setCaseVideo] = useState<{ url: string; file: File | null }>({ url: "", file: null });
+  const [uploading, setUploading] = useState<"image" | "video" | null>(null);
+  const imageInputRef = useRef<HTMLInputElement>(null);
+  const videoInputRef = useRef<HTMLInputElement>(null);
 
   const form = useForm({
     defaultValues: {
@@ -32,6 +37,8 @@ export function StudentCasesManager() {
       student_role: "",
       case_text: "",
       result_text: "",
+      case_image_url: "",
+      case_video_url: "",
       display_order: 0,
       is_published: true,
     },
@@ -69,14 +76,46 @@ export function StudentCasesManager() {
     return cases.filter((item) => item.course_id === selectedCourse);
   }, [cases, selectedCourse]);
 
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      setUploading("image");
+      const { publicUrl } = await api.media.uploadToPath(file);
+      setCaseImage({ url: publicUrl, file });
+      form.setValue("case_image_url", publicUrl);
+    } catch (err: any) {
+      toast({ title: "Ошибка загрузки фото", description: err.message, variant: "destructive" });
+    } finally {
+      setUploading(null);
+    }
+  };
+
+  const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      setUploading("video");
+      const { publicUrl } = await api.media.uploadToPath(file);
+      setCaseVideo({ url: publicUrl, file });
+      form.setValue("case_video_url", publicUrl);
+    } catch (err: any) {
+      toast({ title: "Ошибка загрузки видео", description: err.message, variant: "destructive" });
+    } finally {
+      setUploading(null);
+    }
+  };
+
   const onSubmit = async (values: any) => {
     try {
       const payload = {
         course_id: values.course_id || null,
         student_name: values.student_name,
         student_role: values.student_role || null,
-        case_text: values.case_text,
+        case_text: values.case_text || null,
         result_text: values.result_text || null,
+        case_image_url: values.case_image_url || null,
+        case_video_url: values.case_video_url || null,
         display_order: Number(values.display_order) || 0,
         is_published: values.is_published,
       };
@@ -103,11 +142,15 @@ export function StudentCasesManager() {
       course_id: item.course_id || "",
       student_name: item.student_name,
       student_role: item.student_role || "",
-      case_text: item.case_text,
+      case_text: item.case_text || "",
       result_text: item.result_text || "",
+      case_image_url: item.case_image_url || "",
+      case_video_url: item.case_video_url || "",
       display_order: item.display_order || 0,
       is_published: item.is_published,
     });
+    setCaseImage({ url: item.case_image_url || "", file: null });
+    setCaseVideo({ url: item.case_video_url || "", file: null });
     setEditingId(item.id);
     setOpen(true);
   };
@@ -138,6 +181,8 @@ export function StudentCasesManager() {
     if (!nextOpen) {
       form.reset();
       setEditingId(null);
+      setCaseImage({ url: "", file: null });
+      setCaseVideo({ url: "", file: null });
     }
     setOpen(nextOpen);
   };
@@ -150,9 +195,13 @@ export function StudentCasesManager() {
       student_role: "",
       case_text: "",
       result_text: "",
+      case_image_url: "",
+      case_video_url: "",
       display_order: 0,
       is_published: true,
     });
+    setCaseImage({ url: "", file: null });
+    setCaseVideo({ url: "", file: null });
     setOpen(true);
   };
 
@@ -233,13 +282,55 @@ export function StudentCasesManager() {
                 </div>
 
                 <div>
-                  <FormLabel className="mb-2 block">Кейс</FormLabel>
-                  <Textarea {...form.register("case_text")} rows={6} placeholder="Описание результата и внедрения" />
+                  <FormLabel className="mb-2 block">Описание (необязательно)</FormLabel>
+                  <Textarea {...form.register("case_text")} rows={4} placeholder="Описание кейса и результата" />
                 </div>
 
                 <div>
-                  <FormLabel className="mb-2 block">Итог (опционально)</FormLabel>
-                  <Textarea {...form.register("result_text")} rows={3} placeholder="Например: +40% к конверсии в договор" />
+                  <FormLabel className="mb-2 block">Итог (необязательно)</FormLabel>
+                  <Textarea {...form.register("result_text")} rows={2} placeholder="Например: +40% к конверсии в договор" />
+                </div>
+
+                <div>
+                  <FormLabel className="mb-2 block">Фото студента (аватар)</FormLabel>
+                  {caseImage.url && (
+                    <img src={caseImage.url} alt="Фото" className="mb-2 h-16 w-16 rounded-full object-cover" />
+                  )}
+                  <div className="flex items-center gap-2">
+                    <input ref={imageInputRef} type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
+                    <Button type="button" variant="outline" size="sm" disabled={uploading === "image"} onClick={() => imageInputRef.current?.click()}>
+                      <Upload size={14} className="mr-1" />
+                      {uploading === "image" ? "Загрузка..." : "Загрузить фото"}
+                    </Button>
+                    {caseImage.url && (
+                      <Button type="button" variant="ghost" size="sm" onClick={() => { setCaseImage({ url: "", file: null }); form.setValue("case_image_url", ""); }}>
+                        Удалить
+                      </Button>
+                    )}
+                  </div>
+                  <p className="mt-1 text-xs text-gray-500">или вставьте URL:</p>
+                  <Input className="mt-1" {...form.register("case_image_url")} placeholder="https://..." onChange={(e) => { form.setValue("case_image_url", e.target.value); setCaseImage({ url: e.target.value, file: null }); }} />
+                </div>
+
+                <div>
+                  <FormLabel className="mb-2 block">Видео</FormLabel>
+                  {caseVideo.url && (
+                    <video src={caseVideo.url} controls className="mb-2 h-32 w-full rounded-lg bg-black" />
+                  )}
+                  <div className="flex items-center gap-2">
+                    <input ref={videoInputRef} type="file" accept="video/*" className="hidden" onChange={handleVideoUpload} />
+                    <Button type="button" variant="outline" size="sm" disabled={uploading === "video"} onClick={() => videoInputRef.current?.click()}>
+                      <Upload size={14} className="mr-1" />
+                      {uploading === "video" ? "Загрузка..." : "Загрузить видео"}
+                    </Button>
+                    {caseVideo.url && (
+                      <Button type="button" variant="ghost" size="sm" onClick={() => { setCaseVideo({ url: "", file: null }); form.setValue("case_video_url", ""); }}>
+                        Удалить
+                      </Button>
+                    )}
+                  </div>
+                  <p className="mt-1 text-xs text-gray-500">или вставьте URL:</p>
+                  <Input className="mt-1" {...form.register("case_video_url")} placeholder="https://..." onChange={(e) => { form.setValue("case_video_url", e.target.value); setCaseVideo({ url: e.target.value, file: null }); }} />
                 </div>
 
                 <div>
