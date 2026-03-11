@@ -122,6 +122,8 @@ export interface Review {
   comment?: string;
   author_name: string;
   author_avatar_url?: string;
+  review_image_url?: string;
+  review_video_url?: string;
   is_published: boolean;
   page_type?: string;
   page_id?: string;
@@ -189,6 +191,8 @@ export interface StudentCase {
   student_name: string;
   student_role?: string;
   case_text: string;
+  case_image_url?: string;
+  case_video_url?: string;
   case_description?: string;
   result_text?: string;
   result?: string;

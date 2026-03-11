@@ -94,6 +94,23 @@ const ReviewsSection = () => {
 
                   <p className="mb-6 line-clamp-4 text-gray-700">"{review.comment}"</p>
 
+                  {review.review_image_url ? (
+                    <img
+                      src={review.review_image_url}
+                      alt={`Фото к отзыву ${review.author_name}`}
+                      className="mb-4 h-40 w-full rounded-lg object-cover"
+                    />
+                  ) : null}
+
+                  {review.review_video_url ? (
+                    <video
+                      src={review.review_video_url}
+                      controls
+                      preload="metadata"
+                      className="mb-4 h-40 w-full rounded-lg bg-black"
+                    />
+                  ) : null}
+
                   <div className="flex items-center gap-3 border-t border-gray-100 pt-4">
                     {review.author_avatar_url ? (
                       <img src={review.author_avatar_url} alt={review.author_name} className="h-12 w-12 rounded-full object-cover" />

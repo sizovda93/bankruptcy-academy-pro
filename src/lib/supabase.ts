@@ -71,6 +71,8 @@ export interface Review {
   comment?: string;
   author_name: string;
   author_avatar_url?: string;
+  review_image_url?: string;
+  review_video_url?: string;
   is_published: boolean;
   created_at: string;
   updated_at: string;

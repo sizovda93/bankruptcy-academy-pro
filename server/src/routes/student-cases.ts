@@ -35,16 +35,28 @@ router.get('/', async (req: Request, res: Response) => {
 // POST /api/student-cases
 router.post('/', async (req: Request, res: Response) => {
   try {
-    const { course_id, student_name, student_role, case_text, result_text, is_published, display_order } = req.body;
+    const {
+      course_id,
+      student_name,
+      student_role,
+      case_text,
+      case_image_url,
+      case_video_url,
+      result_text,
+      is_published,
+      display_order,
+    } = req.body;
     const result = await query(
-      `INSERT INTO student_cases (course_id, student_name, student_role, case_text, result_text, is_published, display_order)
-       VALUES ($1,$2,$3,$4,$5,$6,$7)
+      `INSERT INTO student_cases (course_id, student_name, student_role, case_text, case_image_url, case_video_url, result_text, is_published, display_order)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
        RETURNING *`,
       [
         course_id || null,
         student_name,
         student_role || null,
         case_text,
+        case_image_url || null,
+        case_video_url || null,
         result_text || null,
         is_published ?? true,
         display_order || 0,
@@ -59,17 +71,29 @@ router.post('/', async (req: Request, res: Response) => {
 // PUT /api/student-cases/:id
 router.put('/:id', async (req: Request, res: Response) => {
   try {
-    const { course_id, student_name, student_role, case_text, result_text, is_published, display_order } = req.body;
+    const {
+      course_id,
+      student_name,
+      student_role,
+      case_text,
+      case_image_url,
+      case_video_url,
+      result_text,
+      is_published,
+      display_order,
+    } = req.body;
     const result = await query(
       `UPDATE student_cases
-       SET course_id=$1, student_name=$2, student_role=$3, case_text=$4, result_text=$5, is_published=$6, display_order=$7, updated_at=CURRENT_TIMESTAMP
-       WHERE id=$8
+       SET course_id=$1, student_name=$2, student_role=$3, case_text=$4, case_image_url=$5, case_video_url=$6, result_text=$7, is_published=$8, display_order=$9, updated_at=CURRENT_TIMESTAMP
+       WHERE id=$10
        RETURNING *`,
       [
         course_id || null,
         student_name,
         student_role || null,
         case_text,
+        case_image_url || null,
+        case_video_url || null,
         result_text || null,
         is_published ?? true,
         display_order || 0,

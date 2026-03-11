@@ -80,7 +80,7 @@ export function MediaUploader() {
           <Upload className="mx-auto mb-4 text-gray-400" size={32} />
           <Input
             type="file"
-            accept="image/*"
+            accept="image/*,video/*,.pdf,.doc,.docx,.rtf,.txt"
             onChange={handleFileUpload}
             disabled={uploading}
             className="hidden"
@@ -88,7 +88,7 @@ export function MediaUploader() {
           />
           <label htmlFor="file-input" className="cursor-pointer">
             <p className="mb-2">Нажми или перетащи файл сюда</p>
-            <p className="text-sm text-gray-500">PNG, JPG, WebP до 10MB</p>
+            <p className="text-sm text-gray-500">Фото, видео и документы до 10MB</p>
           </label>
           {uploading && <p className="mt-4 text-blue-500">Загрузка...</p>}
         </div>
@@ -103,7 +103,15 @@ export function MediaUploader() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {files.map((file) => (
               <div key={file.id} className="border rounded-lg overflow-hidden hover:shadow-lg transition">
-                <img src={file.file_url} alt={file.file_name} className="w-full h-40 object-cover" />
+                {file.file_type?.startsWith('video/') ? (
+                  <video src={file.file_url} controls className="w-full h-40 bg-black" />
+                ) : file.file_type?.startsWith('image/') ? (
+                  <img src={file.file_url} alt={file.file_name} className="w-full h-40 object-cover" />
+                ) : (
+                  <div className="flex h-40 items-center justify-center bg-gray-100 text-sm text-gray-500">
+                    {file.file_name}
+                  </div>
+                )}
                 <div className="p-3">
                   <p className="text-sm font-medium truncate">{file.file_name}</p>
                   <p className="text-xs text-gray-500 mb-3">{new Date(file.created_at).toLocaleDateString('ru-RU')}</p>

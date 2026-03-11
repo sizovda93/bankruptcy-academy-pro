@@ -15,16 +15,48 @@ if (!fs.existsSync(uploadDir)) {
 
 const upload = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: parseInt(process.env.MAX_FILE_SIZE || '10485760') },
+  limits: { fileSize: parseInt(process.env.MAX_FILE_SIZE || '104857600') },
   fileFilter: (_req, file, cb) => {
-    const allowed = /\.(jpg|jpeg|png|gif|webp|svg|avif|pdf|doc|docx|rtf|txt)$/i;
-    if (allowed.test(path.extname(file.originalname))) {
+    const extAllowed = /\.(jpg|jpeg|png|gif|webp|svg|avif|mp4|webm|mov|m4v|avi|mkv|pdf|doc|docx|rtf|txt)$/i;
+    const mimeAllowed =
+      file.mimetype.startsWith('image/') ||
+      file.mimetype.startsWith('video/') ||
+      file.mimetype === 'application/pdf' ||
+      file.mimetype === 'application/msword' ||
+      file.mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
+      file.mimetype === 'application/rtf' ||
+      file.mimetype === 'text/plain';
+
+    if (extAllowed.test(path.extname(file.originalname)) || mimeAllowed) {
       cb(null, true);
     } else {
       cb(new Error('Unsupported file type'));
     }
   },
 });
+
+const runSingleUpload = (req: Request, res: Response): Promise<void> =>
+  new Promise((resolve, reject) => {
+    upload.single('file')(req, res, (err: any) => {
+      if (err) {
+        reject(err);
+        return;
+      }
+      resolve();
+    });
+  });
+
+const respondUploadError = (res: Response, err: any) => {
+  if (err instanceof multer.MulterError) {
+    if (err.code === 'LIMIT_FILE_SIZE') {
+      res.status(413).json({ error: 'File is too large. Max size is 100MB.' });
+      return;
+    }
+    res.status(400).json({ error: err.message });
+    return;
+  }
+  res.status(400).json({ error: err?.message || 'Upload failed' });
+};
 
 const router = Router();
 
@@ -78,8 +110,10 @@ router.get('/:id/content', async (req: Request, res: Response) => {
   }
 });
 
-router.post('/upload', upload.single('file'), async (req: Request, res: Response) => {
+router.post('/upload', async (req: Request, res: Response) => {
   try {
+    await runSingleUpload(req, res);
+
     if (!req.file) {
       res.status(400).json({ error: 'No file provided' });
       return;
@@ -97,12 +131,14 @@ router.post('/upload', upload.single('file'), async (req: Request, res: Response
 
     res.status(201).json(result.rows[0]);
   } catch (err: any) {
-    res.status(500).json({ error: err.message });
+    respondUploadError(res, err);
   }
 });
 
-router.post('/upload-to-path', upload.single('file'), async (req: Request, res: Response) => {
+router.post('/upload-to-path', async (req: Request, res: Response) => {
   try {
+    await runSingleUpload(req, res);
+
     if (!req.file) {
       res.status(400).json({ error: 'No file provided' });
       return;
@@ -119,7 +155,7 @@ router.post('/upload-to-path', upload.single('file'), async (req: Request, res: 
 
     res.status(201).json({ publicUrl: fileUrl, filename: req.file.originalname, mediaId });
   } catch (err: any) {
-    res.status(500).json({ error: err.message });
+    respondUploadError(res, err);
   }
 });
 

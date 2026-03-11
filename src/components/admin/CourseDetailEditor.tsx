@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react";
+﻿import { useEffect, useRef, useState } from "react";
 import { api, Course, StudentCase } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -93,10 +93,14 @@ export function CourseDetailEditor() {
   const [studentCases, setStudentCases] = useState<StudentCase[]>([]);
   const [editingCaseId, setEditingCaseId] = useState<string | null>(null);
   const [caseSaving, setCaseSaving] = useState(false);
+  const [uploadingCaseField, setUploadingCaseField] = useState<"image" | "video" | null>(null);
+  const caseFormRef = useRef<HTMLDivElement | null>(null);
   const [caseForm, setCaseForm] = useState({
     student_name: "",
     student_role: "",
     case_text: "",
+    case_image_url: "",
+    case_video_url: "",
     result_text: "",
     display_order: 0,
     is_published: true,
@@ -342,6 +346,8 @@ export function CourseDetailEditor() {
       student_name: "",
       student_role: "",
       case_text: "",
+      case_image_url: "",
+      case_video_url: "",
       result_text: "",
       display_order: studentCases.length,
       is_published: true,
@@ -358,10 +364,36 @@ export function CourseDetailEditor() {
       student_name: caseItem.student_name || "",
       student_role: caseItem.student_role || "",
       case_text: caseItem.case_text || "",
+      case_image_url: caseItem.case_image_url || "",
+      case_video_url: caseItem.case_video_url || "",
       result_text: caseItem.result_text || "",
       display_order: caseItem.display_order || 0,
       is_published: caseItem.is_published,
     });
+    toast({ title: "Режим редактирования", description: `Кейс: ${caseItem.student_name}` });
+    setTimeout(() => {
+      caseFormRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 0);
+  };
+
+  const uploadCaseMedia = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+    field: "case_image_url" | "case_video_url"
+  ) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      setUploadingCaseField(field === "case_image_url" ? "image" : "video");
+      const { publicUrl } = await api.media.uploadToPath(file);
+      setCaseForm((prev) => ({ ...prev, [field]: publicUrl }));
+      toast({ title: "Успешно", description: field === "case_image_url" ? "Фото кейса загружено" : "Видео кейса загружено" });
+      e.target.value = "";
+    } catch (error: any) {
+      toast({ title: "Ошибка загрузки", description: error.message, variant: "destructive" });
+    } finally {
+      setUploadingCaseField(null);
+    }
   };
 
   const saveStudentCase = async () => {
@@ -382,6 +414,8 @@ export function CourseDetailEditor() {
         student_name: caseForm.student_name.trim(),
         student_role: caseForm.student_role.trim() || null,
         case_text: caseForm.case_text.trim(),
+        case_image_url: caseForm.case_image_url.trim() || null,
+        case_video_url: caseForm.case_video_url.trim() || null,
         result_text: caseForm.result_text.trim() || null,
         display_order: Number(caseForm.display_order) || 0,
         is_published: caseForm.is_published,
@@ -1344,8 +1378,10 @@ export function CourseDetailEditor() {
 
         {/* Кейсы студентов */}
         <TabsContent value="cases" className="space-y-4">
-          <Card className="p-6">
-            <h3 className="mb-4 text-lg font-semibold">Кейсы студентов</h3>
+          <Card className="p-6" ref={caseFormRef}>
+            <h3 className="mb-4 text-lg font-semibold">
+              {editingCaseId ? "Редактирование кейса" : "Кейсы студентов"}
+            </h3>
             <div className="mb-6 grid gap-4 md:grid-cols-2">
               <div>
                 <FormLabel className="mb-2 block">Имя студента</FormLabel>
@@ -1357,14 +1393,6 @@ export function CourseDetailEditor() {
               </div>
 
               <div>
-                <FormLabel className="mb-2 block">Подзаголовок Hero</FormLabel>
-                <Input
-                  value={heroSection.hero_subtitle}
-                  onChange={(e) => setHeroSection((prev) => ({ ...prev, hero_subtitle: e.target.value }))}
-                  placeholder="Короткий подзаголовок под H1"
-                />
-              </div>
-              <div>
                 <FormLabel className="mb-2 block">Статус / роль</FormLabel>
                 <Input
                   value={caseForm.student_role}
@@ -1372,6 +1400,7 @@ export function CourseDetailEditor() {
                   placeholder="Выпускник курса"
                 />
               </div>
+
               <div className="md:col-span-2">
                 <FormLabel className="mb-2 block">Кейс</FormLabel>
                 <Textarea
@@ -1390,6 +1419,61 @@ export function CourseDetailEditor() {
                   rows={3}
                 />
               </div>
+              <div className="space-y-2 md:col-span-2">
+                <FormLabel className="block">Фото кейса</FormLabel>
+                {caseForm.case_image_url ? (
+                  <img
+                    src={caseForm.case_image_url}
+                    alt="Превью фото кейса"
+                    className="h-36 w-full max-w-md rounded-md object-cover"
+                  />
+                ) : null}
+                <div className="flex items-center gap-2">
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => uploadCaseMedia(e, "case_image_url")}
+                    disabled={uploadingCaseField !== null}
+                    className="cursor-pointer"
+                  />
+                  {uploadingCaseField === "image" ? <span className="text-sm text-gray-500">Загрузка...</span> : null}
+                </div>
+                <p className="text-xs text-gray-500">или</p>
+                <Input
+                  value={caseForm.case_image_url}
+                  onChange={(e) => updateCaseForm("case_image_url", e.target.value)}
+                  placeholder="Вставьте URL фото кейса"
+                />
+              </div>
+
+              <div className="space-y-2 md:col-span-2">
+                <FormLabel className="block">Видео кейса</FormLabel>
+                {caseForm.case_video_url ? (
+                  <video
+                    src={caseForm.case_video_url}
+                    controls
+                    preload="metadata"
+                    className="h-36 w-full max-w-md rounded-md bg-black"
+                  />
+                ) : null}
+                <div className="flex items-center gap-2">
+                  <Input
+                    type="file"
+                    accept="video/*"
+                    onChange={(e) => uploadCaseMedia(e, "case_video_url")}
+                    disabled={uploadingCaseField !== null}
+                    className="cursor-pointer"
+                  />
+                  {uploadingCaseField === "video" ? <span className="text-sm text-gray-500">Загрузка...</span> : null}
+                </div>
+                <p className="text-xs text-gray-500">или</p>
+                <Input
+                  value={caseForm.case_video_url}
+                  onChange={(e) => updateCaseForm("case_video_url", e.target.value)}
+                  placeholder="Вставьте URL видео кейса"
+                />
+              </div>
+
               <div>
                 <FormLabel className="mb-2 block">Порядок</FormLabel>
                 <Input
@@ -1433,6 +1517,21 @@ export function CourseDetailEditor() {
                           <p className="text-sm text-muted-foreground">{caseItem.student_role}</p>
                         )}
                         <p className="mt-2 text-sm whitespace-pre-wrap">{caseItem.case_text}</p>
+                        {caseItem.case_image_url ? (
+                          <img
+                            src={caseItem.case_image_url}
+                            alt={`Фото кейса ${caseItem.student_name}`}
+                            className="mt-3 h-32 w-full max-w-sm rounded-md object-cover"
+                          />
+                        ) : null}
+                        {caseItem.case_video_url ? (
+                          <video
+                            src={caseItem.case_video_url}
+                            controls
+                            preload="metadata"
+                            className="mt-3 h-32 w-full max-w-sm rounded-md bg-black"
+                          />
+                        ) : null}
                         {caseItem.result_text ? (
                           <p className="mt-2 text-sm font-medium text-primary whitespace-pre-wrap">
                             {caseItem.result_text}
@@ -1448,6 +1547,7 @@ export function CourseDetailEditor() {
                         </span>
                         <Button type="button" size="sm" variant="outline" onClick={() => editStudentCase(caseItem)}>
                           <Pencil size={16} />
+                          <span className="ml-1">Редактировать</span>
                         </Button>
                         <Button
                           type="button"

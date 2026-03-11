@@ -526,6 +526,21 @@ export default function WebinarBankruptcyBusiness() {
                       ))}
                     </div>
                     <p className="text-lg leading-relaxed text-foreground/80">{review.comment}</p>
+                    {review.review_image_url ? (
+                      <img
+                        src={review.review_image_url}
+                        alt={`Фото к отзыву ${review.author_name}`}
+                        className="mt-4 h-44 w-full rounded-xl object-cover"
+                      />
+                    ) : null}
+                    {review.review_video_url ? (
+                      <video
+                        src={review.review_video_url}
+                        controls
+                        preload="metadata"
+                        className="mt-4 h-44 w-full rounded-xl bg-black"
+                      />
+                    ) : null}
                     <div className="mt-6 flex items-center gap-3 border-t border-border pt-4">
                       {review.author_avatar_url ? (
                         <img

@@ -711,6 +711,21 @@ export default function CourseEffectiveTeam() {
                   <h3 className="text-2xl font-semibold text-foreground">{item.student_name}</h3>
                   {item.student_role ? <p className="mt-2 text-muted-foreground">{item.student_role}</p> : null}
                   <p className="mt-6 text-lg leading-relaxed text-foreground/80">{item.case_text}</p>
+                  {item.case_image_url ? (
+                    <img
+                      src={item.case_image_url}
+                      alt={`Фото кейса ${item.student_name}`}
+                      className="mt-4 h-44 w-full rounded-xl object-cover"
+                    />
+                  ) : null}
+                  {item.case_video_url ? (
+                    <video
+                      src={item.case_video_url}
+                      controls
+                      preload="metadata"
+                      className="mt-4 h-44 w-full rounded-xl bg-black"
+                    />
+                  ) : null}
                   {item.result_text ? <p className="mt-5 text-base font-semibold text-primary">{item.result_text}</p> : null}
                 </article>
               ))}
