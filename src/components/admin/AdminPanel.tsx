@@ -6,6 +6,7 @@ import { ReviewsManager } from './ReviewsManager';
 import { SiteSettingsManager } from './SiteSettingsManager';
 import { TeachersManager } from './TeachersManager';
 import { LeadsManager } from './LeadsManager';
+import { WebinarLeadsManager } from './WebinarLeadsManager';
 import { LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -82,10 +83,11 @@ export function AdminPanel() {
 
           <div className="mx-auto max-w-7xl px-4 py-8">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="mb-8 grid w-full grid-cols-5">
+              <TabsList className="mb-8 grid w-full grid-cols-6">
                 <TabsTrigger value="courses">Курсы</TabsTrigger>
                 <TabsTrigger value="teachers">Преподаватели</TabsTrigger>
                 <TabsTrigger value="leads">Заявки</TabsTrigger>
+                <TabsTrigger value="webinar-leads">Вебинары</TabsTrigger>
                 <TabsTrigger value="feedback">Отзывы</TabsTrigger>
                 <TabsTrigger value="settings">Настройки</TabsTrigger>
               </TabsList>
@@ -100,6 +102,10 @@ export function AdminPanel() {
 
               <TabsContent value="leads" className="rounded-lg bg-white p-6 shadow">
                 <LeadsManager />
+              </TabsContent>
+
+              <TabsContent value="webinar-leads" className="rounded-lg bg-white p-6 shadow">
+                <WebinarLeadsManager />
               </TabsContent>
 
               <TabsContent value="feedback" className="rounded-lg bg-white p-6 shadow">

@@ -12,6 +12,7 @@ import usersRouter from './routes/users.js';
 import settingsRouter from './routes/settings.js';
 import mediaRouter from './routes/media.js';
 import studentCasesRouter from './routes/student-cases.js';
+import webinarLeadsRouter from './routes/webinar-leads.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
@@ -39,6 +40,7 @@ app.use('/api/users', usersRouter);
 app.use('/api/settings', settingsRouter);
 app.use('/api/media', mediaRouter);
 app.use('/api/student-cases', studentCasesRouter);
+app.use('/api/webinar-leads', webinarLeadsRouter);
 
 // Health check
 app.get('/api/health', async (_req, res) => {

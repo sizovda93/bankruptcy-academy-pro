@@ -3,9 +3,11 @@ import Footer from "@/components/Footer";
 import { useEffect, useState } from "react";
 import { BarChart3, Briefcase, CheckCircle2, Lightbulb, Minus, Plus, Scale, Shield, Star, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { LeadFormContent } from "@/components/LeadFormSection";
+import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { api, Review } from "@/lib/api";
+import { toast } from "@/hooks/use-toast";
 
 const highlights = [
   "6 готовых бизнес-моделей для монетизации знаний о банкротстве",
@@ -167,6 +169,100 @@ const faqItems = [
   },
 ];
 
+function WebinarForm({ compact = false }: { compact?: boolean }) {
+  const [fullName, setFullName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const [consentPolicy, setConsentPolicy] = useState(false);
+  const [consentOffers, setConsentOffers] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+
+  const reset = () => {
+    setFullName(""); setPhone(""); setEmail("");
+    setConsentPolicy(false); setConsentOffers(true);
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!fullName.trim() || !phone.trim()) {
+      toast({ title: "Заполните поля", description: "Укажите имя и телефон.", variant: "destructive" });
+      return;
+    }
+    if (!consentPolicy) {
+      toast({ title: "Требуется согласие", description: "Подтвердите обработку персональных данных.", variant: "destructive" });
+      return;
+    }
+    try {
+      setSubmitting(true);
+      await api.webinarLeads.create({
+        full_name: fullName.trim(),
+        phone: phone.trim(),
+        email: email.trim() || undefined,
+        webinar_title: "Бизнес на банкротстве",
+        consent_policy: consentPolicy,
+        consent_offers: consentOffers,
+      });
+      toast({ title: "Заявка отправлена", description: "Мы свяжемся с вами в ближайшее время." });
+      reset();
+    } catch (error: any) {
+      toast({ title: "Ошибка отправки", description: error.message, variant: "destructive" });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <div className={compact ? "" : "rounded-3xl border border-border bg-card p-6 sm:p-8"}>
+      <form className="space-y-4" onSubmit={handleSubmit}>
+        <Input
+          className="h-14 rounded-xl bg-muted/40 text-base"
+          placeholder="Имя и фамилия"
+          value={fullName}
+          onChange={(e) => setFullName(e.target.value)}
+          required
+        />
+        <Input
+          className="h-14 rounded-xl bg-muted/40 text-base"
+          placeholder="+7 (000) 000-00-00"
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+          required
+        />
+        <Input
+          className="h-14 rounded-xl bg-muted/40 text-base"
+          placeholder="Email"
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <label className="flex items-start gap-3 text-sm text-white/80">
+          <Checkbox
+            checked={consentPolicy}
+            onCheckedChange={(v) => setConsentPolicy(Boolean(v))}
+            className="mt-0.5"
+          />
+          <span>Я согласен с обработкой персональных данных в соответствии с политикой обработки и публичной офертой</span>
+        </label>
+        <label className="flex items-start gap-3 text-sm text-white/80">
+          <Checkbox
+            checked={consentOffers}
+            onCheckedChange={(v) => setConsentOffers(Boolean(v))}
+            className="mt-0.5"
+          />
+          <span>Я соглашаюсь получать уведомления о новых продуктах и предложениях</span>
+        </label>
+        <Button
+          type="submit"
+          className="mt-2 h-14 w-full rounded-xl text-base font-semibold"
+          disabled={!consentPolicy || submitting}
+        >
+          {submitting ? "Отправка..." : "Записаться на вебинар"}
+        </Button>
+      </form>
+    </div>
+  );
+}
+
 export default function WebinarBankruptcyBusiness() {
   const [openBlockIndex, setOpenBlockIndex] = useState<number | null>(0);
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
@@ -225,7 +321,7 @@ export default function WebinarBankruptcyBusiness() {
                 </div>
               </div>
               <div id="webinar-form">
-                <LeadFormContent compact />
+                <WebinarForm />
               </div>
             </div>
           </div>
@@ -498,9 +594,7 @@ export default function WebinarBankruptcyBusiness() {
                 Оставьте заявку — получите программу вебинара, условия участия и бонусные материалы.
               </p>
               <div className="relative mt-6">
-                <a href="#webinar-form">
-                  <Button className="h-12 px-8 text-base">Открыть форму заявки</Button>
-                </a>
+                <Button className="h-12 px-8 text-base" onClick={() => setIsFormOpen(true)}>Открыть форму заявки</Button>
               </div>
             </div>
           </div>
@@ -508,9 +602,12 @@ export default function WebinarBankruptcyBusiness() {
       </main>
 
       <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
-        <DialogContent className="w-[96vw] max-w-[760px] p-4 sm:p-6">
-          <DialogTitle className="sr-only">Запись на вебинар</DialogTitle>
-          <LeadFormContent compact />
+        <DialogContent className="w-[96vw] max-w-[500px] p-4 sm:p-6">
+          <DialogTitle className="text-xl font-bold">Запись на вебинар</DialogTitle>
+          <p className="text-sm text-muted-foreground">Как в кризис построить устойчивый бизнес на банкротстве</p>
+          <div className="[&_label]:text-muted-foreground">
+            <WebinarForm compact />
+          </div>
         </DialogContent>
       </Dialog>
 

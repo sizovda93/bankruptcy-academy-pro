@@ -164,6 +164,17 @@ export interface Lead {
   created_at: string;
 }
 
+export interface WebinarLead {
+  id: string;
+  full_name: string;
+  phone: string;
+  email?: string;
+  webinar_title?: string;
+  consent_policy: boolean;
+  consent_offers: boolean;
+  created_at: string;
+}
+
 export interface SiteSetting {
   id: string;
   setting_key: string;
@@ -269,6 +280,13 @@ export const api = {
     list: () => request<Lead[]>('/leads'),
     create: (data: Partial<Lead>) =>
       request<Lead>('/leads', { method: 'POST', body: JSON.stringify(data) }),
+  },
+
+  // --- Webinar Leads ---
+  webinarLeads: {
+    list: () => request<WebinarLead[]>('/webinar-leads'),
+    create: (data: Partial<WebinarLead>) =>
+      request<WebinarLead>('/webinar-leads', { method: 'POST', body: JSON.stringify(data) }),
   },
 
   // --- Users ---
