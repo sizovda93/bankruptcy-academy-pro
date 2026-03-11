@@ -771,7 +771,8 @@ export function CourseDetailEditor() {
           <Card className="p-6">
             <h3 className="mb-4 text-lg font-semibold">Основная информация</h3>
             
-            <div className="space-y-4">              <div className="grid gap-4 md:grid-cols-2">
+            <div className="space-y-4">
+              <div className="grid gap-4 md:grid-cols-2">
                 <div>
                   <FormLabel className="mb-2 block">Название курса *</FormLabel>
                   <Input
@@ -1420,33 +1421,6 @@ export function CourseDetailEditor() {
                 />
               </div>
               <div className="space-y-2 md:col-span-2">
-                <FormLabel className="block">Фото кейса</FormLabel>
-                {caseForm.case_image_url ? (
-                  <img
-                    src={caseForm.case_image_url}
-                    alt="Превью фото кейса"
-                    className="h-36 w-full max-w-md rounded-md object-cover"
-                  />
-                ) : null}
-                <div className="flex items-center gap-2">
-                  <Input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => uploadCaseMedia(e, "case_image_url")}
-                    disabled={uploadingCaseField !== null}
-                    className="cursor-pointer"
-                  />
-                  {uploadingCaseField === "image" ? <span className="text-sm text-gray-500">Загрузка...</span> : null}
-                </div>
-                <p className="text-xs text-gray-500">или</p>
-                <Input
-                  value={caseForm.case_image_url}
-                  onChange={(e) => updateCaseForm("case_image_url", e.target.value)}
-                  placeholder="Вставьте URL фото кейса"
-                />
-              </div>
-
-              <div className="space-y-2 md:col-span-2">
                 <FormLabel className="block">Видео кейса</FormLabel>
                 {caseForm.case_video_url ? (
                   <video
@@ -1512,18 +1486,22 @@ export function CourseDetailEditor() {
                   <Card key={caseItem.id} className="p-4">
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
-                        <h4 className="font-semibold">{caseItem.student_name}</h4>
-                        {caseItem.student_role && (
-                          <p className="text-sm text-muted-foreground">{caseItem.student_role}</p>
-                        )}
-                        <p className="mt-2 text-sm whitespace-pre-wrap">{caseItem.case_text}</p>
-                        {caseItem.case_image_url ? (
-                          <img
-                            src={caseItem.case_image_url}
-                            alt={`Фото кейса ${caseItem.student_name}`}
-                            className="mt-3 h-32 w-full max-w-sm rounded-md object-cover"
-                          />
-                        ) : null}
+                        <div className="flex items-center gap-3">
+                          {caseItem.case_image_url ? (
+                            <img
+                              src={caseItem.case_image_url}
+                              alt={caseItem.student_name}
+                              className="h-10 w-10 flex-shrink-0 rounded-full object-cover"
+                            />
+                          ) : null}
+                          <div>
+                            <h4 className="font-semibold">{caseItem.student_name}</h4>
+                            {caseItem.student_role && (
+                              <p className="text-sm text-muted-foreground">{caseItem.student_role}</p>
+                            )}
+                          </div>
+                        </div>
+                        {caseItem.case_text ? <p className="mt-2 text-sm whitespace-pre-wrap">{caseItem.case_text}</p> : null}
                         {caseItem.case_video_url ? (
                           <video
                             src={caseItem.case_video_url}
