@@ -846,26 +846,35 @@ export default function CourseNonDischarge() {
             <h2 className="font-heading text-3xl font-bold">Кейсы наших студентов</h2>
             <div className="grid gap-4 lg:grid-cols-4">
               {studentCases.map((item) => (
-                <article key={item.id} className="rounded-3xl border bg-muted/30 p-5">
-                  <h3 className="text-xl font-semibold text-foreground">{item.student_name}</h3>
-                  {item.student_role ? <p className="mt-1 text-sm text-muted-foreground">{item.student_role}</p> : null}
-                  <p className="mt-4 text-sm leading-relaxed text-foreground/80">{item.case_text}</p>
-                  {item.case_image_url ? (
-                    <img
-                      src={item.case_image_url}
-                      alt={`Фото кейса ${item.student_name}`}
-                      className="mt-3 h-36 w-full rounded-xl object-cover"
-                    />
-                  ) : null}
-                  {item.case_video_url ? (
-                    <video
-                      src={item.case_video_url}
-                      controls
-                      preload="metadata"
-                      className="mt-3 h-36 w-full rounded-xl bg-black"
-                    />
-                  ) : null}
-                  {item.result_text ? <p className="mt-4 text-sm font-semibold text-red-600">{item.result_text}</p> : null}
+                <article key={item.id} className="flex flex-col overflow-hidden rounded-3xl border bg-muted/30">
+                  {(item.case_image_url || item.case_video_url) && (
+                    <div className="relative w-full bg-black">
+                      {item.case_video_url ? (
+                        <video
+                          src={item.case_video_url}
+                          controls
+                          preload="metadata"
+                          className="aspect-video w-full object-cover"
+                        />
+                      ) : (
+                        <img
+                          src={item.case_image_url!}
+                          alt={`Фото кейса ${item.student_name}`}
+                          className="aspect-video w-full object-cover"
+                        />
+                      )}
+                    </div>
+                  )}
+                  <div className="flex flex-1 flex-col p-5">
+                    <div>
+                      <h3 className="text-lg font-semibold text-foreground">{item.student_name}</h3>
+                      {item.student_role ? <p className="mt-0.5 text-sm text-muted-foreground">{item.student_role}</p> : null}
+                    </div>
+                    <p className="mt-3 flex-1 text-sm leading-relaxed text-foreground/80">{item.case_text}</p>
+                    {item.result_text ? (
+                      <p className="mt-4 rounded-xl bg-red-50 px-4 py-2 text-sm font-semibold text-red-600">{item.result_text}</p>
+                    ) : null}
+                  </div>
                 </article>
               ))}
             </div>

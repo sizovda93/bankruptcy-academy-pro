@@ -86,32 +86,7 @@ const ReviewsSection = () => {
             {items.map((review) => (
               <CarouselItem key={review.id} className="md:basis-1/2 lg:basis-1/3">
                 <div className="h-full rounded-lg bg-white p-6 shadow-lg transition-shadow hover:shadow-xl">
-                  <div className="mb-4 flex items-center gap-1">
-                    {Array.from({ length: review.rating }).map((_, idx) => (
-                      <Star key={`${review.id}-star-${idx}`} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                    ))}
-                  </div>
-
-                  <p className="mb-6 line-clamp-4 text-gray-700">"{review.comment}"</p>
-
-                  {review.review_image_url ? (
-                    <img
-                      src={review.review_image_url}
-                      alt={`Фото к отзыву ${review.author_name}`}
-                      className="mb-4 h-40 w-full rounded-lg object-cover"
-                    />
-                  ) : null}
-
-                  {review.review_video_url ? (
-                    <video
-                      src={review.review_video_url}
-                      controls
-                      preload="metadata"
-                      className="mb-4 h-40 w-full rounded-lg bg-black"
-                    />
-                  ) : null}
-
-                  <div className="flex items-center gap-3 border-t border-gray-100 pt-4">
+                  <div className="mb-4 flex items-center gap-3">
                     {review.author_avatar_url ? (
                       <img src={review.author_avatar_url} alt={review.author_name} className="h-12 w-12 rounded-full object-cover" />
                     ) : null}
@@ -120,6 +95,31 @@ const ReviewsSection = () => {
                       <p className="text-sm text-gray-500">Студент курса</p>
                     </div>
                   </div>
+
+                  <div className="mb-4 flex items-center gap-1">
+                    {Array.from({ length: review.rating }).map((_, idx) => (
+                      <Star key={`${review.id}-star-${idx}`} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                    ))}
+                  </div>
+
+                  <p className="mb-4 line-clamp-4 text-gray-700">"{review.comment}"</p>
+
+                  {review.review_image_url ? (
+                    <img
+                      src={review.review_image_url}
+                      alt={`Фото к отзыву ${review.author_name}`}
+                      className="mt-2 h-40 w-full rounded-lg object-cover"
+                    />
+                  ) : null}
+
+                  {review.review_video_url ? (
+                    <video
+                      src={review.review_video_url}
+                      controls
+                      preload="metadata"
+                      className="mt-2 h-40 w-full rounded-lg bg-black"
+                    />
+                  ) : null}
                 </div>
               </CarouselItem>
             ))}
