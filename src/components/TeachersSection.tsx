@@ -95,15 +95,15 @@ const TeachersSection = () => {
                   {group.map((teacher) => (
                     <article key={teacher.id} className="flex flex-col overflow-hidden rounded-2xl border border-gray-200 bg-gray-50">
                       {teacher.photo_url ? (
-                        <div className="flex h-64 w-full items-center justify-center bg-gray-100 p-4">
+                        <div className="h-72 w-full overflow-hidden bg-gray-100">
                           <img
                             src={teacher.photo_url}
                             alt={teacher.full_name}
-                            className="h-full w-full object-contain"
+                            className="h-full w-full object-cover object-top"
                           />
                         </div>
                       ) : (
-                        <div className="h-64 w-full bg-gray-200" />
+                        <div className="h-72 w-full bg-gray-200" />
                       )}
 
                       <div className="flex flex-1 flex-col p-6">
