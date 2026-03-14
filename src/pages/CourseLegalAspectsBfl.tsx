@@ -139,7 +139,7 @@ const faqItems = [
   },
 ];
 
-const teamOrderFallback = ["артин", "абукаев", "герасимов", "лященко"];
+const teamOrderFallback = ["артин", "абукаев", "герасимов"];
 
 const teamFallback: Teacher[] = [
   {
@@ -181,19 +181,6 @@ const teamFallback: Teacher[] = [
     created_at: "",
     updated_at: "",
   },
-  {
-    id: "fallback-lyashchenko",
-    full_name: "Лященко Елена Юрьевна",
-    position: "Арбитражный управляющий",
-    bio: "Эксперт по взаимодействию с АУ и стандартизации процессов.",
-    expertise: "Взаимодействие с АУ, регламенты коммуникации, контроль процедуры.",
-    experience: "15 лет",
-    photo_url: "",
-    display_order: 4,
-    is_published: true,
-    created_at: "",
-    updated_at: "",
-  },
 ];
 
 const teamExpertiseByName: Record<string, string> = {
@@ -203,8 +190,6 @@ const teamExpertiseByName: Record<string, string> = {
     "Подготовка процессуальных документов по БФЛ, оценка рисков по кейсам, сопровождение клиента на всех этапах процедуры.",
   герасимов:
     "Анализ судебной практики по БФЛ, оценка рисков на входе в процедуру, стратегия защиты должника.",
-  лященко:
-    "Взаимодействие с арбитражными управляющими, регламенты коммуникации в процедуре, контроль и стандарты сопровождения.",
 };
 
 const getTeamExpertise = (fullName: string) => {
@@ -212,7 +197,6 @@ const getTeamExpertise = (fullName: string) => {
   if (lower.includes("артин")) return teamExpertiseByName.артин;
   if (lower.includes("абукаев")) return teamExpertiseByName.абукаев;
   if (lower.includes("герасимов")) return teamExpertiseByName.герасимов;
-  if (lower.includes("лященко")) return teamExpertiseByName.лященко;
   return "Практическая экспертиза в сопровождении дел о банкротстве физических лиц.";
 };
 
