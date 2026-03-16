@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
-import heroBg from "@/assets/hero-bg.jpg";
+import heroBgWebp from "@/assets/hero-bg.webp";
+import heroBgJpg from "@/assets/hero-bg.jpg";
 
 const HeroSection = () => {
-  const [backgroundUrl, setBackgroundUrl] = useState(heroBg);
+  const [backgroundUrl, setBackgroundUrl] = useState<string | null>(null);
   const [heroTitle, setHeroTitle] = useState("Академия Банкротства");
   const [heroDescription, setHeroDescription] = useState(
     "Знания, навыки и деловые связи для профессионального роста специалистов в сфере банкротства"
@@ -37,14 +38,26 @@ const HeroSection = () => {
 
   return (
     <section className="relative overflow-hidden">
-      <div
-        className="relative mx-auto max-w-[1200px] overflow-hidden rounded-b-3xl"
-        style={{
-          backgroundImage: `url(${backgroundUrl})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      >
+      <div className="relative mx-auto max-w-[1200px] overflow-hidden rounded-b-3xl">
+        {backgroundUrl ? (
+          <img
+            src={backgroundUrl}
+            alt=""
+            aria-hidden="true"
+            className="absolute inset-0 h-full w-full object-cover object-center"
+          />
+        ) : (
+          <picture>
+            <source srcSet={heroBgWebp} type="image/webp" />
+            <img
+              src={heroBgJpg}
+              alt=""
+              aria-hidden="true"
+              fetchPriority="high"
+              className="absolute inset-0 h-full w-full object-cover object-center"
+            />
+          </picture>
+        )}
         <div className="absolute inset-0 bg-gradient-to-br from-primary/80 via-primary-glow/60 to-primary/90" />
         <div className="relative px-6 py-20 text-center sm:py-28 md:py-36">
           <p className="font-heading text-base font-semibold tracking-wide text-white sm:text-lg">
