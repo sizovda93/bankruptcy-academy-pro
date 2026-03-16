@@ -3,11 +3,17 @@ import { api } from "@/lib/api";
 import heroBgWebp from "@/assets/hero-bg.webp";
 import heroBgJpg from "@/assets/hero-bg.jpg";
 
+const CACHE_KEY = "hero_settings";
+
 const HeroSection = () => {
-  const [backgroundUrl, setBackgroundUrl] = useState<string | null>(null);
-  const [heroTitle, setHeroTitle] = useState("Академия Банкротства");
+  const cached = (() => {
+    try { return JSON.parse(localStorage.getItem(CACHE_KEY) || "null"); } catch { return null; }
+  })();
+
+  const [backgroundUrl, setBackgroundUrl] = useState<string | null>(cached?.backgroundUrl ?? null);
+  const [heroTitle, setHeroTitle] = useState(cached?.heroTitle ?? "Академия Банкротства");
   const [heroDescription, setHeroDescription] = useState(
-    "Знания, навыки и деловые связи для профессионального роста специалистов в сфере банкротства"
+    cached?.heroDescription ?? "Знания, навыки и деловые связи для профессионального роста специалистов в сфере банкротства"
   );
 
   useEffect(() => {
@@ -17,19 +23,26 @@ const HeroSection = () => {
   const fetchSettings = async () => {
     try {
       const data = await api.settings.list();
+      if (!data) return;
 
-      if (data) {
-        data.forEach((item) => {
-          if (item.setting_key === "hero_background_url" && item.setting_value) {
-            setBackgroundUrl(item.setting_value);
-          }
-          if (item.setting_key === "hero_title" && item.setting_value) {
-            setHeroTitle(item.setting_value);
-          }
-          if (item.setting_key === "hero_description" && item.setting_value) {
-            setHeroDescription(item.setting_value);
-          }
-        });
+      const update: Record<string, string> = {};
+      data.forEach((item) => {
+        if (item.setting_key === "hero_background_url" && item.setting_value) {
+          update.backgroundUrl = item.setting_value;
+          setBackgroundUrl(item.setting_value);
+        }
+        if (item.setting_key === "hero_title" && item.setting_value) {
+          update.heroTitle = item.setting_value;
+          setHeroTitle(item.setting_value);
+        }
+        if (item.setting_key === "hero_description" && item.setting_value) {
+          update.heroDescription = item.setting_value;
+          setHeroDescription(item.setting_value);
+        }
+      });
+
+      if (Object.keys(update).length > 0) {
+        try { localStorage.setItem(CACHE_KEY, JSON.stringify({ ...cached, ...update })); } catch {}
       }
     } catch (error) {
       console.log("Используются настройки по умолчанию");
