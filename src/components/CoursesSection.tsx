@@ -1,5 +1,5 @@
 ﻿import { useEffect, useMemo, useState } from "react";
-import { BookOpen, CheckCircle2 } from "lucide-react";
+import { BookOpen, CheckCircle2, ShieldCheck, Award, Lock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { api, Course } from "@/lib/api";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
@@ -73,9 +73,14 @@ const CoursesSection = () => {
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCourse, setSelectedCourse] = useState<DisplayCourse | null>(null);
+  const [showExpertsModal, setShowExpertsModal] = useState(false);
 
   const handleCourseClick = (course: DisplayCourse) => {
     const normalizedTitle = course.title.toLowerCase();
+    if (normalizedTitle.includes("эксперт") && normalizedTitle.includes("бфл")) {
+      setShowExpertsModal(true);
+      return;
+    }
     if (normalizedTitle.includes("продвижение без вложений")) {
       navigate("/courses/promotion-without-ads");
       return;
@@ -173,6 +178,76 @@ const CoursesSection = () => {
           ))}
         </div>
       </div>
+
+      {/* Модал для экспертного курса */}
+      <Dialog open={showExpertsModal} onOpenChange={setShowExpertsModal}>
+        <DialogContent className="w-[96vw] max-w-[640px] p-0 overflow-hidden">
+          <DialogTitle className="sr-only">Экспертный курс БФЛ</DialogTitle>
+
+          {/* Градиентная шапка */}
+          <div className="relative bg-gradient-to-br from-primary/90 via-primary to-primary/80 px-6 py-8 text-primary-foreground sm:px-10 sm:py-10">
+            <Lock className="absolute right-6 top-6 h-8 w-8 opacity-20" />
+            <div className="flex items-center gap-2 text-sm font-semibold uppercase tracking-widest opacity-80">
+              <ShieldCheck className="h-4 w-4" />
+              Закрытая программа
+            </div>
+            <h3 className="mt-3 font-heading text-2xl font-bold leading-tight sm:text-3xl">
+              Эксперты БФЛ
+            </h3>
+            <p className="mt-1 text-sm opacity-80">Продвинутый курс для юристов с опытом в БФЛ</p>
+          </div>
+
+          {/* Контент */}
+          <div className="px-6 py-6 sm:px-10 sm:py-8">
+            <div className="flex items-center gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 dark:border-amber-900/50 dark:bg-amber-950/30">
+              <Award className="h-5 w-5 flex-shrink-0 text-amber-600 dark:text-amber-400" />
+              <p className="text-sm font-semibold text-amber-800 dark:text-amber-200">
+                Только для действующих партнёров, прошедших все курсы
+              </p>
+            </div>
+
+            <div className="mt-6 space-y-4 text-sm leading-relaxed text-muted-foreground">
+              <p>
+                Данная программа представляет собой <span className="font-semibold text-foreground">высшую ступень профессиональной
+                сертификации</span> в рамках экосистемы Академии Банкротства. Допуск осуществляется исключительно
+                по результатам внутренней аттестации и при наличии подтверждённого статуса действующего партнёра.
+              </p>
+              <p>
+                Курс охватывает углублённую аналитику судебной практики Верховного Суда РФ, нестандартные
+                стратегии ведения процедур реструктуризации долгов, методологию работы с оспариванием
+                цепочек сделок в делах повышенной сложности, а также тактику взаимодействия с арбитражными
+                управляющими и кредиторами на уровне экспертного консалтинга.
+              </p>
+              <p>
+                Выпускники получают статус <span className="font-semibold text-foreground">«Сертифицированный
+                эксперт БФЛ»</span> и приоритетный доступ к реферальной сети Академии с повышенной комиссионной ставкой.
+              </p>
+            </div>
+
+            <ul className="mt-6 space-y-2">
+              {[
+                "Разбор прецедентных дел ВС РФ 2024–2025",
+                "Стратегии защиты при субсидиарной ответственности",
+                "Экспертный нетворкинг с ведущими практиками отрасли",
+                "Персональное менторство от основателей Академии",
+              ].map((item) => (
+                <li key={item} className="flex items-start gap-2 text-sm text-foreground/90">
+                  <CheckCircle2 className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary" />
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+
+            <button
+              type="button"
+              onClick={() => setShowExpertsModal(false)}
+              className="mt-8 w-full rounded-xl bg-muted px-6 py-3 text-sm font-semibold text-muted-foreground transition-colors hover:bg-muted/80"
+            >
+              Понятно
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={Boolean(selectedCourse)} onOpenChange={(open) => !open && setSelectedCourse(null)}>
         <DialogContent className="w-[96vw] max-w-[1280px] p-4 sm:p-6">
