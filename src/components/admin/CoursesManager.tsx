@@ -1,6 +1,6 @@
 ﻿import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { Pencil, Trash2, Upload } from "lucide-react";
+import { Pencil, Trash2, Upload, Download } from "lucide-react";
 import { api, Course } from "@/lib/api";
 import { resizeImageToCover } from "@/lib/image";
 import { Button } from "@/components/ui/button";
@@ -233,6 +233,13 @@ export function CoursesManager() {
                     <Pencil size={16} className="mr-1" />
                     Редактировать
                   </Button>
+                  {course.cover_image_url ? (
+                    <Button variant="outline" size="sm" asChild>
+                      <a href={`${course.cover_image_url}?download=1`} download>
+                        <Download size={16} />
+                      </a>
+                    </Button>
+                  ) : null}
                   <Button variant="destructive" size="sm" onClick={() => deleteCourse(course.id)}>
                     <Trash2 size={16} />
                   </Button>

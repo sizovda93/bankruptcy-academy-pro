@@ -89,9 +89,10 @@ router.get('/:id/content', async (req: Request, res: Response) => {
     }
 
     const file = result.rows[0];
+    const disposition = req.query.download === '1' ? 'attachment' : 'inline';
     res.setHeader('Content-Type', file.file_type || 'application/octet-stream');
     res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
-    res.setHeader('Content-Disposition', `inline; filename="${encodeURIComponent(file.file_name)}"`);
+    res.setHeader('Content-Disposition', `${disposition}; filename="${encodeURIComponent(file.file_name)}"`);
 
     if (file.storage_kind === 'db' && file.file_data) {
       res.send(file.file_data);
